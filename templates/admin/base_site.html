@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+{% block title %}{{ title }} | {{ site_title }}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        #header{
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        #branding img{
+            max-height: 50px;
+        }
+    </style>
+{% endblock %}
+{% block extrahead %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static '/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static '/favicon-16x16.png' %}">
+{% endblock %}
+{% block branding %}
+    {{ block.super }}
+    <h1 id="site-name">
+        <img src="{% static '/logo-large.png' %}">
+    </h1>
+{% endblock %}
