@@ -109,8 +109,7 @@ def execute_operation(sender,instance,**kwargs):
 def close_cluster_operation(sender, instance, **kwargs):
     for running_op in models.ClusterOperation.objects.select_for_update().filter(
         batch_uuid=instance.batch_uuid,
-        started_time__isnull=False,
-        completed_time__isnull=True
+        started_time__isnull=False
     ):
         if not running_op.get_remain_oprations().exists():
             running_op.completed_time=now()
