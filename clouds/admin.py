@@ -25,7 +25,7 @@ class CloudStaticModelAdmin(StaticModelAdmin):
         ('cloud', admin.RelatedOnlyFieldListFilter),
     )+StaticModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
+        return (super().get_queryset_Q(request)) & Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.owner==request.user or obj.cloud.owner == request.user
 
@@ -153,7 +153,7 @@ class MountAdmin(AutoModelAdmin):
         return redirect(reverse("admin:clouds_volume_changelist"))
     def delete_view(self, request, object_id, extra_context=None):
         m=models.Mount.objects.get(pk=object_id)
-        if not m.instance.umountable:
+        if not m.instance.umountable and request.user!=m.instance.cloud.owner:
             messages.error(request, 'not umountable instance.')
             return redirect('../..')
         return super().delete_view(request, object_id, extra_context)
@@ -163,7 +163,7 @@ class MountAdmin(AutoModelAdmin):
             if "deletable_objects" in response.context_data:
                 not_umountables=[]
                 for m in response.context_data["queryset"]:
-                    if not m.instance.umountable:
+                    if not m.instance.umountable and request.user!=m.instance.cloud.owner:
                         not_umountables.append(m.instance.ipv4)
                 if not_umountables:
                     messages.error(request, str(not_umountables)+' are not in umountable status')
