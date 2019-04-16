@@ -36,7 +36,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         return format_html('<br/>'.join([get_url(ins) for ins in object.get_instances()]))  
     def action(self, obj):
         if obj.deleting:
-            if not get_current_user().is_superuser: 
+            if not get_current_user().is_superuser:
                 return 'deleting'
         op_url=reverse('clusteroperation-list')
         return self.action_button(obj,op_url)

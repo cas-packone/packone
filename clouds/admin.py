@@ -109,8 +109,17 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         'status',
     )
     extra=('action',)
+    def destroy(modeladmin, request, queryset):
+        for instance in queryset:
+            instance.deleting=True
+            instance.save()
+            instance.delete()
+    destroy.short_description = "Destroy selected instances"
+    actions=[destroy]
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
+        return False
     
 @admin.register(models.Volume)
 class VolumeAdmin(OwnershipModelAdmin):
@@ -193,18 +202,18 @@ class MountAdmin(AutoModelAdmin):
 @admin.register(models.InstanceOperation)
 class InstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
-        return super().get_list_display(request,obj)+('log',)
+        return super().get_list_display(request,obj)
     def get_queryset(self, request):
         return super().get_queryset(request).filter(
             Q(target__owner=request.user)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
         ).order_by('-started_time')
     def has_delete_permission(self, request, obj=None):
         return not obj or (obj.target.deleting or not obj.executing) and obj.target.owner == request.user or obj.target.cloud.owner == request.user
-    def rerun(modeladmin, request, queryset):
+    def run(modeladmin, request, queryset):
         for op in queryset:
             op.execute()
-    rerun.short_description = "Re-run selected operations"
-    actions=[rerun]
+    run.short_description = "Run selected operations instantly"
+    actions=[run]
 
 @admin.register(models.Group)
 class GroupAdmin(OwnershipModelAdmin,OperatableAdminMixin):
