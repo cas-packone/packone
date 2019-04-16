@@ -11,7 +11,6 @@ from clouds.utils import get_url, get_formated_url
 
 admin.site.register(models.Component,StaticModelAdmin)
 admin.site.register(models.Engine,StaticModelAdmin)
-admin.site.register(models.Group,AutoModelAdmin)
 
 @admin.register(models.Scale)
 class ScaleAdmin(StaticModelAdmin):
@@ -68,7 +67,6 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         return False
 
 @admin.register(models.ClusterOperation)
-@admin.register(GroupOperation)
 class ClusterOperationAdmin(OperationAdmin):
     def related_instance_operations(self,obj):
         return format_html('<br/>'.join([get_url(io) for io in InstanceOperation.objects.filter(batch_uuid=obj.batch_uuid)]))

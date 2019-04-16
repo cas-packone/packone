@@ -179,3 +179,41 @@ class InstanceOperationAdmin(OperationAdmin):
             op.execute()
     rerun.short_description = "Re-run selected operations"
     actions=[rerun]
+
+@admin.register(models.Group)
+class GroupAdmin(OwnershipModelAdmin,OperatableAdminMixin):
+    def get_list_display_exclude(self, request, obj=None):
+        if request.user.is_superuser: return ()
+        return ('owner','deleting',)
+    def destroy(modeladmin, request, queryset):
+        for group in queryset:
+            group.delete()
+    destroy.short_description = "Destroy selected groups"
+    actions=[destroy]
+    def has_change_permission(self, request, obj=None):
+        return False
+    def has_add_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_module_permission(self, request):
+        if request.user.is_superuser: return True
+        return False
+
+@admin.register(models.GroupOperation)
+class GroupOperationAdmin(OperationAdmin):
+    def related_instance_operations(self,obj):
+        return format_html('<br/>'.join([get_url(io) for io in InstanceOperation.objects.filter(batch_uuid=obj.batch_uuid)]))
+    def get_readonly_fields(self, request, obj=None):
+        fs=super().get_readonly_fields(request, obj)
+        if obj: fs+=('related_instance_operations',)
+        return fs
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).order_by('-started_time')
+        if request.user.is_superuser: return qs
+        return qs.filter(target__owner=request.user)
+    def has_delete_permission(self, request, obj=None):
+        return not obj or (obj.target.deleting or not obj.executing) and obj.target.owner == request.useror or obj.target.cloud.owner == request.user
+    def has_module_permission(self, request):
+        if request.user.is_superuser: return True
+        return False

@@ -232,12 +232,11 @@ def materialize_group(sender,instance,**kwargs):
 @receiver(destroyed, sender=Instance)
 @transaction.atomic
 def destroy_group(sender,instance,**kwargs):
-    for group in Group.objects.select_for_update().filter(
-        deleting=True
+    for group in instance.group_set.filter(
+        instances=None
     ):
-        if not group.instances.all().exists():
-            group.delete()
-            destroyed.send(sender=Group, instance=group, name='destroyed')
+        group.delete()
+        destroyed.send(sender=Group, instance=group, name='destroyed')
 
 @receiver(monitored, sender=Instance)
 @receiver(post_save, sender=GroupOperation)

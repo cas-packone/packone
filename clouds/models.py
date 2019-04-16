@@ -354,6 +354,8 @@ class Group(models.Model,M2MOperatableMixin):
 
 class GroupOperation(M2MOperationModel):
     target=models.ForeignKey(Group,on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = "group operation"
     @staticmethod
     def get_sub_operation_model():
         return InstanceOperation
