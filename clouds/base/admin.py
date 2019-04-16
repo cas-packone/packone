@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import Q, fields
 from django.utils.html import format_html
 from clouds.utils import get_formated_url
+from user.models import Balance
 from .models import OPERATION_STATUS
 
 class AutoModelAdmin(admin.ModelAdmin):
@@ -93,13 +94,14 @@ def powerful_form_field_queryset_Q(db_field, request):
     model=db_field.remote_field.model
     q=None
     if getattr(model, 'owner', False):
-        q=  Q(owner=request.user)
+        q = Q(owner=request.user)
         if getattr(model, 'public', False):
             q= (q | Q(public=True))
         if getattr(model, 'enabled', False):
             q= q & Q(enabled=True)
-        if db_field.name == 'cloud':
-            q = q & Q(balance__profile__owner=request.user) & Q(balance__profile__enabled=True) & Q(balance__gt=0)
+    if db_field.name == 'cloud':
+        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
+        q = Q(balance__in=balances)
     return q
 
 class OwnershipModelAdmin(AutoModelAdmin):

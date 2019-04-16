@@ -6,6 +6,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
+from user.models import Balance
 from user.utils import get_current_user
 from .utils import get_url, get_formated_url
 from .base.admin import AutoModelAdmin, StaticModelAdmin, OwnershipModelAdmin, OperatableAdminMixin, OperationAdmin, powerful_form_field_queryset_Q
@@ -25,12 +26,25 @@ class CloudStaticModelAdmin(StaticModelAdmin):
         ('cloud', admin.RelatedOnlyFieldListFilter),
     )+StaticModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return (super().get_queryset_Q(request)) & Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
+        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
+        clouds=models.Cloud.objects.filter(Q(owner=request.user) | Q(balance__in=balances))
+        return (super().get_queryset_Q(request)) & Q(cloud__in=clouds)
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.owner==request.user or obj.cloud.owner == request.user
 
 @admin.register(models.Image)
 class ImageAdmin(CloudStaticModelAdmin):
+    class ImageForm(forms.ModelForm):
+        class Meta:
+            model = models.Image
+            fields = ('__all__')
+            widgets = {
+                'parent': autocomplete.ModelSelect2(
+                    url='image-autocomplete',
+                    forward=['cloud']
+                )
+            }
+    form = ImageForm
     def clone(self,obj):
         return format_html('<a href="{}?access_id={image.access_id}&cloud={image.cloud.pk}&parent={image.pk}" class="button">Clone</a>'.format(reverse('admin:clouds_image_add'),image=obj))
     def launch(self,obj):
