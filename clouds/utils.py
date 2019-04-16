@@ -30,7 +30,7 @@ def get_refer_GET_parameter(request,name=None):
     return None
 
 def remedy_script_tidy(script, supervisor_operations):
-    stats=[s.rstrip() for s in script.split('\n') if s.strip()]
+    stats=[s.rstrip() for s in script.split('\n')]
     begin_i=0
     current_i=0
     length=len(stats)
