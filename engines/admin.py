@@ -36,7 +36,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         return format_html('<br/>'.join([get_url(ins) for ins in object.get_instances()]))  
     def action(self, obj):
         if obj.deleting:
-            if not get_current_user().is_superuser: 
+            if not get_current_user().is_superuser:
                 return 'deleting'
         op_url=reverse('clusteroperation-list')
         return self.action_button(obj,op_url)
@@ -79,7 +79,7 @@ class ClusterOperationAdmin(OperationAdmin):
         if request.user.is_superuser: return qs
         return qs.filter(target__owner=request.user)
     def has_delete_permission(self, request, obj=None):
-        return not obj or (obj.target.deleting or not obj.executing) and obj.target.owner == request.user or request.user.is_superuser
+        return not obj or obj.target.owner == request.user or request.user.is_superuser
 # @admin.register(models.InstanceOperation)
 # class InstanceOperationAdmin(TargetOperationAdmin):
     #  def get_queryset(self, request):

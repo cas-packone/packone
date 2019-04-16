@@ -199,7 +199,7 @@ class InstanceOperationAdmin(OperationAdmin):
             Q(target__owner=request.user)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
         ).order_by('-started_time')
     def has_delete_permission(self, request, obj=None):
-        return not obj or (obj.target.deleting or not obj.executing) and obj.target.owner == request.user or obj.target.cloud.owner == request.user
+        return not obj or obj.target.owner == request.user or obj.target.cloud.owner == request.user
     def rerun(modeladmin, request, queryset):
         for op in queryset:
             op.execute()
@@ -239,7 +239,7 @@ class GroupOperationAdmin(OperationAdmin):
         if request.user.is_superuser: return qs
         return qs.filter(target__owner=request.user)
     def has_delete_permission(self, request, obj=None):
-        return not obj or (obj.target.deleting or not obj.executing) and obj.target.owner == request.useror or obj.target.cloud.owner == request.user
+        return not obj or obj.target.owner == request.user or obj.target.cloud.owner == request.user
     def has_module_permission(self, request):
         if request.user.is_superuser: return True
         return False
