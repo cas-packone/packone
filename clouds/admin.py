@@ -95,6 +95,8 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         'status',
     )
     extra=('action',)
+    def has_delete_permission(self, request, obj=None):
+        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
     
 @admin.register(models.Volume)
 class VolumeAdmin(OwnershipModelAdmin):
@@ -122,7 +124,7 @@ class VolumeAdmin(OwnershipModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False #obj.ready and super().has_change_permission(request,obj)
     def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.volume.cloud.owner == request.user
+        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
         
 @admin.register(models.Mount)
 class MountAdmin(AutoModelAdmin):
