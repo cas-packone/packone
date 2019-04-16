@@ -50,12 +50,6 @@ def scale_out(sender,instance,**kwargs):
         ).save()
         scaled_out.send(sender=models.Cluster, instance=cluster, name='scaled_out')
 
-# @receiver(post_save, sender=models.Step)
-# def step_out(sender,instance,**kwargs):
-#     if sender==models.Step:
-#         if not kwargs['created'] or instance.deleting: return
-#         instance.built_time = now()
-#         instance.save()
 
 # @receiver(post_save, sender=models.Cluster)
 # @receiver(post_save, sender=Instance)
