@@ -38,7 +38,7 @@ class ImageAdmin(CloudStaticModelAdmin):
     extra=('clone','launch')
     def get_list_display_exclude(self, request, obj=None):
         return ('access_id',)+super().get_list_display_exclude(request,obj)
-    
+
 @admin.register(models.InstanceTemplate)
 class InstanceTemplateAdmin(CloudStaticModelAdmin):
     def get_list_display_exclude(self, request, obj=None):
@@ -48,7 +48,7 @@ class InstanceTemplateAdmin(CloudStaticModelAdmin):
         return False
     def get_form_field_queryset_Q(self, db_field, request):
         return Q(owner=request.user)
-    
+
 #TODO use css and js to move drop down list actions to list and disable operate non-public items
 @admin.register(models.InstanceBlueprint)
 class InstanceBlueprintAdmin(CloudStaticModelAdmin):

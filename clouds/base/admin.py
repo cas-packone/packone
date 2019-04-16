@@ -134,6 +134,7 @@ class StaticModelAdmin(OwnershipModelAdmin):
         return ('name',)+super().get_list_display(request,obj)
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request) | (Q(public=True) & Q(enabled=True))
+    actions=None
 
 class OperatableAdminMixin(object):
     def action_button(self, obj, op_url):
