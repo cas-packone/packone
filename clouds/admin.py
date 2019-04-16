@@ -87,7 +87,7 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 return 'deleting'
         op_url=reverse('instanceoperation-list')
         return self.action_button(obj,op_url)
-    search_fields = ('name','cloud__name','cloud__name','template__name', 'image__name', 'hostname', 'ipv4', 'ipv6', 'remark')
+    search_fields = ('cloud__name','cloud__name','template__name', 'image__name', 'hostname', 'ipv4', 'ipv6', 'remark')
     list_filter = (
         ('cloud', admin.RelatedOnlyFieldListFilter),
         ('template', admin.RelatedOnlyFieldListFilter),
@@ -110,7 +110,7 @@ class VolumeAdmin(OwnershipModelAdmin):
             return format_html('<a href="{}" umount class="button">Umount</a>'.format(reverse('mount-detail',kwargs={'pk':obj.mount.pk})))
         if obj.mountable:
             return format_html('<a href="{}?volume={}" class="button">Mount</a>'.format(reverse('admin:clouds_mount_add'),obj.pk))
-    search_fields = ('name','cloud__name','cloud__name','capacity','remark')
+    search_fields = ('cloud__name','cloud__name','capacity','remark')
     list_filter = (('cloud', admin.RelatedOnlyFieldListFilter),'status')
     extra=('mounted_to','action')
     def get_list_display_exclude(self, request, obj=None):
