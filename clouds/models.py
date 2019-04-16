@@ -258,10 +258,9 @@ class InstanceOperation(OperationModel):
     log=models.TextField(max_length=51200,null=True,editable=False)
     def execute(self):
         super().execute()
-        @transaction.atomic
         def perform(self=self):
             from . import utils
-            self=self.__class__.objects.select_for_update().get(pk=self.pk)
+            self.refresh_from_db()
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
                     output=self.target.cloud.driver.vm_op(

@@ -154,12 +154,15 @@ class OperationModel(models.Model):
         former=target.get_former_operation()
         if former and former.status==OPERATION_STATUS.failed.value: return False
         return True
+    @transaction.atomic
     def execute(self):
-        self.__class__.objects.filter(pk=self.pk).update(
-            status=OPERATION_STATUS.running.value,
-            started_time=now(),
-            completed_time=None
-        )
+        self=self.__class__.objects.select_for_update().get(pk=self.pk)
+        if self.executing: raise Exception('cannot run a same operation concurrently')
+        self.status=OPERATION_STATUS.running.value
+        self.started_time=now()
+        self.completed_time=None
+        self.save()
+        
 
 class M2MOperatableMixin(OperatableMixin):
     def monitor(self):
@@ -191,10 +194,9 @@ class M2MOperationModel(OperationModel):
             batch_uuid=self.batch_uuid,
             completed_time=None
         ).order_by('started_time')
-    @transaction.atomic
     def execute(self):
         super().execute()
-        self=self.__class__.objects.select_for_update().get(pk=self.pk)
+        self.refresh_from_db()
         operatables=self.target.operatables
         if not operatables.exists():
             self.status=OPERATION_STATUS.running.value
