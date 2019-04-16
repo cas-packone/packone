@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from user.utils import get_current_user
 from .utils import get_url, get_formated_url
-from .base.admin import AutoModelAdmin, StaticModelAdmin, CloudStaticModelAdmin, OwnershipModelAdmin, OperatableAdminMixin, OperationAdmin, powerful_form_field_queryset_Q
+from .base.admin import AutoModelAdmin, StaticModelAdmin, OwnershipModelAdmin, OperatableAdminMixin, OperationAdmin, powerful_form_field_queryset_Q
 from . import models
     
 @admin.register(models.Cloud)
@@ -18,6 +18,16 @@ class CloudAdmin(StaticModelAdmin):
         if obj and obj.owner!=request.user:
             return ('_platform_credential','_instance_credential')
         return ()
+
+class CloudStaticModelAdmin(StaticModelAdmin):
+    search_fields = ('cloud__name',)+StaticModelAdmin.search_fields
+    list_filter = (
+        ('cloud', admin.RelatedOnlyFieldListFilter),
+    )+StaticModelAdmin.list_filter
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
+    def has_delete_permission(self, request, obj=None):
+        return not obj or obj.owner==request.user or obj.cloud.owner == request.user
 
 @admin.register(models.Image)
 class ImageAdmin(CloudStaticModelAdmin):

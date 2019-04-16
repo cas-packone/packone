@@ -135,16 +135,6 @@ class StaticModelAdmin(OwnershipModelAdmin):
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request) | (Q(public=True) & Q(enabled=True))
 
-class CloudStaticModelAdmin(StaticModelAdmin):
-    search_fields = ('cloud__name',)+StaticModelAdmin.search_fields
-    list_filter = (
-        ('cloud', admin.RelatedOnlyFieldListFilter),
-    )+StaticModelAdmin.list_filter
-    def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
-    def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user or obj.cloud.owner == request.user
-
 class OperatableAdminMixin(object):
     def action_button(self, obj, op_url):
         ops=obj.get_running_operations()
