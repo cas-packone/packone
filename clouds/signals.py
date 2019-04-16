@@ -55,7 +55,9 @@ def monitor_instance(sender, instance, **kwargs):
 def materialize_instance(sender, instance, **kwargs):
     if not kwargs['created'] or instance.ready: return
     instance.built_time=now()
+    instance.hostname=instance.image.hostname
     instance.save()
+    instance.update_remedy_script(instance.template.remedy_script+'\n'+instance.image.remedy_script,heading=True)
     @transaction.atomic
     def materialize(instance=instance):
         instance=sender.objects.select_for_update().get(pk=instance.pk)

@@ -43,20 +43,19 @@ class Image(StaticModel):
             s=self.parent.remedy_script+s
         return s
     def launch(self, template, owner, remedy_script='', number=1, remark=None):
-        hostname=self.hostname
-        if number>1:
-            parts=self.hostname.split('.')
-            hostname='.'.join((parts[0]+str(number),'.'.join(parts[1:])))
         ins=Instance(
             cloud=self.cloud,
             template=template,
             image=self,
-            hostname=hostname,
-            remedy_script_todo=template.remedy_script+self.remedy_script+remedy_script,
+            remedy_script_todo=remedy_script,
             owner=owner,
             remark=remark
         )
         ins.save()
+        if number>1:
+            parts=ins.hostname.split('.')
+            ins.hostname='.'.join((parts[0]+str(number),'.'.join(parts[1:])))
+            ins.save()
         return ins
 
 class InstanceTemplate(StaticModel):#TODO support root volume resize
