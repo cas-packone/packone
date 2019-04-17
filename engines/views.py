@@ -8,18 +8,6 @@ from . import models
 from . import serializers
 from dal import autocomplete
 
-def get_available_engines(scale_id):
-    scale=Scale.objects.get(pk=scale_id)
-    hosted_imgs=Image.objects.filter(
-        instance_blueprints__in=scale.init_blueprints.all()
-    ).distinct()
-    hosted_components=models.Component.objects.exclude(
-        images__in=Image.objects.exclude(pk__in=hosted_imgs)
-    )
-    return models.Engine.objects.exclude(
-        components__in=models.Component.objects.exclude(pk__in=hosted_components)
-    ).order_by('id')
-
 class ClusterEnginesAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
@@ -27,7 +15,7 @@ class ClusterEnginesAutocompleteView(autocomplete.Select2QuerySetView):
         scale_id = self.forwarded.get('scale', None)
         if not scale_id:
             return models.Engine.objects.none()
-        qs = get_available_engines(scale_id)
+        qs = Scale.objects.get(pk=scale_id).available_engines
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
         return qs

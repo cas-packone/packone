@@ -90,7 +90,10 @@ class AutoModelAdmin(admin.ModelAdmin):
                 }
         return form
 
+#TODO use staticmodel of_user
 def powerful_form_field_queryset_Q(db_field, request):
+    if db_field.name == 'cloud':
+        return Q(balance__in=request.user.balances())
     model=db_field.remote_field.model
     q=None
     if getattr(model, 'owner', False):
@@ -99,9 +102,6 @@ def powerful_form_field_queryset_Q(db_field, request):
             q= (q | Q(public=True))
         if getattr(model, 'enabled', False):
             q= q & Q(enabled=True)
-    if db_field.name == 'cloud':
-        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
-        q = Q(balance__in=balances)
     return q
 
 class OwnershipModelAdmin(AutoModelAdmin):

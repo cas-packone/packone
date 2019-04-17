@@ -3,6 +3,7 @@ from uuid import uuid4
 from enum import Enum
 from threading import Thread
 from django.db import models
+from django.db.models import Q
 from django.db import transaction
 from django.dispatch import Signal
 from django.contrib.auth.models import User
@@ -27,6 +28,13 @@ class Cloud(StaticModel):
     @cached_property
     def instance_credential(self):
         return json.loads(self._instance_credential)
+
+def clouds_of_user(self):
+    return Cloud.objects.filter(
+        balance__in=self.balances(),
+        enabled=True,
+    ).filter(Q(public=True) | Q(owner=self)).distinct()
+User.clouds=clouds_of_user
 
 class Image(StaticModel):
     name=models.CharField(max_length=50)
@@ -110,6 +118,13 @@ class InstanceBlueprint(StaticModel):
                     volume=volume
                 ).save()
         return inss
+
+def blueprints_of_user(self):
+    return InstanceBlueprint.objects.filter(
+        cloud__in=self.clouds(),
+        enabled=True
+    ).filter(Q(public=True) | Q(owner=self))
+User.blueprints=blueprints_of_user
 
 #TODO class VLan
 

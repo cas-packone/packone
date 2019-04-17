@@ -3,6 +3,7 @@ from uuid import uuid4
 from enum import Enum
 from threading import Thread
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from clouds.models import StaticModel, Image, Instance, Mount, INSTANCE_STATUS, INSTANCE_OPERATION, OPERATION_STATUS, InstanceBlueprint, InstanceOperation, OperatableMixin, OperationModel, Group, GroupOperation
@@ -73,6 +74,18 @@ class Scale(StaticModel):
         for ib in self.step_blueprints.all():
             q+=ib.quantity
         return q
+    @cached_property
+    def available_engines(self):
+        hosted_imgs=Image.objects.filter(
+            instance_blueprints__in=self.init_blueprints.all()
+        ).distinct()
+        hosted_components=Component.objects.exclude(
+            images__in=Image.objects.exclude(pk__in=hosted_imgs)
+        )
+        return Engine.objects.exclude(
+            components__in=Component.objects.exclude(pk__in=hosted_components)
+        ).order_by('id').distinct()
+
     def scale(self, owner, current_step=0, remark=None):
         step=Group(owner=owner)
         step.save()
@@ -94,6 +107,13 @@ class Scale(StaticModel):
         step.remark=remark
         step.save()
         return step
+
+def scales_of_user(self):
+    excluded_blueprints=InstanceBlueprint.objects.exclude(pk__in=self.blueprints())
+    return Scale.objects.exclude(
+        Q(init_blueprints__in=excluded_blueprints) | Q(step_blueprints__in=excluded_blueprints)
+    ).filter(enabled=True).filter(Q(public=True) | Q(owner=self)).distinct()
+User.scales=scales_of_user
 
 class Cluster(models.Model,M2MOperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)

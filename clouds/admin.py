@@ -26,9 +26,7 @@ class CloudStaticModelAdmin(StaticModelAdmin):
         ('cloud', admin.RelatedOnlyFieldListFilter),
     )+StaticModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
-        clouds=models.Cloud.objects.filter(Q(owner=request.user) | Q(balance__in=balances))
-        return (super().get_queryset_Q(request)) & Q(cloud__in=clouds)
+        return (super().get_queryset_Q(request)) & (Q(cloud__in=request.user.clouds()) | Q(cloud__owner=request.user))
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.owner==request.user or obj.cloud.owner == request.user
 

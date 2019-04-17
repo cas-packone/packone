@@ -18,13 +18,7 @@ admin.site.register(models.Engine,StaticModelAdmin)
 class ScaleAdmin(StaticModelAdmin):
     list_filter = ('auto',)+StaticModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) | (Q(public=True) & Q(enabled=True))
-    def get_queryset_Q(self, request):
-        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
-        available_clouds=Cloud.objects.filter(balance__in=balances).distinct()
-        available_blueprints=InstanceBlueprint.objects.filter(cloud__in=available_clouds).distinct()
-        excluded_blueprints=InstanceBlueprint.objects.exclude(pk__in=available_blueprints)
-        return Q(pk__in=models.Scale.objects.exclude(init_blueprints__in=excluded_blueprints))
+        return Q(pk__in=request.user.scales())
         
 @admin.register(models.Cluster)
 class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
@@ -75,6 +69,9 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     actions=[start,scale,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
+    def get_form_field_queryset_Q(self, db_field, request):
+        if db_field.name == 'scale': return Q(pk__in=request.user.scales())
+        return None
 
 @admin.register(models.ClusterOperation)
 class ClusterOperationAdmin(OperationAdmin):
