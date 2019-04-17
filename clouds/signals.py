@@ -234,10 +234,11 @@ def materialize_group(sender,instance,**kwargs):
 @receiver(destroyed, sender=Instance)
 @transaction.atomic
 def destroy_group(sender,instance,**kwargs):
-    for group in instance.group_set.filter(
-        instances=None
+    for group in Group.objects.select_for_update().filter(
+        deleting=True,
     ):
-        group.delete()
+        if not group.instances.all().exists():
+            group.delete()
         destroyed.send(sender=Group, instance=group, name='destroyed')
 
 @receiver(monitored, sender=Instance)

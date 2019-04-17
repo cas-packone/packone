@@ -206,9 +206,9 @@ def clusters_of_user(self):
     return Cluster.objects.filter(Q(public=True) | Q(owner=self))
 User.clusters=clusters_of_user
 
-def cluster_groups_of_user(self):
+def steps_of_user(self):
     return Group.objects.filter(cluster__in=self.clusters()).distinct()
-User.cluster_groups=cluster_groups_of_user
+User.steps=steps_of_user
 
 class ClusterOperation(M2MOperationModel):
     target=models.ForeignKey(Cluster,on_delete=models.CASCADE)
@@ -218,9 +218,20 @@ class ClusterOperation(M2MOperationModel):
     def get_sub_operation_model():
         return GroupOperation
 
-class ClusterGroupOperation(GroupOperation):
+class StepOperation(GroupOperation):
     class Meta:
         proxy = True
-        verbose_name='operation'
-    def get_cluster(self):
+        verbose_name = 'operation'
+    def __str__(self):
+        return "Cluster {}/Step {}/{}/{}".format(self.cluster,self.number,self.operation,self.status)
+    @cached_property
+    def cluster(self):
         return self.target.cluster_set.first()
+    @cached_property
+    def number(self):
+        steps=self.cluster.steps.all()
+        l=steps.count()
+        target_pk=self.target.pk
+        for i in range(l):
+            if steps[i].pk==target_pk:
+                return i+1

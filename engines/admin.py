@@ -19,7 +19,7 @@ class ScaleAdmin(StaticModelAdmin):
     list_filter = ('auto',)+StaticModelAdmin.list_filter
     def get_queryset_Q(self, request):
         return Q(pk__in=request.user.scales())
-        
+
 @admin.register(models.Cluster)
 class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     class ClusterForm(forms.ModelForm):
@@ -72,8 +72,8 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def get_form_field_queryset_Q(self, db_field, request):
         if db_field.name == 'scale': return Q(pk__in=request.user.scales())
         return None
-    def get_queryset(self, request):
-        return request.user.clusters()
+    def get_queryset_Q(self, request):
+        return Q(pk__in=request.user.clusters())
 
 @admin.register(models.ClusterOperation)
 class ClusterOperationAdmin(M2MOperationAdmin):
@@ -84,19 +84,19 @@ class ClusterOperationAdmin(M2MOperationAdmin):
     def has_module_permission(self, request):
         return False
 
-@admin.register(models.ClusterGroupOperation)
-class ClusterGroupOperationAdmin(M2MOperationAdmin):
+@admin.register(models.StepOperation)
+class StepOperationAdmin(M2MOperationAdmin):
     list_filter = (
         'operation',
         'manual',
         'status',
     )
     def _target(self,obj):
-        return get_formated_url(obj.get_cluster())
+        return get_formated_url(obj.cluster)
     def get_queryset(self, request):
-        qs=models.ClusterGroupOperation.objects.all()
+        qs=models.StepOperation.objects.all()
         if request.user.is_superuser: return qs
-        return qs.filter(target__in=request.user.cluster_groups()).order_by('-started_time').distinct()
+        return qs.filter(target__in=request.user.steps()).order_by('-started_time').distinct()
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):
