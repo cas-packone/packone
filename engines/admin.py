@@ -86,6 +86,11 @@ class ClusterOperationAdmin(M2MOperationAdmin):
 
 @admin.register(models.ClusterGroupOperation)
 class ClusterGroupOperationAdmin(M2MOperationAdmin):
+    list_filter = (
+        'operation',
+        'manual',
+        'status',
+    )
     def _target(self,obj):
         return get_formated_url(obj.get_cluster())
     def get_queryset(self, request):
