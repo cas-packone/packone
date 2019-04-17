@@ -50,34 +50,20 @@ def scale_out(sender,instance,**kwargs):
         ).save()
         scaled_out.send(sender=models.Cluster, instance=cluster, name='scaled_out')
 
-
-# @receiver(post_save, sender=models.Cluster)
-# @receiver(post_save, sender=Instance)
-# def scale_cluster(sender,instance,**kwargs):
-#     if sender==Instance and instance.cluster_set.filter().exists():
-#         pass#TODO
-#     instance.built_time=None
-#     instance.status=INSTANCE_STATUS.building.value
-#     instance.save()
-
-# @receiver(pre_delete, sender=Instance)
-# def scale_in_cluster(sender,instance,**kwargs):
-#     if not instance.ready: return
-#     for cluster in instance.cluster_set.all():
-#         for ins in cluster.instances.all():
-#             ins.update_remedy_script(
-#                 utils.remedy_script_hosts_remove(instance.hosts_record)
-#             )
-
 @receiver(destroyed, sender=Group)
 @transaction.atomic
-def destroy_cluster(sender,instance,**kwargs):
-    for cluster in models.Cluster.objects.select_for_update().filter(
-        deleting=True,
-    ):
-        if not cluster.steps.all().exists():
-            cluster.delete()
-            destroyed.send(sender=models.Cluster, instance=cluster, name='destroyed')
+def scale_in_cluster(sender,instance,**kwargs):
+    for cluster in instance.cluster_set.select_for_update():
+        cluster.steps.remove(instance)
+        if cluster.deleting:
+            if not cluster.steps.all().exists():
+                destroyed.send(sender=models.Cluster, instance=cluster, name='destroyed')
+                cluster.delete()
+        else:
+            cluster.update_remedy_script(
+                utils.remedy_script_hosts_remove(instance.hosts),
+                heading=True
+            )#TODO remove engines from step
 
 @receiver(monitored, sender=Group)
 @receiver(post_save, sender=models.ClusterOperation)

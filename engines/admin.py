@@ -58,15 +58,19 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 status=models.OPERATION_STATUS.running.value
             ).save()
     start.short_description = "Start selected clusters"
-    def scale(modeladmin, request, queryset):
+    def scale_out(modeladmin, request, queryset):
         for cluster in queryset:
             cluster.scale_one_step()
-    scale.short_description = "Scale out one step"
+    scale_out.short_description = "Scale out one step"
+    def scale_in(modeladmin, request, queryset):
+        for cluster in queryset:
+            cluster.steps.last().delete()
+    scale_in.short_description = "Scale in one step"
     def destroy(modeladmin, request, queryset):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[start,scale,destroy]
+    actions=[start,scale_out,scale_in,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):

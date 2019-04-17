@@ -315,6 +315,7 @@ class Group(models.Model,M2MOperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     instances=models.ManyToManyField(Instance,blank=True,editable=False)
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)
+    hosts=models.TextField(max_length=5120,default="",blank=True,editable=False)
     remark = models.CharField(blank=True,null=True,max_length=100)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False)
     created_time=models.DateTimeField(auto_now_add=True)
@@ -323,10 +324,6 @@ class Group(models.Model,M2MOperatableMixin):
     deleting = models.BooleanField(default=False,editable=False)
     class Meta:
         ordering = ['pk']
-    @cached_property
-    def hosts(self):
-        if not self.ready: raise Exception('group not ready')
-        return '###group###\n'+'\n'.join([ins.hosts_record for ins in self.instances.all()])
     @staticmethod
     def get_operation_model():
         return GroupOperation

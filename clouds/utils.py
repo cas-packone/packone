@@ -53,7 +53,7 @@ def remedy_script_hosts_add(hosts,overwrite=False):
 
 #TODO only support linux
 def remedy_script_hosts_remove(hosts):
-    return ';'.join(["sed -i '/{}/d' /etc/hosts".format(h) for h in hosts.split('\n')])
+    return ';'.join(["sed -i '/{}/d' /etc/hosts".format(h) for h in hosts.split('\n') if h])
 #TODO only support linux
 def remedy_script_hosts_remove_from(tag):
     return "sed -i '/{}/,$d' /etc/hosts".format(tag)

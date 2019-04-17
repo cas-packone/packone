@@ -223,7 +223,7 @@ def materialize_group(sender,instance,**kwargs):
         if group.ready: continue
         if sender==Mount and group.mounts.filter(dev=None).exists(): continue
         if sender==Instance and group.instances.filter(uuid=None).exists(): continue
-        instances=group.instances.all()
+        group.hosts = '###group {}###\n'.format(group.pk)+'\n'.join([ins.hosts_record for ins in group.instances.all()])
         group.built_time=now()
         group.save()
         group.update_remedy_script(
@@ -238,8 +238,8 @@ def destroy_group(sender,instance,**kwargs):
         deleting=True,
     ):
         if not group.instances.all().exists():
+            destroyed.send(sender=Group, instance=group, name='destroyed')
             group.delete()
-        destroyed.send(sender=Group, instance=group, name='destroyed')
 
 @receiver(monitored, sender=Instance)
 @receiver(post_save, sender=GroupOperation)
