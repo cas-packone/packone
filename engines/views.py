@@ -10,15 +10,11 @@ from dal import autocomplete
 
 def get_available_engines(scale_id):
     scale=Scale.objects.get(pk=scale_id)
-    imgs=Image.objects.filter(
+    hosted_imgs=Image.objects.filter(
         instance_blueprints__in=scale.init_blueprints.all()
     ).distinct()
-    hosted_components=models.Component.objects.annotate(
-        num_imgs=Count('images')
-    ).filter(
-        num_imgs=len(imgs)
-    ).exclude(
-        images__in=Image.objects.exclude(pk__in=imgs)
+    hosted_components=models.Component.objects.exclude(
+        images__in=Image.objects.exclude(pk__in=hosted_imgs)
     )
     return models.Engine.objects.exclude(
         components__in=models.Component.objects.exclude(pk__in=hosted_components)

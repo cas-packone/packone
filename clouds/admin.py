@@ -109,6 +109,8 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         'status',
     )
     extra=('action',)
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
     

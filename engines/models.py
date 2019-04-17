@@ -32,13 +32,13 @@ class COMPONENT_OPERATION(Enum):
 
 class Component(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    images=models.ManyToManyField(Image)
+    images=models.ManyToManyField(Image)# every image is required for a single component to run.
     type=models.CharField(max_length=50,choices=[(type.value,type.name) for type in COMPONENT_TYPE])
     endpoint=models.CharField(max_length=200)
 
 class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    components=models.ManyToManyField(Component)
+    components=models.ManyToManyField(Component)# every component is required for a single engine to run.
     def start(self, pilot):
         print(utils.ambari_service_start('admin','admin',pilot.portal,self.name.upper()))
     def stop(self, pilot):

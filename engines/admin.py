@@ -1,9 +1,11 @@
 from django.contrib import admin
 from . import models
 from clouds.base.admin import StaticModelAdmin, OwnershipModelAdmin, OperationAdmin, OperatableAdminMixin, AutoModelAdmin
-from clouds.models import InstanceOperation, GroupOperation
+from clouds.models import Cloud, InstanceBlueprint, InstanceOperation, GroupOperation
+from user.models import Balance
 from django.utils.html import format_html
 from django.urls import reverse
+from django.db.models import Q
 from django import forms
 from dal import autocomplete
 from user.utils import get_current_user
@@ -15,6 +17,14 @@ admin.site.register(models.Engine,StaticModelAdmin)
 @admin.register(models.Scale)
 class ScaleAdmin(StaticModelAdmin):
     list_filter = ('auto',)+StaticModelAdmin.list_filter
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) | (Q(public=True) & Q(enabled=True))
+    def get_queryset_Q(self, request):
+        balances=Balance.objects.filter(profile__owner=request.user,profile__enabled=True,balance__gt=0)
+        available_clouds=Cloud.objects.filter(Q(owner=request.user) | Q(balance__in=balances)).distinct()
+        available_blueprints=InstanceBlueprint.objects.filter(cloud__in=available_clouds).distinct()
+        excluded_blueprints=InstanceBlueprint.objects.exclude(pk__in=available_blueprints)
+        return Q(pk__in=models.Scale.objects.exclude(init_blueprints__in=excluded_blueprints))
         
 @admin.register(models.Cluster)
 class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
@@ -80,46 +90,6 @@ class ClusterOperationAdmin(OperationAdmin):
         return qs.filter(target__owner=request.user)
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.target.owner == request.user or request.user.is_superuser
-# @admin.register(models.InstanceOperation)
-# class InstanceOperationAdmin(TargetOperationAdmin):
-    #  def get_queryset(self, request):
-#         return super().get_queryset(request).filter(Q(target__owner=request.user)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))).order_by('-started_time')
-
-# @admin.register(models.Pilot)
-# class PilotAdmin(OwnerOrPublicGuardedModelAdmin):
-#     def action(self, obj):
-#         op='start'
-#         if obj.status==models.COMPONENT_STATUS.running.value:
-#             op='stop'
-#         op_url=reverse('pilotoperation-list')
-#         return format_html('<a href="{}" data-id={} data-op={} class="button">{}</a>'.format(op_url,obj.pk,op,op))
-#     def scaling(self,obj):
-#         ibs=obj.cluster_blueprint.instance_blueprints.filter(scalable=True)
-#         if ibs.exists():
-#             ib=ibs[0]
-#             index=len(obj.cluster.instance_set.filter(image=ib.image, cluster=obj.cluster))
-#             hostname=ib.hostname.format(index+1)# why tuple?????
-#             return format_html('<a href="{}?cloud={ib.image.cloud.pk}&image={ib.image.pk}&template={ib.template.pk}&cluster={cluster.pk}&hostname={hostname}" class="button">Scale out</a>'.format(
-#                 reverse('admin:clouds_instance_add'),
-#                 ib=ib,
-#                 cluster=obj.cluster,
-#                 hostname=hostname
-#             ))
-#     search_fields = ['name', 'cluster_blueprint__name', 'remark']
-#     list_filter = (
-#         ('cluster_blueprint', admin.RelatedOnlyFieldListFilter),
-#         'public'
-#     )
-#     def get_list_display(self, request, obj=None):
-#         return ("name","access","cluster",)+super().get_list_display(request, obj)+('action','scaling')
-#         # return ("name","access","cluster_blueprint","cluster")+super().get_list_display(request, obj)+('action','scaling')
-#     def get_readonly_fields(self, request, obj=None):
-#         fs=super().get_readonly_fields(request, obj)
-#         if not obj:#add
-#             return fs
-#         return ('cluster_blueprint','cluster','access','scaling')+fs
-#     def access(self, obj):
-#         return format_html('<a href="{}" target="_blank" class="button">Manage</a>'.format(obj.portal))
 
 # @admin.register(models.EngineOperation)
 # class EngineOperationAdmin(TargetOperationAdmin):
