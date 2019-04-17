@@ -33,6 +33,8 @@
 {% block branding %}
     {{ block.super }}
     <h1 id="site-name">
-        <img src="{% static '/logo-large.png' %}">
+        <a href="/">
+            <img src="{% static '/logo-large.png' %}">
+        </a>
     </h1>
 {% endblock %}
