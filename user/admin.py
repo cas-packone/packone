@@ -26,6 +26,8 @@ class BalanceAdmin(EnabledProfileGuardedAdmin):#TODO add balanceZeroException in
         return not obj or request.user==obj.cloud.owner
     def has_add_permission(self, request, obj=None):
         return Cloud.objects.filter(owner=request.user).exists()
+    def has_delete_permission(self, request, obj=None):
+        return not obj or obj.cloud.owner==request.user
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request)|Q(cloud__owner=request.user)
     def get_form_field_queryset_Q(self, db_field, request):
