@@ -163,7 +163,6 @@ class OperationModel(models.Model):
         self.completed_time=None
         self.save()
         
-
 class M2MOperatableMixin(OperatableMixin):
     def monitor(self):
         for operatable in self.operatables:
@@ -175,6 +174,8 @@ class M2MOperationModel(OperationModel):
     class Meta:
         verbose_name = "operation"
         abstract = True
+    def get_sub_operations(self):
+        return self.get_sub_operation_model().objects.filter(batch_uuid=self.batch_uuid)
     def get_status(self):
         if self.get_sub_operation_model().objects.filter(
             batch_uuid=self.batch_uuid,

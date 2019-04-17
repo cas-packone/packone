@@ -202,8 +202,25 @@ class Cluster(models.Model,M2MOperatableMixin):
         matched_ins=self.instances.filter(hostname=hostname)
         return matched_ins[0] if matched_ins.exists() else None
 
+def clusters_of_user(self):
+    return Cluster.objects.filter(Q(public=True) | Q(owner=self))
+User.clusters=clusters_of_user
+
+def cluster_groups_of_user(self):
+    return Group.objects.filter(cluster__in=self.clusters()).distinct()
+User.cluster_groups=cluster_groups_of_user
+
 class ClusterOperation(M2MOperationModel):
     target=models.ForeignKey(Cluster,on_delete=models.CASCADE)
+    class Meta:
+        verbose_name='cluster operation'
     @staticmethod
     def get_sub_operation_model():
         return GroupOperation
+
+class ClusterGroupOperation(GroupOperation):
+    class Meta:
+        proxy = True
+        verbose_name='operation'
+    def get_cluster(self):
+        return self.target.cluster_set.first()

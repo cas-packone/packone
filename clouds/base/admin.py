@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q, fields
 from django.utils.html import format_html
-from clouds.utils import get_formated_url
+from clouds.utils import get_formated_url, get_url
 from user.models import Balance
 from .models import OPERATION_STATUS
 
@@ -164,10 +164,28 @@ class OperationAdmin(AutoModelAdmin):
     )
     def _target(self,obj):
         return get_formated_url(obj.target)
-    list_display_exclude=('operation','target','tidied','created_time')
+    list_display_exclude=('operation','target','tidied','created_time','batch_uuid')
+    def get_form_fields_exclude(self,request,obj=None):
+        return ('target',) if obj else ('_target',)
     def get_list_display(self,request,obj=None):
-        return ('operation','script','_target')+super().get_list_display(request,obj)
+        return ('operation', '_target',) + super().get_list_display(request,obj)
+    def get_readonly_fields(self,request,obj=None):
+        return ('_target', 'batch_uuid',) + super().get_readonly_fields(request,obj)
     def get_form_field_queryset_Q(self, db_field, request):
         return powerful_form_field_queryset_Q(db_field, request)
     def has_change_permission(self, request, obj=None):
         return False
+
+class M2MOperationAdmin(OperationAdmin):
+    def sub_operations(self,obj):
+        return format_html('<br/>'.join([get_url(sub) for sub in obj.get_sub_operations()]))
+    def get_readonly_fields(self, request, obj=None):
+        fs=super().get_readonly_fields(request, obj)
+        if obj: fs+=('sub_operations',)
+        return fs
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).order_by('-started_time')
+        if request.user.is_superuser: return qs
+        return qs.filter(target__owner=request.user)
+    def has_delete_permission(self, request, obj=None):
+        return not obj or obj.target.owner == request.user or request.user.is_superuser

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from . import models
-from clouds.base.admin import StaticModelAdmin, OwnershipModelAdmin, OperationAdmin, OperatableAdminMixin, AutoModelAdmin
-from clouds.models import Cloud, InstanceBlueprint, InstanceOperation, GroupOperation
+from clouds.base.admin import StaticModelAdmin, OwnershipModelAdmin, OperationAdmin, OperatableAdminMixin, AutoModelAdmin, M2MOperationAdmin
+from clouds.models import Cloud, Group, InstanceBlueprint, InstanceOperation, GroupOperation
 from user.models import Balance
 from django.utils.html import format_html
 from django.urls import reverse
@@ -72,30 +72,33 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def get_form_field_queryset_Q(self, db_field, request):
         if db_field.name == 'scale': return Q(pk__in=request.user.scales())
         return None
+    def get_queryset(self, request):
+        return request.user.clusters()
 
 @admin.register(models.ClusterOperation)
-class ClusterOperationAdmin(OperationAdmin):
-    def related_instance_operations(self,obj):
-        return format_html('<br/>'.join([get_url(io) for io in InstanceOperation.objects.filter(batch_uuid=obj.batch_uuid)]))
-    def get_readonly_fields(self, request, obj=None):
-        fs=super().get_readonly_fields(request, obj)
-        if obj: fs+=('related_instance_operations',)
-        return fs
+class ClusterOperationAdmin(M2MOperationAdmin):
     def get_queryset(self, request):
-        qs = super().get_queryset(request).order_by('-started_time')
+        qs=models.ClusterOperation.objects.all()
         if request.user.is_superuser: return qs
-        return qs.filter(target__owner=request.user)
+        return qs.filter(target__in=request.user.clusters()).order_by('-started_time')
+    def has_module_permission(self, request):
+        return False
+
+@admin.register(models.ClusterGroupOperation)
+class ClusterGroupOperationAdmin(M2MOperationAdmin):
+    def _target(self,obj):
+        return get_formated_url(obj.get_cluster())
+    def get_queryset(self, request):
+        qs=models.ClusterGroupOperation.objects.all()
+        if request.user.is_superuser: return qs
+        return qs.filter(target__in=request.user.cluster_groups()).order_by('-started_time').distinct()
+    def has_add_permission(self, request, obj=None):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
+    def has_view_permission(self, request, obj=None):
+        return True
     def has_delete_permission(self, request, obj=None):
-        return not obj or obj.target.owner == request.user or request.user.is_superuser
-
-# @admin.register(models.EngineOperation)
-# class EngineOperationAdmin(TargetOperationAdmin):
-#     def get_list_display(self, request, obj=None):
-#         return ('pilot',)+super().get_list_display(request, obj)
-#     def get_readonly_fields(self, request, obj=None):
-#         fs=super().get_readonly_fields(request, obj)
-#         if not obj:#add
-#             return fs
-#         return fs+('cluster_operation',)
-
-# admin.site.register(models.PilotOperation,TargetOperationAdmin)
+        return True
+    def has_module_permission(self, request):
+        return True
