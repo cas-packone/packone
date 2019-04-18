@@ -168,7 +168,7 @@ class OperationAdmin(AutoModelAdmin):
     def get_form_fields_exclude(self,request,obj=None):
         return ('target',) if obj else ('_target',)
     def get_list_display(self,request,obj=None):
-        return ('batch','operation', '_target',) + super().get_list_display(request,obj)
+        return ('batch','operation', '_target','script') + super().get_list_display(request,obj)
     def get_readonly_fields(self,request,obj=None):
         return ('_target', 'batch_uuid',) + super().get_readonly_fields(request,obj)
     def get_form_field_queryset_Q(self, db_field, request):

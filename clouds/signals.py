@@ -55,9 +55,12 @@ def monitor_instance(sender, instance, **kwargs):
 def materialize_instance(sender, instance, **kwargs):
     if not kwargs['created'] or instance.ready: return
     instance.built_time=now()
-    instance.hostname=instance.image.hostname
     instance.save()
-    instance.update_remedy_script(instance.template.remedy_script+'\n'+instance.image.remedy_script,heading=True)
+    if not instance.hostname: instance.hostname=instance.image.hostname
+    instance.update_remedy_script(
+        utils.remedy_script_hostname(instance.hostname)+'\n'+instance.template.remedy_script+'\n'+instance.image.remedy_script,
+        heading=True
+    )
     @transaction.atomic
     def materialize(instance=instance):
         instance=sender.objects.select_for_update().get(pk=instance.pk)
@@ -77,15 +80,26 @@ def materialize_instance(sender, instance, **kwargs):
         instance.built_time=info["create_time"]
         instance.ipv4=info["ipv4"]
         instance.save()
-        #TODO make hostname changeable
-        if not instance.hostname: instance.hostname=instance.image.hostname
-        remedy_script=utils.remedy_script_hostname(instance.hostname)+'\n'
         hosts='###instance###\n'+instance.hosts_record
         if instance.cloud.hosts: hosts=hosts+'\n###cloud###\n'+instance.cloud.hosts
-        remedy_script+=utils.remedy_script_hosts_add(hosts, overwrite=True)
-        instance.update_remedy_script(remedy_script,heading=True)
+        instance.update_remedy_script(
+            utils.remedy_script_hosts_add(hosts, overwrite=True),
+            heading=True
+        )
         materialized.send(sender=sender, instance=instance, name='materialized')
     transaction.on_commit(Thread(target=materialize).start)
+
+@receiver(pre_save, sender=Instance)
+def update_instance(sender, instance, **kwargs):
+    if not instance.pk: return
+    old=sender.objects.get(pk=instance.id)
+    if old.hostname==instance.hostname: return
+    InstanceOperation(
+        target=instance,
+        operation=INSTANCE_OPERATION.remedy.value,
+        script=utils.remedy_script_hostname(instance.hostname),
+        manual=False,
+    ).save()
 
 @receiver(pre_delete, sender=Instance)
 def destroy_instance(sender,instance,**kwargs):

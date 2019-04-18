@@ -107,6 +107,10 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         'status',
     )
     extra=('action',)
+    def get_readonly_fields(self,request,obj=None):
+        fs=super().get_readonly_fields(request,obj)
+        if obj: return ('image', 'template',) + fs
+        return fs
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
