@@ -32,17 +32,27 @@ def scale_out(sender,instance,**kwargs):
         cluster.save()
         old_steps=cluster.get_ready_steps().exclude(pk=instance.pk)
         old_hosts='\n'.join([step.hosts for ins in old_steps])
-        for step in old_steps:
-            step.update_remedy_script(
-                utils.remedy_script_hosts_add(instance.hosts)
-            )
-        instance.update_remedy_script(
-            utils.remedy_script_hosts_add(old_hosts)
-        )
+        if old_steps.exists():
+            for step in old_steps:
+                GroupOperation(
+                    operation=INSTANCE_OPERATION.remedy.value,
+                    script=utils.remedy_script_hosts_add(instance.hosts),
+                    target=step,
+                    manual=False,
+                ).save()
+            GroupOperation(
+                operation=INSTANCE_OPERATION.remedy.value,
+                script=utils.remedy_script_hosts_add(old_hosts),
+                target=instance,
+                manual=False,
+            ).save()
         if cluster.scale.remedy_script:
-            instance.update_remedy_script(
-                cluster.scale.remedy_script
-            )
+            GroupOperation(
+                operation=INSTANCE_OPERATION.remedy.value,
+                script=cluster.scale.remedy_script,
+                target=instance,
+                manual=False,
+            ).save()
         GroupOperation(
             operation=INSTANCE_OPERATION.start.value,
             target=instance,

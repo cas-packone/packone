@@ -212,7 +212,7 @@ class Volume(models.Model):
     status= models.PositiveIntegerField(choices=[(status.value,status.name) for status in VOLUME_STATUS],default=VOLUME_STATUS.building.value,editable=False)
     deleting = models.BooleanField(default=False,editable=False)
     def __str__(self):
-        return "{}/{}/{}".format(self.cloud.name,self.capacity,self.uuid)
+        return "{}/{}/{}".format(self.cloud.name,self.capacity,str(self.uuid).split('-')[0])
     @property
     def ready(self):
         return self.uuid
@@ -364,6 +364,8 @@ class Group(models.Model,M2MOperatableMixin):
 
 class GroupOperation(M2MOperationModel):
     target=models.ForeignKey(Group,on_delete=models.CASCADE)
+    def __str__(self):
+        return "{}({}/{})".format(self.batch,self.operation,self.status)
     class Meta:
         verbose_name = "group operation"
     @staticmethod

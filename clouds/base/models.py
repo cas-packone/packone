@@ -135,7 +135,10 @@ class OperationModel(models.Model):
         verbose_name = "operation"
         abstract = True
     def __str__(self):
-        return "{}/{}/{}/{}".format(self.target,self.operation,self.pk,self.status)
+        return "{}({}/{}/{})".format(self.batch,self.target,self.operation,self.status)
+    @property
+    def batch(self):
+        return str(self.batch_uuid).split('-')[0]
     @cached_property
     def is_boot(self):
         return self.operation in (INSTANCE_OPERATION.start.value,INSTANCE_OPERATION.reboot.value)

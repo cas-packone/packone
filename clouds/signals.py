@@ -226,9 +226,12 @@ def materialize_group(sender,instance,**kwargs):
         group.hosts = '###group {}###\n'.format(group.pk)+'\n'.join([ins.hosts_record for ins in group.instances.all()])
         group.built_time=now()
         group.save()
-        group.update_remedy_script(
-            utils.remedy_script_hosts_add(group.hosts)
-        )
+        GroupOperation(
+            operation=INSTANCE_OPERATION.remedy.value,
+            script=utils.remedy_script_hosts_add(group.hosts),
+            target=group,
+            manual=False,
+        ).save()
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)
