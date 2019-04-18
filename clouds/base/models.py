@@ -57,12 +57,18 @@ class OperatableMixin(object):
     @property
     def stopable(self):
         return self.status == INSTANCE_STATUS.active.value
-    def monitor(self,notify=True):
-        if not self.ready: raise Exception('instance not ready')
-        status = self.cloud.driver.vm_status(self.cloud.platform_credential,str(self.uuid))
-        if self.__class__.objects.filter(pk=self.pk).update(status=status):
-            self.refresh_from_db()
-            if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
+    def remedy(self, script='', manual=True):
+        if self.remedy_script_todo:
+            script+=self.remedy_script_todo
+            self.__class__.objects.filter(pk=self.pk).update(remedy_script_todo='')
+        if script:
+            self.get_operation_model()(
+                operation=INSTANCE_OPERATION.remedy.value,
+                script=script,
+                target=self,
+                manual=manual
+            ).save()
+        self.refresh_from_db()
     def update_remedy_script(self,script,heading=False):
         if heading:
             v=models.Value(script+'\n')
@@ -123,7 +129,7 @@ class OPERATION_STATUS(Enum):
 class OperationModel(models.Model):
     operation=models.CharField(max_length=50,choices=[(op.value,op.name) for op in INSTANCE_OPERATION],default=INSTANCE_OPERATION.start.value)
     batch_uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    script=models.TextField(max_length=5120,blank=True,null=True)
+    script=models.TextField(max_length=5120,default='',blank=True)
     serial=models.ForeignKey("self",on_delete=models.CASCADE,blank=True,null=True,editable=False)
     created_time=models.DateTimeField(auto_now_add=True)
     started_time=models.DateTimeField(blank=True,null=True,editable=False)
@@ -160,7 +166,9 @@ class OperationModel(models.Model):
     @transaction.atomic
     def execute(self):
         self=self.__class__.objects.select_for_update().get(pk=self.pk)
-        if self.executing: raise Exception('cannot run a same operation concurrently')
+        if self.executing:
+            print('WARNING: cannot run a same operation({}) concurrently'.format(self))
+            return
         self.status=OPERATION_STATUS.running.value
         self.started_time=now()
         self.completed_time=None

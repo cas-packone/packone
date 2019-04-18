@@ -14,6 +14,7 @@ from . import utils
 from django.dispatch import Signal
 materialized = Signal(providing_args=["instance","name"])
 destroyed = Signal(providing_args=["instance","name"])
+tidied = Signal(providing_args=["instance","name"])
 selected = Signal(providing_args=["instance","name"])
 from .models import monitored
 from .models import executed
@@ -21,6 +22,7 @@ from .models import executed
 @receiver(materialized)
 @receiver(destroyed)
 @receiver(monitored)
+@receiver(tidied)
 @receiver(selected)
 @receiver(executed)
 def log(sender,instance,name,**kwargs):
@@ -37,16 +39,14 @@ def clone_image(sender,instance,**kwargs):
 # actions relies on status must be registered to the monitored signal first.
 @receiver(materialized, sender=Instance)
 @receiver(post_save, sender=Mount)
-@receiver(post_save, sender=InstanceOperation)
+@receiver(tidied, sender=InstanceOperation)
 @receiver(executed, sender=InstanceOperation)
 def monitor_instance(sender, instance, **kwargs):
     if sender==Mount:
         if not kwargs['created'] or instance.ready: return
         instance=instance.instance
     if sender==InstanceOperation:
-        if 'created' in kwargs:
-            if not kwargs['created']: return
-            if instance.status!=OPERATION_STATUS.running.value: return
+        if instance.status==OPERATION_STATUS.waiting.value: return
         instance=instance.target
     if not instance.ready: return
     Thread(target=instance.monitor).start()
@@ -57,10 +57,7 @@ def materialize_instance(sender, instance, **kwargs):
     instance.built_time=now()
     if not instance.hostname: instance.hostname=instance.image.hostname
     instance.save()
-    instance.update_remedy_script(
-        utils.remedy_script_hostname(instance.hostname)+'\n'+instance.template.remedy_script+'\n'+instance.image.remedy_script,
-        heading=True
-    )
+    instance.update_remedy_script(utils.remedy_script_hostname(instance.hostname)+'\n'+instance.template.remedy_script+'\n'+instance.image.remedy_script,heading=True)
     @transaction.atomic
     def materialize(instance=instance):
         instance=sender.objects.select_for_update().get(pk=instance.pk)
@@ -82,10 +79,7 @@ def materialize_instance(sender, instance, **kwargs):
         instance.save()
         hosts='###instance###\n'+instance.hosts_record
         if instance.cloud.hosts: hosts=hosts+'\n###cloud###\n'+instance.cloud.hosts
-        instance.update_remedy_script(
-            utils.remedy_script_hosts_add(hosts, overwrite=True),
-            heading=True
-        )
+        instance.update_remedy_script(utils.remedy_script_hosts_add(hosts, overwrite=True),heading=True)
         materialized.send(sender=sender, instance=instance, name='materialized')
     transaction.on_commit(Thread(target=materialize).start)
 
@@ -238,12 +232,9 @@ def materialize_group(sender,instance,**kwargs):
         group.hosts = '###group {}###\n'.format(group.pk)+'\n'.join([ins.hosts_record for ins in group.instances.all()])
         group.built_time=now()
         group.save()
-        GroupOperation(
-            operation=INSTANCE_OPERATION.remedy.value,
-            script=utils.remedy_script_hosts_add(group.hosts),
-            target=group,
-            manual=False,
-        ).save()
+        for ins in group.instances.all():
+            ins.remedy(manual=False)
+        group.update_remedy_script(utils.remedy_script_hosts_add(group.hosts))
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)
@@ -257,7 +248,7 @@ def destroy_group(sender,instance,**kwargs):
             group.delete()
 
 @receiver(monitored, sender=Instance)
-@receiver(post_save, sender=GroupOperation)
+@receiver(tidied, sender=GroupOperation)
 @receiver(executed, sender=GroupOperation)
 def monitor_group(sender, instance, **kwargs):
     if sender==Instance:
@@ -268,20 +259,17 @@ def monitor_group(sender, instance, **kwargs):
             group.refresh_from_db()
             monitored.send(sender=Group, instance=group, name='monitored')
     else:
-        if 'created' in kwargs:
-            if kwargs['created'] and instance.status==OPERATION_STATUS.running.value and not instance.serial:
-                instance.target.monitor()
+        if instance.status==OPERATION_STATUS.waiting.value: return
         else:
             instance.target.monitor()
 
-@receiver(pre_save, sender=InstanceOperation)
-@receiver(pre_save, sender=GroupOperation)
-def tidy_operation(sender,instance,**kwargs):
-    if instance.id: return
-    if not instance.tidied and instance.script and instance.operation==INSTANCE_OPERATION.remedy.value:
+@receiver(post_save, sender=InstanceOperation)
+@receiver(post_save, sender=GroupOperation)
+def tidy_operation(sender,instance,created,**kwargs):
+    if not created or instance.serial: return #only following serial operations will not be tidied
+    if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script and not instance.tidied:
         supervisor_ops=[s.value for s in INSTANCE_OPERATION]
         ops=utils.remedy_script_tidy(instance.script,supervisor_ops)
-        operations=[]
         for i in range(len(ops)):
             op=ops[i]
             if i==0:
@@ -292,46 +280,35 @@ def tidy_operation(sender,instance,**kwargs):
                 else:
                     instance.script=op
                     instance.tidied=True
+                instance.save()
             else:
                 if op in supervisor_ops:
                     op_instance=sender(
                         target=instance.target,
                         operation=op,
                     )
-                    operations.append(op_instance)
                 else:
                     op_instance=sender(
                         target=instance.target,
                         operation=INSTANCE_OPERATION.remedy.value,
                         script=op,
                     )
-                    operations.append(op_instance)
-        def serial_save():
-            for operation in operations:
-                operation.status=OPERATION_STATUS.waiting.value
-                operation.serial=instance
-                operation.tidied=True
-                operation.manual=False
-                operation.save()
-        transaction.on_commit(serial_save)
+                op_instance.status=OPERATION_STATUS.waiting.value
+                op_instance.serial=instance
+                op_instance.tidied=True
+                op_instance.manual=False
+                op_instance.save()
     if not instance.manual and instance.target.get_ready_operations().exists():
         instance.status=OPERATION_STATUS.waiting.value
+        instance.save()
+    tidied.send(sender=sender, instance=instance, name='tidied')
 
 @receiver(monitored, sender=Instance)
 @receiver(monitored, sender=Group)
-@transaction.atomic
+@transaction.atomic#to aviod deleted target and duplicated remedy
 def select_operation(sender,instance,**kwargs):
-    #to aviold deleting instance
-    for target in sender.objects.select_for_update().filter(pk=instance.pk):
-        if target.remedy_script_todo:
-            instance.get_operation_model()(
-                operation=INSTANCE_OPERATION.remedy.value,
-                target=target,
-                script=target.remedy_script_todo,
-                manual=False
-            ).save()
-            target.remedy_script_todo=''
-            target.save()
+    for target in instance.__class__.objects.select_for_update().filter(pk=instance.pk):
+        target.remedy(manual=False)
         ops=target.get_ready_operations()
         if not ops.exists(): ops=target.get_next_operations()[:1]
         if not ops.exists(): return

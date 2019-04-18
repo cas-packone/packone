@@ -7,7 +7,7 @@ from django.db.models import Max
 from django.utils.timezone import now
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, pre_delete
-from clouds.signals import materialized, executed, monitored, destroyed, selected
+from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
 from clouds.signals import tidy_operation, select_operation
 from clouds import utils
 from .import models
@@ -31,28 +31,14 @@ def scale_out(sender,instance,**kwargs):
         cluster.built_time=now()
         cluster.save()
         old_steps=cluster.get_ready_steps().exclude(pk=instance.pk)
-        old_hosts='\n'.join([step.hosts for ins in old_steps])
         if old_steps.exists():
+            old_hosts_script=utils.remedy_script_hosts_add('\n'.join([step.hosts for step in old_steps]))
+            new_hosts_script=utils.remedy_script_hosts_add(instance.hosts)
+            instance.update_remedy_script(old_hosts_script)
             for step in old_steps:
-                GroupOperation(
-                    operation=INSTANCE_OPERATION.remedy.value,
-                    script=utils.remedy_script_hosts_add(instance.hosts),
-                    target=step,
-                    manual=False,
-                ).save()
-            GroupOperation(
-                operation=INSTANCE_OPERATION.remedy.value,
-                script=utils.remedy_script_hosts_add(old_hosts),
-                target=instance,
-                manual=False,
-            ).save()
+                step.update_remedy_script(new_hosts_script)
         if cluster.scale.remedy_script:
-            GroupOperation(
-                operation=INSTANCE_OPERATION.remedy.value,
-                script=cluster.scale.remedy_script,
-                target=instance,
-                manual=False,
-            ).save()
+            instance.update_remedy_script(cluster.scale.remedy_script)
         GroupOperation(
             operation=INSTANCE_OPERATION.start.value,
             target=instance,
@@ -76,7 +62,7 @@ def scale_in_cluster(sender,instance,**kwargs):
             )#TODO remove engines from step
 
 @receiver(monitored, sender=Group)
-@receiver(post_save, sender=models.ClusterOperation)
+@receiver(tidied, sender=models.ClusterOperation)
 @receiver(executed, sender=models.ClusterOperation)
 def monitor_status(sender, instance, **kwargs):
     if sender==Group:
@@ -87,13 +73,11 @@ def monitor_status(sender, instance, **kwargs):
             cluster.refresh_from_db()
             monitored.send(sender=models.Cluster, instance=cluster, name='monitored')
     else:
-        if 'created' in kwargs:
-            if kwargs['created'] and instance.status==OPERATION_STATUS.running.value and not instance.serial:
-                instance.target.monitor()
+        if instance.status==OPERATION_STATUS.waiting.value: return
         else:
             instance.target.monitor()
 
-pre_save.connect(tidy_operation,sender=models.ClusterOperation)
+post_save.connect(tidy_operation,sender=models.ClusterOperation)
 monitored.connect(select_operation,sender=models.Cluster)
 @receiver(selected, sender=models.ClusterOperation)
 def execute_operation(sender,instance,**kwargs):

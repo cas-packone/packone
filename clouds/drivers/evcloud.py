@@ -26,7 +26,14 @@ def vm_status(credential, vm_id):
     params = {
         "vm_id":vm_id
     }
-    return int(do_action(credential, action,params))
+    try:
+        return int(do_action(credential, action,params))
+    except coreapi.exceptions.ErrorMessage as e:
+        if '\u865a\u62df\u673aUUID\u9519\u8bef' in e.error._data['detail']:
+            print('VM UUID Mismatch')
+            return 5
+        else:
+            raise e
 
 def vm_list(credential, include_remarks=[]):
     include_remarks.append(settings.PACKONE_LABEL)
