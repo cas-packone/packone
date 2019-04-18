@@ -227,4 +227,4 @@ class GroupAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def has_delete_permission(self, request, obj=None):
         return False
     def has_module_permission(self, request):
-        return True
+        return False

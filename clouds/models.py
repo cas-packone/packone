@@ -324,6 +324,11 @@ class Group(models.Model,M2MOperatableMixin):
     deleting = models.BooleanField(default=False,editable=False)
     class Meta:
         ordering = ['pk']
+    def __str__(self):
+        return self.long_id
+    @property
+    def long_id(self):
+        return str(self.uuid).split('-')[0]
     @staticmethod
     def get_operation_model():
         return GroupOperation
@@ -351,8 +356,11 @@ class Group(models.Model,M2MOperatableMixin):
                 operatable.deleting=True
                 operatable.save()
                 for m in operatable.mount_set.select_related('volume').select_for_update():
-                    m.volume.deleting=True
-                    m.volume.save()
+                    if m.ready:
+                        m.volume.deleting=True
+                        m.volume.save()
+                    else:
+                        m.delete()
                 InstanceOperation(
                     target=operatable,
                     operation=INSTANCE_OPERATION.poweroff.value,

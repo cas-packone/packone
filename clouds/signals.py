@@ -55,8 +55,8 @@ def monitor_instance(sender, instance, **kwargs):
 def materialize_instance(sender, instance, **kwargs):
     if not kwargs['created'] or instance.ready: return
     instance.built_time=now()
-    instance.save()
     if not instance.hostname: instance.hostname=instance.image.hostname
+    instance.save()
     instance.update_remedy_script(
         utils.remedy_script_hostname(instance.hostname)+'\n'+instance.template.remedy_script+'\n'+instance.image.remedy_script,
         heading=True
@@ -105,20 +105,19 @@ def update_instance(sender, instance, **kwargs):
 def destroy_instance(sender,instance,**kwargs):
     #to aviold repeated deletion
     for instance in sender.objects.select_for_update().filter(pk=instance.pk):
-        if not instance.ready:
-            print('WARNNING: delete instance under building')
-            return
         def destroy():
-            try:
-                instance.cloud.driver.vm_force_delete(
-                    instance.cloud.platform_credential,
-                    str(instance.uuid)
-                )
-            except Exception as e:#TODO may spam the log
-                instance.pk=None
-                instance.save()
-                traceback.print_exc()
-                return
+            if not instance.ready:
+                print('WARNNING: delete instance under building')
+            else:
+                try:
+                    instance.cloud.driver.vm_force_delete(
+                        instance.cloud.platform_credential,
+                        str(instance.uuid)
+                    )
+                except Exception as e:#TODO may spam the log
+                    instance.pk=None
+                    instance.save()
+                    traceback.print_exc()
             destroyed.send(sender=sender, instance=instance, name='destroyed')
         transaction.on_commit(Thread(target=destroy).start)
 
@@ -148,20 +147,19 @@ def materialize_volume(sender, instance, **kwargs):
 def destroy_volume(sender,instance,**kwargs):
     #to aviold repeated deletion
     for volume in sender.objects.select_for_update().filter(pk=instance.pk):
-        if not volume.ready:
-            print('WARNNING: delete volume under building')
-            return
         def destroy():
-            try:
-                volume.cloud.driver.volume_delete(
-                    volume.cloud.platform_credential,
-                    str(volume.uuid)
-                )
-            except Exception as e:#TODO may spam the log
-                volume.pk=None
-                volume.save()
-                traceback.print_exc()
-                return
+            if not volume.ready:
+                print('WARNNING: delete volume under building')
+            else:
+                try:
+                    volume.cloud.driver.volume_delete(
+                        volume.cloud.platform_credential,
+                        str(volume.uuid)
+                    )
+                except Exception as e:#TODO may spam the log
+                    volume.pk=None
+                    volume.save()
+                    traceback.print_exc()
             destroyed.send(sender=sender, instance=volume, name='destroyed')
         transaction.on_commit(Thread(target=destroy).start)
 
@@ -205,26 +203,26 @@ def mount(sender, instance, **kwargs):
 def umount(sender,instance,**kwargs):
     #to aviold repeated deletion
     for mount in sender.objects.select_for_update().filter(pk=instance.pk):
-        if not mount.ready:
-            print('WARNNING: delete mount under building')
-            return
         @transaction.atomic
-        def destroy():
+        def destroy(mount=mount):
             volume=Volume.objects.select_for_update().get(pk=mount.volume.pk)
-            try:
-                mount.volume.cloud.driver.volume_unmount(
-                    mount.volume.cloud.platform_credential,
-                    str(mount.volume.uuid),
-                    str(mount.instance.uuid)
-                )
-            except Exception as e:
-                mount.pk=None
-                mount.save()
-                traceback.print_exc()
-                return
-            volume.status=VOLUME_STATUS.available.value
-            volume.save()
-            mount.instance.update_remedy_script(utils.remedy_script_mount_remove(mount))
+            if not mount.ready:
+                print('WARNNING: delete mount under building')
+            else:
+                try:
+                    mount.volume.cloud.driver.volume_unmount(
+                        mount.volume.cloud.platform_credential,
+                        str(mount.volume.uuid),
+                        str(mount.instance.uuid)
+                    )
+                except Exception as e:
+                    mount.pk=None
+                    mount.save()
+                    traceback.print_exc()
+                    return
+                volume.status=VOLUME_STATUS.available.value
+                volume.save()
+                mount.instance.update_remedy_script(utils.remedy_script_mount_remove(mount))
             destroyed.send(sender=sender, instance=mount, name='destroyed')
         transaction.on_commit(Thread(target=destroy).start)
 
