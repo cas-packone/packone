@@ -59,7 +59,12 @@ def scale_in_cluster(sender,instance,**kwargs):
             cluster.update_remedy_script(
                 utils.remedy_script_hosts_remove(instance.hosts),
                 heading=True
-            )#TODO remove engines from step
+            )
+            if cluster.scale.remedy_script_scale_in:
+                cluster.update_remedy_script(
+                    cluster.scale.remedy_script_scale_in,
+                    heading=True
+                )
 
 @receiver(monitored, sender=Group)
 @receiver(tidied, sender=models.ClusterOperation)

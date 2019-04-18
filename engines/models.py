@@ -56,12 +56,21 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
 class Scale(StaticModel):
     init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales")
     step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True)
+    _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
+    _remedy_script_scale_in=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-in remedy script')
     auto=models.BooleanField(default=False)
     def __str__(self):
         return "{}/{}".format(
             self.name,
             'auto' if self.auto else 'manual',
         )
+    @cached_property
+    def remedy_script_scale_in(self):
+        return "###scale-in remedy {}: {}###\n{}\n".format(
+            self._meta.verbose_name,
+            self.name,
+            self._remedy_script_scale_in
+        ) if self._remedy_script_scale_in else ""
     @cached_property
     def init_size(self):
         q=0
@@ -85,7 +94,6 @@ class Scale(StaticModel):
         return Engine.objects.exclude(
             components__in=Component.objects.exclude(pk__in=hosted_components)
         ).order_by('id').distinct()
-
     def scale(self, owner, current_step=0, remark=None):
         step=Group(owner=owner)
         step.save()
