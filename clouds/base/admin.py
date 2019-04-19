@@ -1,11 +1,16 @@
 from django.contrib import admin
-from django.db.models import Q, fields
+from django import forms
+from django.db.models import Q, ManyToManyField, TextField, fields
 from django.utils.html import format_html
+from dal import autocomplete
 from clouds.utils import get_formated_url, get_url
 from user.models import Balance
 from .models import OPERATION_STATUS
 
 class AutoModelAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        ManyToManyField: {'widget': forms.widgets.CheckboxSelectMultiple},
+    }
     def __init__(self, model, admin_site):
         super().__init__(model,admin_site)
         fs_head=[]
