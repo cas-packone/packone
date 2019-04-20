@@ -209,6 +209,7 @@ class M2MOperationModel(OperationModel):
     def execute(self):
         super().execute()
         self.refresh_from_db()
+        if not self.executing: return
         operatables=self.target.operatables
         if not operatables.exists():
             self.status=OPERATION_STATUS.running.value

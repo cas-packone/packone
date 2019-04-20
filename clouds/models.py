@@ -273,9 +273,10 @@ class InstanceOperation(OperationModel):
     log=models.TextField(max_length=51200,null=True,editable=False)
     def execute(self):
         super().execute()
+        self.refresh_from_db()
+        if not self.executing: return
         def perform(self=self):
             from . import utils
-            self.refresh_from_db()
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
                     output=self.target.cloud.driver.vm_op(
