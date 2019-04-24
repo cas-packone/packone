@@ -1,7 +1,7 @@
-.. image:: static/logo-large.png
+.. image:: pk1/static/logo-large.png
     :width: 320
     :alt: Logo
-    
+
 ===================
 Introduction
 ===================
