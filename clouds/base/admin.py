@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q, fields
 from django.utils.html import format_html
+from django.utils.timezone import now
 from clouds.utils import get_formated_url, get_url
 from user.models import Balance
 from .models import OPERATION_STATUS
@@ -165,6 +166,8 @@ class OperationAdmin(AutoModelAdmin):
     def _target(self,obj):
         return get_formated_url(obj.target)
     list_display_exclude=('operation','target','tidied','created_time','batch_uuid')
+    def get_queryset_Q(self, request):
+        return Q(target__owner=request.user)
     def get_form_fields_exclude(self,request,obj=None):
         return ('target',) if obj else ('_target',)
     def get_list_display(self,request,obj=None):
@@ -175,6 +178,14 @@ class OperationAdmin(AutoModelAdmin):
         return powerful_form_field_queryset_Q(db_field, request)
     def has_change_permission(self, request, obj=None):
         return False
+    def rerun(modeladmin, request, queryset):
+        for op in queryset:
+            op.status=OPERATION_STATUS.running.value
+            op.started_time=now()
+            op.completed_time=None
+            op.execute()
+    rerun.short_description = "Re-run selected operations"
+    actions=[rerun]
 
 class M2MOperationAdmin(OperationAdmin):
     def sub_operations(self,obj):
@@ -183,9 +194,5 @@ class M2MOperationAdmin(OperationAdmin):
         fs=super().get_readonly_fields(request, obj)
         if obj: fs+=('sub_operations',)
         return fs
-    def get_queryset(self, request):
-        qs = super().get_queryset(request).order_by('-started_time')
-        if request.user.is_superuser: return qs
-        return qs.filter(target__owner=request.user)
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.target.owner == request.user or request.user.is_superuser

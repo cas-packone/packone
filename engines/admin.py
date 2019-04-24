@@ -81,26 +81,15 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
 
 @admin.register(models.ClusterOperation)
 class ClusterOperationAdmin(M2MOperationAdmin):
-    def get_queryset(self, request):
-        qs=models.ClusterOperation.objects.all()
-        if request.user.is_superuser: return qs
-        return qs.filter(target__in=request.user.clusters()).order_by('-started_time')
     def has_module_permission(self, request):
         return False
 
 @admin.register(models.StepOperation)
 class StepOperationAdmin(M2MOperationAdmin):
-    list_filter = (
-        'operation',
-        'manual',
-        'status',
-    )
     def _target(self,obj):
-        return get_formated_url(obj.cluster)
-    def get_queryset(self, request):
-        qs=models.StepOperation.objects.all()
-        if request.user.is_superuser: return qs
-        return qs.filter(target__in=request.user.steps()).order_by('-started_time').distinct()
+        return  format_html(get_url(obj.cluster)+'/'+get_url(obj.target))
+    def get_queryset_Q(self, request):
+        return Q(target__in=request.user.steps())
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):

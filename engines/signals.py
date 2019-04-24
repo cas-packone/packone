@@ -20,7 +20,6 @@ scaled_out = Signal(providing_args=["instance","name"])
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
-#TODO only running cluster can be scaled-out
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):
@@ -31,27 +30,16 @@ def scale_out(sender,instance,**kwargs):
     for cluster in instance.cluster_set.select_for_update():
         cluster.built_time=now()
         cluster.save()
-        old_steps=cluster.get_ready_steps().exclude(pk=instance.pk)
+        old_steps=cluster.get_ready_steps().exclude(pk=instance.pk).select_for_update()
         if old_steps.exists():
             old_hosts_script=utils.remedy_script_hosts_add('\n'.join([step.hosts for step in old_steps]))
-            new_hosts_script=utils.remedy_script_hosts_add(instance.hosts)
-            GroupOperation(
-                operation=INSTANCE_OPERATION.remedy.value,
-                target=instance,
-                script=old_hosts_script,
-                status=OPERATION_STATUS.running.value,
-                manual=False
-            ).save()
+            new_hosts_script=utils.remedy_script_hosts_add(instance.hosts)   
+            #TODO only running remedyless cluster can be scaled-out
+            instance.remedy(old_hosts_script,manual=False)
             for step in old_steps:
-                GroupOperation(
-                    operation=INSTANCE_OPERATION.remedy.value,
-                    target=step,
-                    script=new_hosts_script,
-                    status=OPERATION_STATUS.running.value,
-                    manual=False
-                ).save()
+                step.remedy(new_hosts_script)
         if cluster.scale.remedy_script:
-            instance.update_remedy_script(cluster.scale.remedy_script)
+            instance.remedy(cluster.scale.remedy_script,manual=False)
         GroupOperation(
             operation=INSTANCE_OPERATION.start.value,
             target=instance,

@@ -55,11 +55,8 @@ def monitor_instance(sender, instance, **kwargs):
 def materialize_instance(sender, instance, **kwargs):
     if not kwargs['created'] or instance.ready: return
     instance.built_time=now()
-    if not instance.hostname:
-        instance.hostname=instance.image.hostname
-    else:
-        instance.update_remedy_script(utils.remedy_script_hostname(instance.hostname)+'\n'+instance.template.remedy_script+'\n'+instance.image.remedy_script,heading=True)
     instance.save()
+    instance.update_remedy_script(instance.template.remedy_script+'\n'+instance.image.remedy_script,heading=True)
     @transaction.atomic
     def materialize(instance=instance):
         instance=sender.objects.select_for_update().get(pk=instance.pk)
@@ -86,16 +83,18 @@ def materialize_instance(sender, instance, **kwargs):
     transaction.on_commit(Thread(target=materialize).start)
 
 @receiver(pre_save, sender=Instance)
-def update_instance(sender, instance, **kwargs):
-    if not instance.pk: return
+def update_instance_hostname(sender, instance, **kwargs):
+    if not instance.pk:
+        if not instance.hostname:
+            instance.hostname=instance.image.hostname
+        instance.remedy_script_todo+='\n'+utils.remedy_script_hostname(instance.hostname)
+        return
     old=sender.objects.get(pk=instance.id)
-    if old.hostname==instance.hostname: return
-    InstanceOperation(
-        target=instance,
-        operation=INSTANCE_OPERATION.remedy.value,
-        script=utils.remedy_script_hostname(instance.hostname),
-        manual=False,
-    ).save()
+    if old.hostname!=instance.hostname:
+        instance.remedy(
+            script=utils.remedy_script_hostname(instance.hostname),
+            manual=False
+        )
 
 @receiver(pre_delete, sender=Instance)
 def destroy_instance(sender,instance,**kwargs):
@@ -224,6 +223,7 @@ def umount(sender,instance,**kwargs):
 
 @receiver(materialized, sender=Instance)#TODO instance may created before be added to group
 @receiver(materialized, sender=Mount)
+@transaction.atomic
 def materialize_group(sender,instance,**kwargs):
     if sender==Mount: instance=instance.instance
     elif instance.mount_set.all().exists(): return
@@ -231,12 +231,12 @@ def materialize_group(sender,instance,**kwargs):
         if group.ready: continue
         if sender==Mount and group.mounts.filter(dev=None).exists(): continue
         if sender==Instance and group.instances.filter(uuid=None).exists(): continue
-        group.hosts = '###group {}###\n'.format(group.pk)+'\n'.join([ins.hosts_record for ins in group.instances.all()])
+        group.hosts = '###group {}###\n'.format(group.long_id)+'\n'.join([ins.hosts_record for ins in group.instances.all()])
         group.built_time=now()
         group.save()
         for ins in group.instances.all():
             ins.remedy(manual=False)
-        group.update_remedy_script(utils.remedy_script_hosts_add(group.hosts))
+        group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)
@@ -262,8 +262,7 @@ def monitor_group(sender, instance, **kwargs):
             monitored.send(sender=Group, instance=group, name='monitored')
     else:
         if instance.status==OPERATION_STATUS.waiting.value: return
-        else:
-            instance.target.monitor()
+        instance.target.monitor()
 
 @receiver(post_save, sender=InstanceOperation)
 @receiver(post_save, sender=GroupOperation)
@@ -300,9 +299,6 @@ def tidy_operation(sender,instance,created,**kwargs):
                 op_instance.tidied=True
                 op_instance.manual=False
                 op_instance.save()
-    if not instance.manual and instance.target.get_ready_operations().exists():
-        instance.status=OPERATION_STATUS.waiting.value
-        instance.save()
     tidied.send(sender=sender, instance=instance, name='tidied')
 
 @receiver(monitored, sender=Instance)
@@ -311,12 +307,16 @@ def tidy_operation(sender,instance,created,**kwargs):
 def select_operation(sender,instance,**kwargs):
     for target in instance.__class__.objects.select_for_update().filter(pk=instance.pk):
         target.remedy(manual=False)
-        ops=target.get_ready_operations()
-        if not ops.exists(): ops=target.get_next_operations()[:1]
+        ops=target.get_next_operations().select_for_update()
         if not ops.exists(): return
         for op in ops:
             if op.runnable:
+                op.status=OPERATION_STATUS.running.value
+                op.started_time=now()
+                op.completed_time=None
+                op.save()
                 selected.send(sender=op.__class__, instance=op, name='selected')
+                break
             else:
                 op.status=OPERATION_STATUS.waiting.value
                 op.save()

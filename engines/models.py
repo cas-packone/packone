@@ -227,7 +227,7 @@ class ClusterOperation(M2MOperationModel):
         return GroupOperation
 
 class StepOperation(GroupOperation):
-    class Meta:
+    class Meta(GroupOperation.Meta):
         proxy = True
         verbose_name = 'operation'
     def __str__(self):

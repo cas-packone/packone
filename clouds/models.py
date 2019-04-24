@@ -51,19 +51,20 @@ class Image(StaticModel):
             s=self.parent.remedy_script+s
         return s
     def launch(self, template, owner, remedy_script='', number=1, remark=None):
+        hostname=self.hostname
+        if number>1:
+            parts=hostname.split('.')
+            hostname='.'.join((parts[0]+str(number),'.'.join(parts[1:])))
         ins=Instance(
             cloud=self.cloud,
             template=template,
             image=self,
+            hostname=hostname,
             remedy_script_todo=remedy_script,
             owner=owner,
             remark=remark
         )
         ins.save()
-        if number>1:
-            parts=ins.hostname.split('.')
-            ins.hostname='.'.join((parts[0]+str(number),'.'.join(parts[1:])))
-            ins.save()
         return ins
 
 class InstanceTemplate(StaticModel):#TODO support root volume resize
@@ -272,9 +273,6 @@ class InstanceOperation(OperationModel):
     target=models.ForeignKey(Instance,on_delete=models.CASCADE)
     log=models.TextField(max_length=51200,null=True,editable=False)
     def execute(self):
-        super().execute()
-        self.refresh_from_db()
-        if not self.executing: return
         def perform(self=self):
             from . import utils
             if self.operation!=INSTANCE_OPERATION.remedy.value:
@@ -375,7 +373,7 @@ class GroupOperation(M2MOperationModel):
     target=models.ForeignKey(Group,on_delete=models.CASCADE)
     def __str__(self):
         return "{}({}/{})".format(self.batch,self.operation,self.status)
-    class Meta:
+    class Meta(M2MOperationModel.Meta):
         verbose_name = "group operation"
     @staticmethod
     def get_sub_operation_model():

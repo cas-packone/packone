@@ -57,18 +57,21 @@ class OperatableMixin(object):
     @property
     def stopable(self):
         return self.status == INSTANCE_STATUS.active.value
+    @transaction.atomic
     def remedy(self, script='', manual=True):
-        if self.remedy_script_todo:
-            script+=self.remedy_script_todo
-            self.__class__.objects.filter(pk=self.pk).update(remedy_script_todo='')
-        if script:
-            self.get_operation_model()(
-                operation=INSTANCE_OPERATION.remedy.value,
-                script=script,
-                target=self,
-                manual=manual
-            ).save()
-        self.refresh_from_db()
+        for self in self.__class__.objects.filter(pk=self.pk).select_for_update():
+            if self.remedy_script_todo:
+                script=self.remedy_script_todo+'\n\n'+script
+                self.remedy_script_todo=''
+                self.save()
+            if script:
+                self.get_operation_model()(
+                    operation=INSTANCE_OPERATION.remedy.value,
+                    script=script,
+                    target=self,
+                    manual=manual
+                ).save()
+            self.refresh_from_db()
     def update_remedy_script(self,script,heading=False):
         if heading:
             v=models.Value(script+'\n')
@@ -83,7 +86,7 @@ class OperatableMixin(object):
             completed_time__isnull=True,
             status=OPERATION_STATUS.running.value,
             target=self
-        ).exclude(target__deleting=True, manual=False).order_by("id")
+        ).exclude(target__deleting=True, manual=False).order_by("pk")
     def get_running_operations(self):
         return self.get_operation_model().objects.filter(
             started_time__isnull=False,
@@ -93,8 +96,10 @@ class OperatableMixin(object):
     def get_next_operations(self):
         return self.get_operation_model().objects.filter(
             target=self,
-            status=OPERATION_STATUS.waiting.value
-        ).exclude(target__deleting=True, manual=False).order_by("id")
+            started_time__isnull=True,
+            completed_time__isnull=True,
+            status__in=[OPERATION_STATUS.waiting.value,OPERATION_STATUS.running.value],
+        ).exclude(target__deleting=True, manual=False).order_by("pk")
     def get_former_operation(self):
         return self.get_operation_model().objects.filter(
             target=self,
@@ -140,6 +145,7 @@ class OperationModel(models.Model):
     class Meta:
         verbose_name = "operation"
         abstract = True
+        ordering=['-started_time','-completed_time','-pk']
     def __str__(self):
         return "{}({}/{}/{})".format(self.batch,self.target,self.operation,self.status)
     @property
@@ -153,6 +159,7 @@ class OperationModel(models.Model):
         return self.started_time and not self.completed_time
     @property
     def runnable(self):
+        if self.serial: return self.serial.runnable
         if self.executing: return False
         if self.manual:
             if self.status!=OPERATION_STATUS.running.value: return False
@@ -163,16 +170,6 @@ class OperationModel(models.Model):
         former=target.get_former_operation()
         if former and former.status==OPERATION_STATUS.failed.value: return False
         return True
-    @transaction.atomic
-    def execute(self):
-        self=self.__class__.objects.select_for_update().get(pk=self.pk)
-        if self.executing:
-            print('WARNING: cannot run a same operation({}) concurrently'.format(self))
-            return
-        self.status=OPERATION_STATUS.running.value
-        self.started_time=now()
-        self.completed_time=None
-        self.save()
         
 class M2MOperatableMixin(OperatableMixin):
     def monitor(self):
@@ -182,8 +179,7 @@ class M2MOperatableMixin(OperatableMixin):
 executed = Signal(providing_args=["instance","name"])
 
 class M2MOperationModel(OperationModel):
-    class Meta:
-        verbose_name = "operation"
+    class Meta(OperationModel.Meta):
         abstract = True
     def get_sub_operations(self):
         return self.get_sub_operation_model().objects.filter(batch_uuid=self.batch_uuid)
@@ -207,9 +203,6 @@ class M2MOperationModel(OperationModel):
             completed_time=None
         ).order_by('started_time')
     def execute(self):
-        super().execute()
-        self.refresh_from_db()
-        if not self.executing: return
         operatables=self.target.operatables
         if not operatables.exists():
             self.status=OPERATION_STATUS.running.value

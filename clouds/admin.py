@@ -198,17 +198,10 @@ class MountAdmin(AutoModelAdmin):
 class InstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
         return super().get_list_display(request,obj)+('log',)
-    def get_queryset(self, request):
-        return super().get_queryset(request).filter(
-            Q(target__owner=request.user)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
-        ).order_by('-started_time')
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.target.owner == request.user or obj.target.cloud.owner == request.user
-    def rerun(modeladmin, request, queryset):
-        for op in queryset:
-            op.execute()
-    rerun.short_description = "Re-run selected operations"
-    actions=[rerun]
 
 @admin.register(models.Group)
 class GroupAdmin(OwnershipModelAdmin,OperatableAdminMixin):
