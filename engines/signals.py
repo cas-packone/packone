@@ -20,6 +20,7 @@ scaled_out = Signal(providing_args=["instance","name"])
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
+#TODO only running cluster can be scaled-out
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):
@@ -34,9 +35,21 @@ def scale_out(sender,instance,**kwargs):
         if old_steps.exists():
             old_hosts_script=utils.remedy_script_hosts_add('\n'.join([step.hosts for step in old_steps]))
             new_hosts_script=utils.remedy_script_hosts_add(instance.hosts)
-            instance.update_remedy_script(old_hosts_script)
+            GroupOperation(
+                operation=INSTANCE_OPERATION.remedy.value,
+                target=instance,
+                script=old_hosts_script,
+                status=OPERATION_STATUS.running.value,
+                manual=False
+            ).save()
             for step in old_steps:
-                step.update_remedy_script(new_hosts_script)
+                GroupOperation(
+                    operation=INSTANCE_OPERATION.remedy.value,
+                    target=step,
+                    script=new_hosts_script,
+                    status=OPERATION_STATUS.running.value,
+                    manual=False
+                ).save()
         if cluster.scale.remedy_script:
             instance.update_remedy_script(cluster.scale.remedy_script)
         GroupOperation(
