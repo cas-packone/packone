@@ -35,10 +35,12 @@ def scale_out(sender,instance,**kwargs):
             old_hosts_script=utils.remedy_script_hosts_add('\n'.join([step.hosts for step in old_steps]))
             new_hosts_script=utils.remedy_script_hosts_add(instance.hosts)   
             #TODO only running remedyless cluster can be scaled-out
-            instance.remedy(old_hosts_script,manual=False)
             for step in old_steps:
                 step.remedy(new_hosts_script)
-        if cluster.scale.remedy_script:
+            instance.remedy(old_hosts_script,manual=False)
+            if cluster.scale.remedy_script_scale_out:
+                instance.remedy(cluster.scale.remedy_script_scale_out,manual=False)
+        elif cluster.scale.remedy_script:
             instance.remedy(cluster.scale.remedy_script,manual=False)
         GroupOperation(
             operation=INSTANCE_OPERATION.start.value,

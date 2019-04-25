@@ -54,9 +54,10 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
             return COMPONENT_STATUS.null.value
 
 class Scale(StaticModel):
-    init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales")
-    step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True)
-    _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
+    init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales",verbose_name='initial blueprints')
+    step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True,verbose_name='scale-out blueprints')
+    _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='initial remedy script')
+    _remedy_script_scale_out=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
     _remedy_script_scale_in=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-in remedy script')
     auto=models.BooleanField(default=False)
     def __str__(self):
@@ -64,6 +65,13 @@ class Scale(StaticModel):
             self.name,
             'auto' if self.auto else 'manual',
         )
+    @cached_property
+    def remedy_script_scale_out(self):
+        return "###scale-out remedy {}: {}###\n{}\n".format(
+            self._meta.verbose_name,
+            self.name,
+            self._remedy_script_scale_out
+        ) if self._remedy_script_scale_out else ""
     @cached_property
     def remedy_script_scale_in(self):
         return "###scale-in remedy {}: {}###\n{}\n".format(
