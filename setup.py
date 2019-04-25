@@ -4,7 +4,7 @@ setup(
     name = "pk1",
     version = "0.0.2",
     keywords = ("pip", "packone"),
-    description = "Pack clouds, engines and data services into one light stack",
+    description = "PackOne: Pack clouds, engines and data services into one light stack.",
     long_description = open('README.rst').read(),
     license = "Apache-2.0 Licence",
     url = "https://github.com/cas-bigdatalab/packone",
