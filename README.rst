@@ -1,5 +1,5 @@
 .. image:: pk1/static/logo-large.png
-    :width: 320
+    :width: 200
     :alt: Logo
 
 ===================
