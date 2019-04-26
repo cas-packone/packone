@@ -193,6 +193,8 @@ class Cluster(models.Model,M2MOperatableMixin):
             self.deleting=True
             self.save()
             for operatable in operatables:
+                operatable.destroy_script_todo=self.scale.remedy_script_scale_in
+                operatable.save()
                 operatable.delete()
         else:
             super().delete(*args, **kwargs)
