@@ -11,3 +11,4 @@ psycopg2-binary==2.7.6.1
 python-cinderclient==4.1.0
 python-novaclient==11.1.0
 scp==0.13.0
+django-admin-auto
