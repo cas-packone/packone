@@ -211,12 +211,17 @@ class M2MOperationModel(OperationModel):
             from clouds.models import executed
             executed.send(sender=self.__class__, instance=self, name='executed')
             return
-        for operatable in operatables:
-            self.get_sub_operation_model()(
-                operation=self.operation,
-                batch_uuid=self.batch_uuid,
-                target=operatable,
-                tidied=True,
-                manual=self.manual,
-                script=self.script
-            ).save()
+        subops=self.get_sub_operations()
+        if subops.exists():
+            for op in subops:
+                op.execute()
+        else:
+            for operatable in operatables:
+                self.get_sub_operation_model()(
+                    operation=self.operation,
+                    batch_uuid=self.batch_uuid,
+                    target=operatable,
+                    tidied=True,
+                    manual=self.manual,
+                    script=self.script
+                ).save()

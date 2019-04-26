@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from clouds.utils import get_formated_url, get_url
 from user.models import Balance
 from .models import OPERATION_STATUS
+from django.db import transaction
 
 class AutoModelAdmin(admin.ModelAdmin):
     def __init__(self, model, admin_site):
@@ -178,11 +179,13 @@ class OperationAdmin(AutoModelAdmin):
         return powerful_form_field_queryset_Q(db_field, request)
     def has_change_permission(self, request, obj=None):
         return False
+    @transaction.atomic
     def rerun(modeladmin, request, queryset):
-        for op in queryset:
+        for op in queryset.select_for_update():
             op.status=OPERATION_STATUS.running.value
             op.started_time=now()
             op.completed_time=None
+            op.save()
             op.execute()
     rerun.short_description = "Re-run selected operations"
     actions=[rerun]
