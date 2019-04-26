@@ -314,6 +314,7 @@ class Group(models.Model,M2MOperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     instances=models.ManyToManyField(Instance,blank=True,editable=False)
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)
+    destroy_script_todo=models.TextField(max_length=51200,default="",blank=True)
     hosts=models.TextField(max_length=5120,default="",blank=True,editable=False)
     remark = models.CharField(blank=True,null=True,max_length=100)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False)
@@ -347,6 +348,8 @@ class Group(models.Model,M2MOperatableMixin):
     def delete(self, *args, **kwargs):
         if not self.ready:
             print('WARNNING: delete {} under building'.format(self._meta.verbose_name))
+        elif self.destroy_script_todo:
+            self.remedy(self.destroy_script_todo)
         operatables=self.operatables
         if operatables.exists():
             self.deleting=True
