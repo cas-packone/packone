@@ -25,7 +25,7 @@ class ComponentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, permissions.IsOwnerOrAdminOrPublicReadOnly,)
     serializer_class = serializers.ComponentSerializer
     def get_queryset(self):
-        queryset = models.Component.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-id')
+        queryset = models.Component.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -35,7 +35,7 @@ class EngineViewSet(viewsets.ModelViewSet):
     filter_fields=('public',)
     permission_classes = (IsAuthenticated, permissions.IsOwnerOrAdminOrPublicReadOnly,)
     def get_queryset(self):
-        queryset = models.Engine.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-id')
+        queryset = models.Engine.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -46,7 +46,7 @@ class ScaleViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','post','delete','head','options']
     serializer_class = serializers.ScaleSerializer
     def get_queryset(self):
-        queryset = models.Scale.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-id')
+        queryset = models.Scale.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -55,7 +55,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,permissions.IsOwner,)
     serializer_class = serializers.ClusterSerializer
     def get_queryset(self):
-        queryset = models.Cluster.objects.filter(owner=self.request.user).order_by('-id')
+        queryset = models.Cluster.objects.filter(owner=self.request.user).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -64,5 +64,5 @@ class ClusterOperationViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ClusterOperationSerializer
     http_method_names = ['get','post','head','options']
     def get_queryset(self):
-        queryset = models.ClusterOperation.objects.filter(target__owner=self.request.user).order_by('-id')
+        queryset = models.ClusterOperation.objects.filter(target__owner=self.request.user).order_by('-pk')
         return queryset

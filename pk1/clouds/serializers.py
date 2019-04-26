@@ -46,7 +46,7 @@ class InstanceSerializer(serializers.ModelSerializer):
 
 class InstancePKField(serializers.PrimaryKeyRelatedField):
     def get_queryset(self):
-        qs = models.Instance.objects.all().order_by('-id')
+        qs = models.Instance.objects.all().order_by('-pk')
         user = self.context['request'].user
         if not user.is_superuser:
             qs = qs.filter(owner=user)

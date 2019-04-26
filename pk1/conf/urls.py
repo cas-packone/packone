@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/user/', include('user.urls')),
     path('api/clouds/', include('clouds.urls')),
     path('api/engines/', include('engines.urls')),
-    # path('api/data/', include('data.urls')),
+    path('api/data/', include('data.urls')),
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
 ]

@@ -36,7 +36,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProfileSerializer
     def get_queryset(self):
-        queryset = models.Profile.objects.filter(account=self.request.user).order_by('-id')
+        queryset = models.Profile.objects.filter(account=self.request.user).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(account=self.request.user)

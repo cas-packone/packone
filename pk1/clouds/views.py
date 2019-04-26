@@ -67,14 +67,14 @@ class ImageViewSet(viewsets.ModelViewSet):#TODO allow specify image id when post
     permission_classes = (IsAuthenticated,permissions.IsOwnerOrAdminOrPublicReadOnly,)
     serializer_class = serializers.ImageSerializer
     def get_queryset(self):
-        queryset = models.Image.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-id')
+        queryset = models.Image.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 class InstanceTemplateViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.InstanceTemplateSerializer
-    queryset = models.InstanceTemplate.objects.all().order_by('-id')
+    queryset = models.InstanceTemplate.objects.all().order_by('-pk')
 
 class InstanceBlueprintViewSet(viewsets.ModelViewSet):
     filter_fields=('public',)
@@ -82,7 +82,7 @@ class InstanceBlueprintViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','post','delete','head','options']
     serializer_class = serializers.InstanceBlueprintSerializer
     def get_queryset(self):
-        queryset = models.InstanceBlueprint.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-id')
+        queryset = models.InstanceBlueprint.objects.filter(Q(public=True) | Q(owner=self.request.user)).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -93,7 +93,7 @@ class InstanceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,permissions.IsOwnerOrAdmin)
     serializer_class = serializers.InstanceSerializer
     def get_queryset(self):
-        queryset = models.Instance.objects.filter(owner=self.request.user).order_by('-id')
+        queryset = models.Instance.objects.filter(owner=self.request.user).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -102,14 +102,14 @@ class InstanceOperationViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.InstanceOperationSerializer
     http_method_names = ['get','post','head','options']
     def get_queryset(self):
-        queryset = models.InstanceOperation.objects.filter(target__owner=self.request.user).order_by('-id')
+        queryset = models.InstanceOperation.objects.filter(target__owner=self.request.user).order_by('-pk')
         return queryset
 
 class VolumeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.VolumeSerializer
     permission_classes = (IsAuthenticated,permissions.IsOwner,)
     def get_queryset(self):
-        queryset = models.Volume.objects.filter(owner=self.request.user).order_by('-id')
+        queryset = models.Volume.objects.filter(owner=self.request.user).order_by('-pk')
         return queryset
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -118,5 +118,5 @@ class MountViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.MountSerializer
     http_method_names = ['get','post','delete','head','options']
     def get_queryset(self):
-        queryset = models.Mount.objects.filter(volume__owner=self.request.user).order_by('-id')
+        queryset = models.Mount.objects.filter(volume__owner=self.request.user).order_by('-pk')
         return queryset

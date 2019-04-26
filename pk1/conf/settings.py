@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'dal_select2',
     'clouds.apps.CloudsConfig',
     'engines.apps.EnginesConfig',
+    'data.apps.DataConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
     'django.contrib.auth',
