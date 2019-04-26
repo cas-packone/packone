@@ -8,19 +8,6 @@ from user.models import Balance
 from .models import OPERATION_STATUS
 from django.db import transaction
 
-def get_get_prefill_form(self, request, obj=None, **kwargs):
-    form = super().get_form(request, obj, **kwargs)
-    for fname in request.GET:
-        if fname in form.base_fields:
-            # form.base_fields[fname].disabled=True
-            # form.base_fields[fname].widget=forms.HiddenInput()
-            form.base_fields[fname].widget.attrs={
-                'readonly': True,
-                'style': 'border: none; outline: none;'
-            }
-    return form
-AutoModelAdmin.get_form=get_get_prefill_form
-
 #TODO use staticmodel of_user
 def powerful_form_field_queryset_Q(db_field, request):
     if db_field.name == 'cloud':
