@@ -19,6 +19,12 @@ class CloudAdmin(StaticModelAdmin):
         if obj and obj.owner!=request.user:
             return ('_platform_credential','_instance_credential')
         return ()
+    def import_image(modeladmin, request, queryset):
+        for cloud in queryset:
+            cloud.import_image()
+    import_image.short_description = "import images from selected clouds"
+    actions = [import_image]
+        
 
 class CloudStaticModelAdmin(StaticModelAdmin):
     search_fields = ('cloud__name',)+StaticModelAdmin.search_fields

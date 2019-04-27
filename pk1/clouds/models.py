@@ -28,8 +28,21 @@ class Cloud(StaticModel):
     @cached_property
     def instance_credential(self):
         return json.loads(self._instance_credential)
-    def list_image(self):
-        return self.driver.image_list(self.platform_credential)
+    def import_image(self):
+        for img in self.driver.image_list(self.platform_credential):
+            name=img['name']
+            id=img['id']
+            if Image.objects.filter(cloud=self, access_id=id).exists(): continue
+            if Image.objects.filter(cloud=self, name=name).exists():
+                name='{}-{}'.format(name,img['id'])
+            Image(
+                name=name,
+                cloud=self,
+                access_id = img['id'],
+                hostname='packone',
+                owner=self.owner,
+                remark='auto imported'
+            ).save()
 
 def clouds_of_user(self):
     return Cloud.objects.filter(
@@ -44,6 +57,8 @@ class Image(StaticModel):
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.PROTECT,blank=True,null=True)
+    class Meta:
+        unique_together = ('cloud', 'name')
     @cached_property
     def remedy_script(self):
         s="###remedy image: {}###\n{}\n".format(self.name,self._remedy_script) if self._remedy_script else ""

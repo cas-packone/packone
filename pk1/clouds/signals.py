@@ -30,17 +30,8 @@ def log(sender,instance,name,**kwargs):
 
 @receiver(post_save, sender=Cloud)
 def import_image(sender,instance,**kwargs):
-    if not kwargs['created']: return
-    for img in instance.list_image():
-        Image(
-            name=img['name'],
-            cloud=instance,
-            access_id = img['id'],
-            hostname='packone',
-            owner=instance.owner,
-            remark='auto imported'
-        ).save()
-
+    if kwargs['created']:
+        instance.import_image()
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):
     if not instance.parent: return
