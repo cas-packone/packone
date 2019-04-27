@@ -7,7 +7,7 @@ from django.db.models import Max
 from django.utils.timezone import now
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, pre_delete
-from .models import Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
+from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
 from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
 
@@ -27,6 +27,19 @@ from .models import executed
 @receiver(executed)
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
+
+@receiver(post_save, sender=Cloud)
+def import_image(sender,instance,**kwargs):
+    if not kwargs['created']: return
+    for img in instance.list_image():
+        Image(
+            name=img['name'],
+            cloud=instance,
+            access_id = img['id'],
+            hostname='packone',
+            owner=instance.owner,
+            remark='auto imported'
+        ).save()
 
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):

@@ -155,3 +155,10 @@ def volume_delete(credential, volume_id):
             return True
         else:
             raise e
+
+def image_list(credential):
+    action = ["images","list"]
+    params = {
+        "pool_id":credential['image_poll_id'],
+    }
+    return do_action(credential, action, params)
