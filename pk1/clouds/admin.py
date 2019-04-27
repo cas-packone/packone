@@ -22,9 +22,12 @@ class CloudAdmin(StaticModelAdmin):
     def import_image(modeladmin, request, queryset):
         for cloud in queryset:
             cloud.import_image()
-    import_image.short_description = "import images from selected clouds"
-    actions = [import_image]
-        
+    import_image.short_description = "refresh images from selected clouds"
+    def import_template(modeladmin, request, queryset):
+        for cloud in queryset:
+            cloud.import_template()
+    import_template.short_description = "refresh templates from selected clouds"
+    actions = [import_image,import_template]
 
 class CloudStaticModelAdmin(StaticModelAdmin):
     search_fields = ('cloud__name',)+StaticModelAdmin.search_fields

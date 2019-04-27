@@ -162,3 +162,6 @@ def image_list(credential):
         "pool_id":credential['image_poll_id'],
     }
     return do_action(credential, action, params)
+
+def template_list(credential):
+    return ()

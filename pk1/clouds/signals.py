@@ -32,6 +32,8 @@ def log(sender,instance,name,**kwargs):
 def import_image(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
+        instance.import_template()
+        
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):
     if not instance.parent: return

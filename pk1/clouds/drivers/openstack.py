@@ -147,3 +147,25 @@ def vm_status(credential, vm_id):
     elif vm.status=='ERROR':
         return INSTANCE_STATUS.failure.value
     return INSTANCE_STATUS.null.value
+
+def image_list(credential):
+    nova = get_nova(credential)
+    images=[]
+    for image in nova.glance.list():
+        images.append({
+            'id':image.id,
+            'name':image.name,
+        })
+    return images
+
+def template_list(credential):
+    nova = get_nova(credential)
+    templates=[]
+    for f in nova.flavors.list():
+        templates.append({
+            'id':f.id,
+            'name':f.name,
+            'mem':f.ram,
+            'vcpu':f.vcpus
+        })
+    return templates

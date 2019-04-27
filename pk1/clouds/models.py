@@ -43,7 +43,20 @@ class Cloud(StaticModel):
                 owner=self.owner,
                 remark='auto imported'
             ).save()
-
+    def import_template(self):
+        for tpl in self.driver.template_list(self.platform_credential):
+            id=tpl['id']
+            if InstanceTemplate.objects.filter(cloud=self, access_id=id).exists(): continue
+            InstanceTemplate(
+                access_id=id,
+                name=tpl['name'],
+                mem=tpl['mem'],
+                vcpu=tpl['vcpu'],
+                cloud=self,
+                owner=self.owner,
+                remark='auto imported'
+            ).save()
+            
 def clouds_of_user(self):
     return Cloud.objects.filter(
         balance__in=self.balances(),
