@@ -26,10 +26,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'jet.dashboard',
+    'jet',
     'dal',
     'dal_select2',
     'clouds.apps.CloudsConfig',
@@ -60,6 +61,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'conf.urls'
+
+JET_SIDE_MENU_COMPACT = True
 
 TEMPLATES = [
     {

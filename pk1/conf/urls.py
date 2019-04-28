@@ -24,6 +24,8 @@ admin.site.site_url = None
 
 urlpatterns = [
     re_path(r'^', admin.site.urls),
+    re_path(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    re_path(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('api/user/', include('user.urls')),
     path('api/clouds/', include('clouds.urls')),
     path('api/engines/', include('engines.urls')),
