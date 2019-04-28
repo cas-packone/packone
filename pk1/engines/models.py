@@ -37,7 +37,9 @@ class Stack(StaticModel):
                 stack=self,
                 owner=self.owner,
                 description=e['description'],
-                remark='auto imported'
+                remark='auto imported',
+                enabled=self.enabled,
+                public=self.public
             )
             eg.save()
             cpns=self.driver.list_components(self.host.ipv4,name)
@@ -49,7 +51,9 @@ class Stack(StaticModel):
                     stack=self,
                     type=c['type'],
                     owner=self.owner,
-                    remark='auto imported'
+                    remark='auto imported',
+                    enabled=self.enabled,
+                    public=self.public
                 )
                 [{'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_CLIENT', 'StackServiceComponents':{'advertise_version': True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '1+', 'component_category': 'CLIENT', 'component_name': 'HBASE_CLIENT', 'custom_commands': [], 'decommission_allowed': False, 'display_name': 'HBase Client', 'has_bulk_commands_definition': False, 'is_client':True, 'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name':'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER', 'StackServiceComponents': {'advertise_version': True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '1+', 'component_category': 'MASTER', 'component_name': 'HBASE_MASTER', 'custom_commands': ['DECOMMISSION'], 'decommission_allowed': False, 'display_name': 'HBase Master', 'has_bulk_commands_definition': False, 'is_client': False, 'is_master': True, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported':False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': [{'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER/dependencies/HDFS_CLIENT', 'Dependencies': {'component_name': 'HDFS_CLIENT', 'dependent_component_name': 'HBASE_MASTER', 'dependent_service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER/dependencies/ZOOKEEPER_SERVER', 'Dependencies': {'component_name': 'ZOOKEEPER_SERVER', 'dependent_component_name': 'HBASE_MASTER', 'dependent_service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}}]}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_REGIONSERVER', 'StackServiceComponents': {'advertise_version': True, 'bulk_commands_display_name': 'RegionServers', 'bulk_commands_master_component_name': 'HBASE_MASTER', 'cardinality': '1+', 'component_category': 'SLAVE', 'component_name':'HBASE_REGIONSERVER', 'custom_commands': [], 'decommission_allowed': True, 'display_name': 'RegionServer', 'has_bulk_commands_definition': True, 'is_client': False, 'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/PHOENIX_QUERY_SERVER', 'StackServiceComponents': {'advertise_version':True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '0+', 'component_category': 'SLAVE', 'component_name': 'PHOENIX_QUERY_SERVER', 'custom_commands': [], 'decommission_allowed': False, 'display_name': 'Phoenix Query Server', 'has_bulk_commands_definition': False, 'is_client': False,'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}]
                 cpn.save()
