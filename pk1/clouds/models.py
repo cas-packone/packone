@@ -12,9 +12,16 @@ from django.utils.functional import cached_property
 from .base.models import StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
 from django.utils.timezone import now
 
+import pkgutil
+from django.conf import settings
+drivers=[]
+for importer, modname, ispkg in pkgutil.iter_modules((settings.BASE_DIR+'/clouds/drivers',)):
+    driver='clouds.drivers.{}'.format(modname)
+    drivers.append((driver,driver))
+
 import importlib, json
 class Cloud(StaticModel):
-    _driver=models.CharField(max_length=50)
+    _driver=models.CharField(max_length=50,choices=drivers)
     _platform_credential=models.TextField(max_length=5120,blank=True,null=True)
     _instance_credential=models.TextField(max_length=2048,blank=True,null=True)    
     hosts=models.TextField(max_length=5120,blank=True,null=True)

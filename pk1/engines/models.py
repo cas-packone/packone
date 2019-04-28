@@ -11,10 +11,19 @@ from django.utils.functional import cached_property
 from django.db import transaction
 from clouds.base.models import M2MOperatableMixin, M2MOperationModel
 
+import pkgutil
+from django.conf import settings
+drivers=[]
+for importer, modname, ispkg in pkgutil.iter_modules((settings.BASE_DIR+'/engines/drivers',)):
+    driver='engines.drivers.{}'.format(modname)
+    drivers.append((driver,driver))
+
 import importlib
 class Stack(StaticModel):
-    _driver=models.CharField(max_length=50)
+    _driver=models.CharField(max_length=50,choices=drivers)
     host=models.ForeignKey(Instance,on_delete=models.PROTECT)
+    class Meta:
+        unique_together = ('owner', 'name')
     @cached_property
     def driver(self):
         return importlib.import_module(self._driver)
@@ -73,12 +82,16 @@ class Component(StaticModel):
     type=models.CharField(max_length=50,choices=[(type.value,type.name) for type in COMPONENT_TYPE])
     stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     endpoint=models.CharField(max_length=200,default='',blank=True)
+    class Meta:
+        unique_together = ('stack', 'name')
 
 class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     components=models.ManyToManyField(Component)# every component is required for a single engine to run.
     description=models.TextField(max_length=5120,blank=True,default='')
+    class Meta:
+        unique_together = ('stack', 'name')
     def start(self, pilot):
         print(utils.ambari_service_start('admin','admin',pilot.portal,self.name.upper()))
     def stop(self, pilot):
