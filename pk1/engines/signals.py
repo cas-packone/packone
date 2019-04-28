@@ -20,6 +20,11 @@ scaled_out = Signal(providing_args=["instance","name"])
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
+@receiver(post_save, sender=models.Stack)
+def import_engines(sender,instance,**kwargs):
+    if kwargs['created']:
+        instance.import_engines()
+
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):
