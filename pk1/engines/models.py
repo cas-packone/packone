@@ -11,12 +11,41 @@ from django.utils.functional import cached_property
 from django.db import transaction
 from clouds.base.models import M2MOperatableMixin, M2MOperationModel
 
+import importlib
 class Stack(StaticModel):
     _driver=models.CharField(max_length=50)
     host=models.ForeignKey(Instance,on_delete=models.PROTECT)
     @cached_property
     def driver(self):
         return importlib.import_module(self._driver)
+    def import_engine(self):
+        es=self.driver.list_engines(self.host.ipv4)
+        for e in es:
+            name=e['name']
+            if Engine.objects.filter(name=name,stack=self).exists(): continue
+            eg=Engine(
+                name=name,
+                stack=self,
+                owner=self.owner,
+                description=e['description'],
+                remark='auto imported'
+            )
+            eg.save()
+            cpns=self.driver.list_components(self.host.ipv4,name)
+            for c in cpns:
+                name=c['name']
+                if Component.objects.filter(name=name,stack=self).exists(): continue
+                cpn=Component(
+                    name=name,
+                    stack=self,
+                    type=c['type'],
+                    owner=self.owner,
+                    remark='auto imported'
+                )
+                [{'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_CLIENT', 'StackServiceComponents':{'advertise_version': True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '1+', 'component_category': 'CLIENT', 'component_name': 'HBASE_CLIENT', 'custom_commands': [], 'decommission_allowed': False, 'display_name': 'HBase Client', 'has_bulk_commands_definition': False, 'is_client':True, 'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name':'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER', 'StackServiceComponents': {'advertise_version': True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '1+', 'component_category': 'MASTER', 'component_name': 'HBASE_MASTER', 'custom_commands': ['DECOMMISSION'], 'decommission_allowed': False, 'display_name': 'HBase Master', 'has_bulk_commands_definition': False, 'is_client': False, 'is_master': True, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported':False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': [{'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER/dependencies/HDFS_CLIENT', 'Dependencies': {'component_name': 'HDFS_CLIENT', 'dependent_component_name': 'HBASE_MASTER', 'dependent_service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_MASTER/dependencies/ZOOKEEPER_SERVER', 'Dependencies': {'component_name': 'ZOOKEEPER_SERVER', 'dependent_component_name': 'HBASE_MASTER', 'dependent_service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}}]}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/HBASE_REGIONSERVER', 'StackServiceComponents': {'advertise_version': True, 'bulk_commands_display_name': 'RegionServers', 'bulk_commands_master_component_name': 'HBASE_MASTER', 'cardinality': '1+', 'component_category': 'SLAVE', 'component_name':'HBASE_REGIONSERVER', 'custom_commands': [], 'decommission_allowed': True, 'display_name': 'RegionServer', 'has_bulk_commands_definition': True, 'is_client': False, 'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}, {'href': 'http://10.0.88.64:8080/api/v1/stacks/HDP/versions/2.5/services/HBASE/components/PHOENIX_QUERY_SERVER', 'StackServiceComponents': {'advertise_version':True, 'bulk_commands_display_name': '', 'bulk_commands_master_component_name': '', 'cardinality': '0+', 'component_category': 'SLAVE', 'component_name': 'PHOENIX_QUERY_SERVER', 'custom_commands': [], 'decommission_allowed': False, 'display_name': 'Phoenix Query Server', 'has_bulk_commands_definition': False, 'is_client': False,'is_master': False, 'reassign_allowed': False, 'recovery_enabled': False, 'rolling_restart_supported': False, 'service_name': 'HBASE', 'stack_name': 'HDP', 'stack_version': '2.5'}, 'dependencies': []}]
+                cpn.save()
+                eg.components.add(cpn)
+
 
 class COMPONENT_STATUS(Enum):
     null=0 #unknown
@@ -42,11 +71,14 @@ class Component(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     images=models.ManyToManyField(Image)# every image is required for a single component to run.
     type=models.CharField(max_length=50,choices=[(type.value,type.name) for type in COMPONENT_TYPE])
-    endpoint=models.CharField(max_length=200)
+    stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
+    endpoint=models.CharField(max_length=200,default='',blank=True)
 
 class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
+    stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     components=models.ManyToManyField(Component)# every component is required for a single engine to run.
+    description=models.TextField(max_length=5120,blank=True,default='')
     def start(self, pilot):
         print(utils.ambari_service_start('admin','admin',pilot.portal,self.name.upper()))
     def stop(self, pilot):
