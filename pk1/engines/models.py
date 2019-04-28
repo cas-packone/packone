@@ -11,6 +11,13 @@ from django.utils.functional import cached_property
 from django.db import transaction
 from clouds.base.models import M2MOperatableMixin, M2MOperationModel
 
+class Stack(StaticModel):
+    _driver=models.CharField(max_length=50)
+    host=models.ForeignKey(Instance,on_delete=models.PROTECT)
+    @cached_property
+    def driver(self):
+        return importlib.import_module(self._driver)
+
 class COMPONENT_STATUS(Enum):
     null=0 #unknown
     active=1
