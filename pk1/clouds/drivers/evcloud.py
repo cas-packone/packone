@@ -164,4 +164,12 @@ def image_list(credential):
     return do_action(credential, action, params)
 
 def template_list(credential):
-    return ()
+    return (
+        {'id': '0', 'name': 'm1.nano', 'mem': 64, 'vcpu': 1}, 
+        {'id': '1', 'name': 'm1.tiny', 'mem': 512, 'vcpu': 1}, 
+        {'id': '2', 'name': 'm1.small', 'mem': 2048, 'vcpu': 1},
+        {'id': '3', 'name': 'm1.medium', 'mem': 4096, 'vcpu': 2},
+        {'id': '4', 'name': 'm1.large', 'mem': 8192, 'vcpu': 4}, 
+        {'id': '5', 'name': 'm1.xlarge', 'mem': 16384, 'vcpu': 8}, 
+        {'id': '6', 'name': 'l1.medium', 'mem': 4096, 'vcpu': 2},
+    )
