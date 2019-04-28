@@ -48,7 +48,9 @@ class Cloud(StaticModel):
                 access_id = img['id'],
                 hostname='packone',
                 owner=self.owner,
-                remark='auto imported'
+                remark='auto imported',
+                enabled=self.enabled,
+                public=self.public
             ).save()
     def import_template(self):
         for tpl in self.driver.template_list(self.platform_credential):
@@ -61,7 +63,9 @@ class Cloud(StaticModel):
                 vcpu=tpl['vcpu'],
                 cloud=self,
                 owner=self.owner,
-                remark='auto imported'
+                remark='auto imported',
+                enabled=self.enabled,
+                public=self.public
             ).save()
             
 def clouds_of_user(self):

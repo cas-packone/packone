@@ -23,7 +23,7 @@ def log(sender,instance,name,**kwargs):
 @receiver(post_save, sender=models.Stack)
 def import_engines(sender,instance,**kwargs):
     if kwargs['created']:
-        instance.import_engines()
+        instance.import_engine()
 
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
