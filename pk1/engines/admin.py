@@ -23,6 +23,8 @@ class StackAdmin(StaticModelAdmin):
 @admin.register(models.Component)
 class ComponentAdmin(StaticModelAdmin):
     list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
+    def has_module_permission(self, request):
+        return False
 
 @admin.register(models.Engine)
 class EngineAdmin(StaticModelAdmin):
