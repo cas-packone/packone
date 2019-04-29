@@ -82,6 +82,7 @@ class COMPONENT_OPERATION(Enum):
 
 class Component(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
+    name=models.CharField(max_length=50)
     images=models.ManyToManyField(Image)# every image is required for a single component to run.
     type=models.CharField(max_length=50,choices=[(type.value,type.name) for type in COMPONENT_TYPE])
     stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
@@ -91,6 +92,7 @@ class Component(StaticModel):
 
 class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
+    name=models.CharField(max_length=50)
     stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     components=models.ManyToManyField(Component)# every component is required for a single engine to run.
     description=models.TextField(max_length=5120,blank=True,default='')
