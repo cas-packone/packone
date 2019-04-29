@@ -24,7 +24,7 @@ def log(sender,instance,name,**kwargs):
 @receiver(executed, sender=InstanceOperation)
 def create_stack(sender,instance,**kwargs):
     if 'created' in kwargs and kwargs['created']:
-        instance.host.remedy(instance.driver.setup_scripts()+'\n'+'###setup stack end###')
+        instance.host.remedy(instance.driver.init_script+'\n'+'###setup stack end###')
         return
     if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script.endswith('###setup stack end###'):
         instance.target.stack_set.first().import_engine()
