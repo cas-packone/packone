@@ -119,6 +119,7 @@ def destroy_instance(sender,instance,**kwargs):
                     instance.pk=None
                     instance.save()
                     traceback.print_exc()
+                    return
             destroyed.send(sender=sender, instance=instance, name='destroyed')
         transaction.on_commit(Thread(target=destroy).start)
 
@@ -161,6 +162,7 @@ def destroy_volume(sender,instance,**kwargs):
                     volume.pk=None
                     volume.save()
                     traceback.print_exc()
+                    return
             destroyed.send(sender=sender, instance=volume, name='destroyed')
         transaction.on_commit(Thread(target=destroy).start)
 
@@ -355,10 +357,14 @@ def cleanup(sender,instance,**kwargs):
             if instance.umountable:
                 for m in ms:
                     m.delete()
+                instance.remark+=';umounting'
+                instance.save()
         else:
-            instance.delete()
+            instance.refresh_from_db()
+            if not instance.remark.endswith('umounting'):
+                instance.delete()
     else:
-        if instance.instance.deleting:
+        if instance.instance.deleting and not instance.instance.mount_set.all().exists():
             instance.instance.delete()
         if instance.volume.deleting:
             instance.volume.delete()

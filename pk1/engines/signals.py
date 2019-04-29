@@ -21,10 +21,14 @@ def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
 @receiver(post_save, sender=models.Stack)
-def import_engines(sender,instance,**kwargs):
-    if kwargs['created']:
-        instance.import_engine()
-
+@receiver(executed, sender=InstanceOperation)
+def create_stack(sender,instance,**kwargs):
+    if 'created' in kwargs and kwargs['created']:
+        instance.host.remedy(instance.driver.setup_scripts()+'\n'+'###setup stack end###')
+        return
+    if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script.endswith('###setup stack end###'):
+        instance.target.stack_set.first().import_engine()
+    
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):

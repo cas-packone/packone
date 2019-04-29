@@ -154,12 +154,19 @@ class OperationModel(models.Model):
     @cached_property
     def is_boot(self):
         return self.operation in (INSTANCE_OPERATION.start.value,INSTANCE_OPERATION.reboot.value)
+    @cached_property
+    def serial_pre(self):
+        if not self.serial: return None
+        pre = self.__class__.objects.filter(serial=self.serial,pk__lt=self.pk).order_by('-pk').first()
+        if not pre: pre=self.serial
+        return pre
     @property
     def executing(self):
         return self.started_time and not self.completed_time
     @property
     def runnable(self):
-        if self.serial: return self.serial.runnable
+        if self.serial_pre and self.serial_pre.status!=OPERATION_STATUS.success.value:
+            return False
         if self.executing: return False
         if self.manual:
             if self.status!=OPERATION_STATUS.running.value: return False
