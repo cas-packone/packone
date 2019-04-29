@@ -11,14 +11,6 @@ from dal import autocomplete
 from user.utils import get_current_user
 from clouds.utils import get_url, get_formated_url
 
-@admin.register(models.Component)
-class ComponentAdmin(StaticModelAdmin):
-    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
-
-@admin.register(models.Engine)
-class EngineAdmin(StaticModelAdmin):
-    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
-
 @admin.register(models.Stack)
 class StackAdmin(StaticModelAdmin):
     list_filter = ('_driver',)+StaticModelAdmin.list_filter
@@ -27,6 +19,14 @@ class StackAdmin(StaticModelAdmin):
             stack.import_engine()
     import_engine.short_description = "Refresh engines from selected stacks"
     actions = [import_engine]
+
+@admin.register(models.Component)
+class ComponentAdmin(StaticModelAdmin):
+    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
+
+@admin.register(models.Engine)
+class EngineAdmin(StaticModelAdmin):
+    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
 
 @admin.register(models.Scale)
 class ScaleAdmin(StaticModelAdmin):
