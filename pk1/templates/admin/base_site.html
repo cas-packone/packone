@@ -171,7 +171,8 @@
         });
     </script>
     <script type="text/javascript">
-        var operationFunc = function(){
+    var actionSubmitFun = function(){};
+    window.onload =function(){
         // 多选平铺
         //查询到因select2隐藏的select
         var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
@@ -227,7 +228,7 @@
             var result_list_select_array = changelist_footer_div.getElementsByTagName('select');
             // 判断查询到的select
             if (result_list_select_array && result_list_select_array.length > 0) {
-                var actionSubmitFun = function actionSubmit(btnElement) {
+                actionSubmitFun = function actionSubmit(btnElement) {
                     console.log('执行操作');
                     if (btnElement) {
                         // 找到所点击btn的所在行
@@ -406,9 +407,6 @@
                 }
             }
         }
-    };
-    window.onload =function(){
-        operationFunc();
     }
     </script>
 {% endblock %}
