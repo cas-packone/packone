@@ -171,242 +171,272 @@
         });
     </script>
     <script type="text/javascript">
-    var actionSubmitFun = function(){};
-    window.onload =function(){
-        // 多选平铺
-        //查询到因select2隐藏的select
-        var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
-        //判断select是否有下拉项
-        if (select_elements_array && select_elements_array.length > 0) {
-            // 需要修改的数组
-            var select_element_update_array = [];
-            // 循环处理select(筛选需要修改的)
-            for (var j = 0; j < select_elements_array.length; j++) {
-                if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
-                    var update_select_obj = {}
-                    // 需要修改的select
-                    update_select_obj.select = select_elements_array[j];
-                    // 需要修改select的父元素
-                    update_select_obj.parent = select_elements_array[j].parentElement;
-                    // 需要修改select父元素
-                    update_select_obj.parent_last_child = select_elements_array[j].parentElement.lastElementChild;
-                    // push进需修改的数组
-                    select_element_update_array.push(update_select_obj);
-                }
-            }
-            // 循环处理需要修改的数组
-            for (var j = 0; j < select_element_update_array.length; j++) {
-                // 数组中第一个元素
-                var select_element_obj_j = select_element_update_array[j];
-                // 取select的name
-                var select_elements_j_name = select_element_obj_j.select.getAttribute("name");
-                // 取select的option
-                var select_elements_j_opt = select_element_obj_j.select.getElementsByTagName('option');
-                // 判断取出的select的option是否为空
-                if (select_elements_j_opt && select_elements_j_opt.length > 0) {
-                    // 把select转为checkbox并添加样式
-                    var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL">';
-                    for (var i = 0; i < select_elements_j_opt.length; i++) {
-                        elements_checkbox += ('<input type="checkbox" name="'
-                            + select_elements_j_name + '" id="love'
-                            + j + i + '" value="'
-                            + select_elements_j_opt[i].value + '" />'
-                            + '<label for="love' + j + i + '">' + select_elements_j_opt[i].text + '</label>');
-                    }
-                    elements_checkbox += '</div></div>';
-                    // 判断是否转换成功,若成功则进行替换
-                    if (elements_checkbox) {
-                        select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
+        var actionSubmitFun = function () { };
+        window.onload = function () {
+            var currentUrl = window.location.href;
+            // 多选平铺
+            //查询到因select2隐藏的select
+            var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
+            //判断select是否有下拉项
+            if (select_elements_array && select_elements_array.length > 0) {
+                // 需要修改的数组
+                var select_element_update_array = [];
+                // 循环处理select(筛选需要修改的)
+                for (var j = 0; j < select_elements_array.length; j++) {
+                    if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
+                        var update_select_obj = {}
+                        // 需要修改的select
+                        update_select_obj.select = select_elements_array[j];
+                        // 需要修改select的父元素
+                        update_select_obj.parent = select_elements_array[j].parentElement;
+                        // 需要修改select父元素
+                        update_select_obj.parent_last_child = select_elements_array[j].parentElement.lastElementChild;
+                        // push进需修改的数组
+                        select_element_update_array.push(update_select_obj);
                     }
                 }
+                // 循环处理需要修改的数组
+                for (var j = 0; j < select_element_update_array.length; j++) {
+                    // 数组中第一个元素
+                    var select_element_obj_j = select_element_update_array[j];
+                    // 取select的name
+                    var select_elements_j_name = select_element_obj_j.select.getAttribute("name");
+                    // 取select的option
+                    var select_elements_j_opt = select_element_obj_j.select.getElementsByTagName('option');
+                    // 判断取出的select的option是否为空
+                    if (select_elements_j_opt && select_elements_j_opt.length > 0) {
+                        // 把select转为checkbox并添加样式
+                        var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL">';
+                        for (var i = 0; i < select_elements_j_opt.length; i++) {
+                            elements_checkbox += ('<input type="checkbox" name="'
+                                + select_elements_j_name + '" id="love'
+                                + j + i + '" value="'
+                                + select_elements_j_opt[i].value + '" />'
+                                + '<label for="love' + j + i + '">' + select_elements_j_opt[i].text + '</label>');
+                        }
+                        elements_checkbox += '</div></div>';
+                        // 判断是否转换成功,若成功则进行替换
+                        if (elements_checkbox) {
+                            select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
+                        }
+                    }
+                }
             }
-        }
-        //操作事件
-        var changelist_footer_div = document.getElementsByClassName("changelist-footer")[0];
-        if (changelist_footer_div) {
-            // 查询select
-            var result_list_select_array = changelist_footer_div.getElementsByTagName('select');
-            // 判断查询到的select
-            if (result_list_select_array && result_list_select_array.length > 0) {
-                actionSubmitFun = function actionSubmit(btnElement) {
-                    console.log('执行操作');
-                    if (btnElement) {
-                        // 找到所点击btn的所在行
-                        var current_tr = btnElement.parentNode.parentNode;
-                        // 判空
-                        if (current_tr) {
-                            // 找到tr所在table
-                            var current_table = current_tr.parentNode;
-                            // 获取table的所有input
-                            var current_table_input = current_table.getElementsByTagName('input');
-                            // 循环处理（把所有的checkbox取消选中）
-                            if (current_table_input && current_table_input.length > 0) {
-                                for (var i = 0; i < current_table_input.length; i++) {
-                                    if (current_table_input[i].type == "checkbox") {
-                                        current_table_input[i].checked = false;
+            //操作事件
+            var changelist_footer_div = document.getElementsByClassName("changelist-footer")[0];
+            if (changelist_footer_div) {
+                // 查询select
+                var result_list_select_array = changelist_footer_div.getElementsByTagName('select');
+                // 判断查询到的select
+                if (result_list_select_array && result_list_select_array.length > 0) {
+                    actionSubmitFun = function actionSubmit(btnElement) {
+                        console.log('执行操作');
+                        if (btnElement) {
+                            // 找到所点击btn的所在行
+                            var current_tr = btnElement.parentNode.parentNode;
+                            // 判空
+                            if (current_tr) {
+                                // 找到tr所在table
+                                var current_table = current_tr.parentNode;
+                                // 获取table的所有input
+                                var current_table_input = current_table.getElementsByTagName('input');
+                                // 循环处理（把所有的checkbox取消选中）
+                                if (current_table_input && current_table_input.length > 0) {
+                                    for (var i = 0; i < current_table_input.length; i++) {
+                                        if (current_table_input[i].type == "checkbox") {
+                                            current_table_input[i].checked = false;
+                                        }
+                                    }
+                                    // 获取当前行的第一个td
+                                    var current_tr_first_td = current_tr.firstElementChild;
+                                    // 获取当前td的input并置为选中状态
+                                    var current_tr_first_td_input = current_tr_first_td.getElementsByTagName('input')[0];
+                                    current_tr_first_td_input.checked = true;
+                                    // 循环获取from并提交
+                                    var current_from = current_tr;
+                                    while (true) {
+                                        if (current_from.tagName === 'FORM' || current_from.tagName === 'form') {
+                                            result_list_select_array[0].value = btnElement.getAttribute('selectValue');
+                                            current_from.submit();
+                                            break;
+                                        } else {
+                                            current_from = current_from.parentNode;
+                                            if (current_from.tagName === 'BODY' || current_from.tagName === 'body' ||
+                                                current_from.tagName === 'HTML' || current_from.tagName === 'html') {
+                                                console.log('not find');
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
-                                // 获取当前行的第一个td
-                                var current_tr_first_td = current_tr.firstElementChild;
-                                // 获取当前td的input并置为选中状态
-                                var current_tr_first_td_input = current_tr_first_td.getElementsByTagName('input')[0];
-                                current_tr_first_td_input.checked = true;
-                                // 循环获取from并提交
-                                var current_from = current_tr;
-                                while (true) {
-                                    if (current_from.tagName === 'FORM' || current_from.tagName === 'form') {
-                                        result_list_select_array[0].value = btnElement.getAttribute('selectValue');
-                                        current_from.submit();
-                                        break;
-                                    } else {
-                                        current_from = current_from.parentNode;
-                                        if (current_from.tagName === 'BODY' || current_from.tagName === 'body' ||
-                                            current_from.tagName === 'HTML' || current_from.tagName === 'html') {
-                                            console.log('not find');
-                                            break;
+                            }
+                        }
+
+                    }
+                    // 获取查询到的select的option
+                    var result_list_select_option = result_list_select_array[0].getElementsByTagName('option');
+                    // 判断option是否为空
+                    if (result_list_select_option && result_list_select_option.length > 1) {
+                        // 获取要处理的table
+                        var result_list_table = document.getElementById('result_list');
+                        // 判空
+                        if (result_list_table) {
+                            // 获取所有行
+                            var result_list_table_tr_all = result_list_table.getElementsByTagName("tr");
+                            // 判空
+                            if (result_list_table_tr_all && result_list_table_tr_all.length > 1) {
+                                // 要追加的操作的按钮
+                                var append_element_obj_array = [];
+                                // 循环select的option生成按钮
+                                for (var i = 1; i < result_list_select_option.length; i++) {
+                                    var result_list_select_option_i = result_list_select_option[i];
+                                    var result_list_select_option_i_text = result_list_select_option_i.text.split(" ")[0];
+                                    console.log('select text : ' + result_list_select_option_i_text);
+                                    var append_element_obj = {};
+                                    // 创建th
+                                    var append_th_element = document.createElement('th');
+                                    append_th_element.scope = "col";
+                                    append_th_element.class = "sortable column-owner";
+                                    var append_th_element_div = document.createElement('div');
+                                    append_th_element_div.class = "text";
+                                    append_th_element_div.append(result_list_select_option_i_text);
+                                    append_th_element.appendChild(append_th_element_div);
+                                    append_element_obj.th = append_th_element;
+                                    // 创建td
+                                    var append_td_element = document.createElement('td');
+                                    append_td_element.class = "field-owner nowrap";
+                                    var append_td_element_input = document.createElement('input');
+                                    append_td_element_input.type = "button";
+                                    append_td_element_input.value = result_list_select_option_i_text;
+                                    append_td_element_input.title = result_list_select_option_i.text;
+                                    append_td_element_input.setAttribute('onclick', 'actionSubmitFun(this)');
+                                    append_td_element_input.setAttribute('selectValue', result_list_select_option_i.value);
+                                    append_td_element.appendChild(append_td_element_input);
+                                    append_element_obj.td = append_td_element;
+                                    // push 
+                                    append_element_obj_array.push(append_element_obj);
+                                }
+                                // 判断需添加操作按钮是否为空
+                                if (append_element_obj_array.length > 0) {
+                                    // 循环添加按钮和title
+                                    for (var i = 0; i < append_element_obj_array.length; i++) {
+                                        var append_element_obj_i = append_element_obj_array[i];
+                                        if (append_element_obj_i.th && append_element_obj_i.td) {
+                                            result_list_table_tr_all[0].appendChild(append_element_obj_i.th);
+                                        }
+                                        for (var j = 1; j < result_list_table_tr_all.length; j++) {
+                                            result_list_table_tr_all[j].appendChild(append_element_obj_i.td.cloneNode(true));
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
                 }
-                // 获取查询到的select的option
-                var result_list_select_option = result_list_select_array[0].getElementsByTagName('option');
-                // 判断option是否为空
-                if (result_list_select_option && result_list_select_option.length > 1) {
-                    // 获取要处理的table
-                    var result_list_table = document.getElementById('result_list');
-                    // 判空
-                    if (result_list_table) {
-                        // 获取所有行
-                        var result_list_table_tr_all = result_list_table.getElementsByTagName("tr");
-                        // 判空
-                        if (result_list_table_tr_all && result_list_table_tr_all.length > 1) {
-                            // 要追加的操作的按钮
-                            var append_element_obj_array = [];
-                            // 循环select的option生成按钮
-                            for (var i = 1; i < result_list_select_option.length; i++) {
-                                var result_list_select_option_i = result_list_select_option[i];
-                                var result_list_select_option_i_text = result_list_select_option_i.text.split(" ")[0];
-                                console.log('select text : ' + result_list_select_option_i_text);
-                                var append_element_obj = {};
-                                // 创建th
-                                var append_th_element = document.createElement('th');
-                                append_th_element.scope = "col";
-                                append_th_element.class = "sortable column-owner";
-                                var append_th_element_div = document.createElement('div');
-                                append_th_element_div.class = "text";
-                                append_th_element_div.append(result_list_select_option_i_text);
-                                append_th_element.appendChild(append_th_element_div);
-                                append_element_obj.th = append_th_element;
-                                // 创建td
-                                var append_td_element = document.createElement('td');
-                                append_td_element.class = "field-owner nowrap";
-                                var append_td_element_input = document.createElement('input');
-                                append_td_element_input.type = "button";
-                                append_td_element_input.value = result_list_select_option_i_text;
-                                append_td_element_input.title = result_list_select_option_i.text;
-                                append_td_element_input.setAttribute('onclick', 'actionSubmitFun(this)');
-                                append_td_element_input.setAttribute('selectValue', result_list_select_option_i.value);
-                                append_td_element.appendChild(append_td_element_input);
-                                append_element_obj.td = append_td_element;
-                                // push 
-                                append_element_obj_array.push(append_element_obj);
-                            }
-                            // 判断需添加操作按钮是否为空
-                            if (append_element_obj_array.length > 0) {
-                                // 循环添加按钮和title
-                                for (var i = 0; i < append_element_obj_array.length; i++) {
-                                    var append_element_obj_i = append_element_obj_array[i];
-                                    if (append_element_obj_i.th && append_element_obj_i.td) {
-                                        result_list_table_tr_all[0].appendChild(append_element_obj_i.th);
-                                    }
-                                    for (var j = 1; j < result_list_table_tr_all.length; j++) {
-                                        result_list_table_tr_all[j].appendChild(append_element_obj_i.td.cloneNode(true));
-                                    }
-                                }
-                            }
+            }
+            var homeUrlStr = window.location.origin + '/';
+            if (homeUrlStr === currentUrl || (homeUrlStr + "#") === currentUrl) {
+                var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
+                if (element_first_div) {
+                    var element_first_div_inner_html = element_first_div.innerHTML;
+                    var ss = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">' +
+                        '<div class="dashboard-item-header ui-sortable-handle">' +
+                        '<span class="dashboard-item-header-drag icon-grid"></span>' +
+                        '<span class="dashboard-item-header-title">' +
+                        '<a href="javascript:openStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
+                        '<a href="javascript:closedStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
+                        'State' +
+                        '</span>' +
+                        '<div class="cf"></div>' +
+                        '</div>' +
+                        '<div class="dashboard-item-content">' +
+                        '<ul>' +
+                        '<li class="contrast">' +
+                        '<a href="#" title="Models in the data applica tion">state</a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">gStore三元组：<button ty pe="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">5,098,650</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">EventDB事例：<button ty pe="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">1,536,156,943</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">Aserv行数：<button type ="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">1,410,192,278</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">节点数：<button type="bu tton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">4</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">CPU：<button type="bu tton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">36</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">内存：<button type="but ton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">54 GB</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">本地磁盘：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">570 GB</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">Spark：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">Hadoop：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">Impala：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">gStore：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
+                        '</li>' +
+                        '<li>' +
+                        '<span style="color: #47bac1;">Hive：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>    ' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>';
+                    element_first_div.innerHTML = ss + element_first_div_inner_html;
+                    function hasClassCustom(elements, cName) {
+                        return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
+                    }
+                    function openStyle() {
+                        var updateDivElement = document.getElementById('updateDivElementId');
+                        if (hasClassCustom(updateDivElement, "collapsed")) {
+                            updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
+                        }
+                    }
+                    function closedStyle() {
+                        var updateDivElement = document.getElementById('updateDivElementId');
+                        if (!hasClassCustom(updateDivElement, "collapsed")) {
+                            updateDivElement.className += " " + "collapsed";
                         }
                     }
                 }
             }
-        }
-        var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-        if (element_first_div) {
-            var element_first_div_inner_html = element_first_div.innerHTML;
-            var ss = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">' +
-                '<div class="dashboard-item-header ui-sortable-handle">' +
-                '<span class="dashboard-item-header-drag icon-grid"></span>' +
-                '<span class="dashboard-item-header-title">' +
-                '<a href="javascript:openStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
-                '<a href="javascript:closedStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
-                'State' +
-                '</span>' +
-                '<div class="cf"></div>' +
-                '</div>' +
-                '<div class="dashboard-item-content">' +
-                '<ul>' +
-                '<li class="contrast">' +
-                '<a href="#" title="Models in the data applica tion">state</a>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">gStore三元组：<button ty pe="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">5,098,650</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">EventDB事例：<button ty pe="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">1,536,156,943</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">Aserv行数：<button type ="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">1,410,192,278</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">节点数：<button type="bu tton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">4</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">CPU：<button type="bu tton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">36</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">内存：<button type="but ton" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">54 GB</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">本地磁盘：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">570 GB</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">Spark：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">Hadoop：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">Impala：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">gStore：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>' +
-                '</li>' +
-                '<li>' +
-                '<span style="color: #47bac1;">Hive：<button type="button" style="color: #fff;background-color: #5cb85c;border-color: #4cae4c;line-height: 1.42857143;border: 1px solid transparent;border-radius: 4px;">正常</button></span>    ' +
-                '</li>' +
-                '</ul>' +
-                '</div>' +
-                '</div>';
-            element_first_div.innerHTML = ss + element_first_div_inner_html;
-            function hasClassCustom(elements, cName) {
-                return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
-            }
-            function openStyle() {
-                var updateDivElement = document.getElementById('updateDivElementId');
-                if (hasClassCustom(updateDivElement, "collapsed")) {
-                    updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
+            var aTagAll = document.getElementsByTagName('a');
+            var addMenu = '';
+            if (aTagAll && aTagAll.length > 0) {
+                for (var i = 0; i < aTagAll.length; i++) {
+                    if ('/data/datainstanceoperation/' === aTagAll[i].getAttribute('href') && 'sidebar-link' === aTagAll[i].getAttribute('class')) {
+                        addMenu = aTagAll[i].parentNode;
+                        break;
+                    }
                 }
             }
-            function closedStyle() {
-                var updateDivElement = document.getElementById('updateDivElementId');
-                if (!hasClassCustom(updateDivElement, "collapsed")) {
-                    updateDivElement.className += " " + "collapsed";
-                }
+            if (addMenu) {
+                var analysisMenu = '<div>' +
+                    '<a href="/?Analysis" class="sidebar-link">' +
+                    '<span class="sidebar-right">' +
+                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                    '</span>' +
+                    '<span class="sidebar-link-label">Data Analysis</span>' +
+                    '</a>' +
+                    '</div>';
+                    addMenu.outerHTML = analysisMenu + addMenu.outerHTML;
+            }
+            var dataAnalysisUrl = window.location.origin + "/?Analysis";
+            if (dataAnalysisUrl === currentUrl || (dataAnalysisUrl + "#") === currentUrl) {
+                var rightContent = document.getElementById("content");
+                rightContent.innerHTML = '<iframe style="width: 100%; height: 600px;" src=""></iframe>';
             }
         }
-    }
     </script>
 {% endblock %}
