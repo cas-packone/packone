@@ -435,7 +435,7 @@
             var dataAnalysisUrl = window.location.origin + "/?Analysis";
             if (dataAnalysisUrl === currentUrl || (dataAnalysisUrl + "#") === currentUrl) {
                 var rightContent = document.getElementById("content");
-                rightContent.innerHTML = '<iframe style="width: 100%; height: 600px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
             }
         }
     </script>
