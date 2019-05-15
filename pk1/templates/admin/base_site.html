@@ -273,6 +273,23 @@
     });
 </script>
 <script type="text/javascript">
+    function hasClassCustom(elements, cName) {
+        return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
+    }
+
+    function openStyle() {
+        var updateDivElement = document.getElementById('updateDivElementId');
+        if (hasClassCustom(updateDivElement, "collapsed")) {
+            updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
+        }
+    }
+
+    function closedStyle() {
+        var updateDivElement = document.getElementById('updateDivElementId');
+        if (!hasClassCustom(updateDivElement, "collapsed")) {
+            updateDivElement.className += " " + "collapsed";
+        }
+    }
     var actionSubmitFun = function () { };
     window.onload = function () {
         var currentUrl = window.location.href;
@@ -496,24 +513,6 @@
                     '</div>' +
                     '</div>';
                 element_first_div.innerHTML = ss + element_first_div_inner_html;
-
-                function hasClassCustom(elements, cName) {
-                    return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
-                }
-
-                function openStyle() {
-                    var updateDivElement = document.getElementById('updateDivElementId');
-                    if (hasClassCustom(updateDivElement, "collapsed")) {
-                        updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
-                    }
-                }
-
-                function closedStyle() {
-                    var updateDivElement = document.getElementById('updateDivElementId');
-                    if (!hasClassCustom(updateDivElement, "collapsed")) {
-                        updateDivElement.className += " " + "collapsed";
-                    }
-                }
             }
         }
         var aTagAll = document.getElementsByTagName('a');
