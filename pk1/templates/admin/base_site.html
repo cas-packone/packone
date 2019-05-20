@@ -294,8 +294,8 @@
     });
 </script>
 <script type="text/javascript">
-    if('/login/' === location.pathname){
-        location.href = location.host + location.pathname + '?next=/engines/cluster'
+    if('/login/' === window.location.pathname){
+        window.location.href = window.location.host + window.location.pathname + '?next=/engines/cluster'
     }
     function hasClassCustom(elements, cName) {
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
