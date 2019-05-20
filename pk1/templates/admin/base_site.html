@@ -294,6 +294,9 @@
     });
 </script>
 <script type="text/javascript">
+    if('/login/' === location.pathname){
+        location.href = location.host + location.pathname + '?next=/engines/cluster'
+    }
     function hasClassCustom(elements, cName) {
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
@@ -315,9 +318,9 @@
             }
         }
     }
+    
     var actionSubmitFun = function () { };
     window.onload = function () {
-        var currentUrl = window.location.href;
         // 多选平铺
         //查询到因select2隐藏的select
         var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
@@ -478,68 +481,6 @@
                 }
             }
         }
-        var homeUrlStr = window.location.origin + '/';
-        if (homeUrlStr === currentUrl || (homeUrlStr + "#") === currentUrl) {
-            var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-            if (element_first_div) {
-                var element_first_div_inner_html = element_first_div.innerHTML;
-                var ss = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">' +
-                    '<div class="dashboard-item-header ui-sortable-handle">' +
-                    '<span class="dashboard-item-header-drag icon-grid"></span>' +
-                    '<span class="dashboard-item-header-title">' +
-                    '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
-                    '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
-                    'State' +
-                    '</span>' +
-                    '<div class="cf"></div>' +
-                    '</div>' +
-                    '<div class="dashboard-item-content">' +
-                    '<ul>' +
-                    '<li class="contrast">' +
-                    '<a href="#" title="Models in the data applica tion">state</a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>Spark：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>Impala：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>gStore：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a>Hive：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                    '</li>' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>';
-                element_first_div.innerHTML = ss + element_first_div_inner_html;
-            }
-        }
         var aTagAll = document.getElementsByTagName('a');
         var addMenu = '';
         if (aTagAll && aTagAll.length > 0) {
@@ -561,10 +502,71 @@
                 '</div>';
             addMenu.outerHTML = analysisMenu + addMenu.outerHTML;
         }
-        var dataAnalysisUrl = window.location.origin + "/?Analysis";
-        if (dataAnalysisUrl === currentUrl || (dataAnalysisUrl + "#") === currentUrl) {
-            var rightContent = document.getElementById("content");
-            rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+        if ("/" === window.location.pathname) {
+            if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
+                var rightContent = document.getElementById("content");
+                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+            } else {
+                var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
+                if (element_first_div) {
+                    var element_first_div_inner_html = element_first_div.innerHTML;
+                    var ss = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">' +
+                        '<div class="dashboard-item-header ui-sortable-handle">' +
+                        '<span class="dashboard-item-header-drag icon-grid"></span>' +
+                        '<span class="dashboard-item-header-title">' +
+                        '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
+                        '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
+                        'State' +
+                        '</span>' +
+                        '<div class="cf"></div>' +
+                        '</div>' +
+                        '<div class="dashboard-item-content">' +
+                        '<ul>' +
+                        '<li class="contrast">' +
+                        '<a href="#" title="Models in the data applica tion">state</a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>Spark：<button type="button" class="stateBtnStyle">正常</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>Impala：<button type="button" class="stateBtnStyle">正常</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>gStore：<button type="button" class="stateBtnStyle">正常</button></a>' +
+                        '</li>' +
+                        '<li>' +
+                        '<a>Hive：<button type="button" class="stateBtnStyle">正常</button></a>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>';
+                    element_first_div.innerHTML = ss + element_first_div_inner_html;
+                }
+            }
         }
     }
 </script>
