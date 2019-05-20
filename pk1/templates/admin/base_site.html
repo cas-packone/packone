@@ -298,7 +298,7 @@
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
 
-    function openStyle() {
+    function openStyle(element) {
         var updateDivElement = document.getElementById('updateDivElementId');
         if (hasClassCustom(updateDivElement, "collapsed")) {
             updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
@@ -483,7 +483,7 @@
                     '<div class="dashboard-item-header ui-sortable-handle">' +
                     '<span class="dashboard-item-header-drag icon-grid"></span>' +
                     '<span class="dashboard-item-header-title">' +
-                    '<a href="javascript:openStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
+                    '<a href="javascript:openStyle(this);" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
                     '<a href="javascript:closedStyle();" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
                     'State' +
                     '</span>' +
