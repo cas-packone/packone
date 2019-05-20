@@ -294,7 +294,7 @@
     });
 </script>
 <script type="text/javascript">
-    if('/login/' === window.location.pathname){
+    if('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search){
         window.location.href = window.location.origin + window.location.pathname + '?next=/engines/cluster';
     }
     function hasClassCustom(elements, cName) {
