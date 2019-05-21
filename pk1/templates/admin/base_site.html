@@ -709,6 +709,7 @@
                             '<tbody>');
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
                         if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length === 13) {
+                            var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
                             containerNew += ('<tr>' +
                                 '<td style="width: 31%;">Scale</td>' +
                                 '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>' +
