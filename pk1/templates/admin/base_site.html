@@ -331,7 +331,31 @@
     if ('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window.location.pathname + '?next=/engines/cluster';
     }
-    if ('/engines/cluster/' === window.location.pathname) {
+    function hasClassCustom(elements, cName) {
+        return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
+    }
+
+    function openStyle(elementId) {
+        if (elementId) {
+            var updateDivElement = document.getElementById(elementId);
+            if (hasClassCustom(updateDivElement, "collapsed")) {
+                updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
+            }
+        }
+    }
+
+    function closedStyle(elementId) {
+        if (elementId) {
+            var updateDivElement = document.getElementById(elementId);
+            if (!hasClassCustom(updateDivElement, "collapsed")) {
+                updateDivElement.className += " " + "collapsed";
+            }
+        }
+    }
+
+    var actionSubmitFun = function () { };
+    window.onload = function () {
+        if ('/engines/cluster/' === window.location.pathname) {
         var containerOld = document.getElementById('container');
         if (containerOld) {
             containerOld.style.display = "none";
@@ -399,30 +423,6 @@
         containerNew += '</div></div>';
         containerOld.outerHTML = containerNew + containerOld.outerHTML;
     }
-    function hasClassCustom(elements, cName) {
-        return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
-    }
-
-    function openStyle(elementId) {
-        if (elementId) {
-            var updateDivElement = document.getElementById(elementId);
-            if (hasClassCustom(updateDivElement, "collapsed")) {
-                updateDivElement.className = updateDivElement.className.replace(new RegExp("(\\s|^)" + "collapsed" + "(\\s|$)"), " ");
-            }
-        }
-    }
-
-    function closedStyle(elementId) {
-        if (elementId) {
-            var updateDivElement = document.getElementById(elementId);
-            if (!hasClassCustom(updateDivElement, "collapsed")) {
-                updateDivElement.className += " " + "collapsed";
-            }
-        }
-    }
-
-    var actionSubmitFun = function () { };
-    window.onload = function () {
         // 菜单调整
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
