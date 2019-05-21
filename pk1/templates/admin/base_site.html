@@ -369,6 +369,12 @@
             }
         }
     }
+    if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
+        if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
+            document.getElementById('branding-pin').click();
+        }
+    }
+
 
     var actionSubmitFun = function () { };
     window.onload = function () {
@@ -412,7 +418,7 @@
                         } else if ("/data/datainstance/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Instances";
                         } else if ("/?Analysis" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
-                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Piflow";
+                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Data Pipeline";
                         } else {
                             removeElementMenus.push(sidebar_section_array_i_a_array[i]);
                         }
@@ -642,7 +648,7 @@
                     '<span class="sidebar-right">' +
                     '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
                     '</span>' +
-                    '<span class="sidebar-link-label">Piflow</span>' +
+                    '<span class="sidebar-link-label">Data Pipeline</span>' +
                     '</a>' +
                     '</div>';
                 addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
@@ -689,25 +695,23 @@
             }
         }
         if ('/engines/cluster/' === window.location.pathname) {
+            // 关闭菜单
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
-            var containerOld = document.getElementById('container');
-            if (containerOld) {
-                containerOld.style.display = "none";
-            }
-            var containerNew = '<div id="contentNew" class="colM">' +
-                '<h1 style="text-align: center;margin: 1.42857rem 0 1.42857rem;">Clusters</h1>' +
-                '<p style="text-align: right;padding-right: 12px;">' +
-                '<a href="/engines/cluster/add/" class="addlink button aHrefHover" style="background-color: #ddefdd;color: #93b785;text-align: right;">Add cluster</a>' +
-                '</p>' +
+            // 删除无用导航
+            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
+            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
+            
+            var contentElement = document.getElementById('content');
+            var contentElementNew = '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
                 '<div class="dashboard-container columns_4 cf">';
             var result_list_cluster = document.getElementById('result_list');
             if (result_list_cluster) {
                 var result_list_cluster_tr = result_list_cluster.getElementsByTagName('tr');
                 if (result_list_cluster_tr && result_list_cluster_tr.length > 1) {
                     for (var i = 1; i < result_list_cluster_tr.length; i++) {
-                        containerNew += ('<div class="dashboard-column-wrapper">' +
+                        contentElementNew += ('<div class="dashboard-column-wrapper">' +
                             '<div class="dashboard-column ui-droppable ui-sortable">' +
                             '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">' +
                             '<div class="dashboard-item-header ui-sortable-handle">' +
@@ -728,7 +732,7 @@
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
                         if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length === 13) {
                             var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
-                            containerNew += ('<tr>' +
+                            contentElementNew += ('<tr>' +
                                 '<td style="width: 31%;">Scale</td>' +
                                 '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>' +
                                 '</tr>' +
@@ -750,11 +754,12 @@
                                 '<td style="width: 31%;">Status</td>' +
                                 '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>' +
                                 '</tr>' +
+                                '</tr>' +
                                 '<td colspan="2">' +
-                                '<a class="button aHrefHover" title="Enter Space" name="index" href="/?space=' + clusterSpace + '">Enter</a></td>' +
+                                '<a class="button aHrefHover" title="Enter Space" name="index" href="/engines/stepoperation?space=' + clusterSpace + '">Enter</a></td>' +
                                 '</tr>');
                         }
-                        containerNew += ('</tbody>' +
+                        contentElementNew += ('</tbody>' +
                             '</table>' +
                             '</div>' +
                             '</div>' +
@@ -763,8 +768,8 @@
                     }
                 }
             }
-            containerNew += '</div></div>';
-            containerOld.outerHTML = containerNew + containerOld.outerHTML;
+            contentElementNew += '</div>';
+            contentElement.innerHTML = contentElementNew;
         }
     }
 </script>
