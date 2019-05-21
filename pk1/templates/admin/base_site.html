@@ -491,6 +491,9 @@
                     break;
                     }
                 }
+                if('sidebar-link' === aTagAll[i].getAttribute('class') || 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
+                    aTagAll[i].remove();
+                }
             }
         }
         if (addMenu) {
