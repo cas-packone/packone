@@ -4,7 +4,7 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-    .select2-container--default + .select2-container--jet {
+    .select2-container--default+.select2-container--jet {
         display: None;
     }
 
@@ -33,15 +33,20 @@
     }
 </style>
 <style>
-    div.breadcrumbs a, #header a:link, #header a:visited {
+    div.breadcrumbs a,
+    #header a:link,
+    #header a:visited {
         color: #6f7e95;
     }
 
-    #user-tools, #user-tools a:link, #user-tools a:visited {
+    #user-tools,
+    #user-tools a:link,
+    #user-tools a:visited {
         color: #c1c8f4;
     }
 
-    div.breadcrumbs, #header {
+    div.breadcrumbs,
+    #header {
         background-color: #ecf2f6;
     }
 
@@ -69,7 +74,7 @@
         border-radius: 4px
     }
 
-    .RadioStyle input:checked + label {
+    .RadioStyle input:checked+label {
         background: url(images/ico_checkon.svg) no-repeat right bottom;
         background-size: 21px 21px;
         color: #00a4ff
@@ -88,7 +93,8 @@
         background-color: #ffffff;
     }
 
-    .sidebar-link, .sidebar-link:visited {
+    .sidebar-link,
+    .sidebar-link:visited {
         color: #000000;
     }
 
@@ -101,7 +107,9 @@
         border-bottom: 0.07143rem solid #ececec;
     }
 
-    .sidebar-title-link, .sidebar-title-link:visited, .sidebar-title-link:hover {
+    .sidebar-title-link,
+    .sidebar-title-link:visited,
+    .sidebar-title-link:hover {
         color: #0b6913;
     }
 
@@ -109,7 +117,9 @@
         color: #4fa252;
     }
 
-    .sidebar-link,.sidebar-link:visited, .sidebar-link:hover {
+    .sidebar-link,
+    .sidebar-link:visited,
+    .sidebar-link:hover {
         color: #020202;
     }
 
@@ -117,7 +127,8 @@
         color: #4fa252;
     }
 
-    div.breadcrumbs, #header {
+    div.breadcrumbs,
+    #header {
         background-color: #356b2e;
     }
 
@@ -134,11 +145,22 @@
         background: #94c382;
     }
 
-    a, a:visited, a:hover, a:focus {
+    a,
+    a:visited,
+    a:hover,
+    a:focus {
         color: #656565;
     }
 
-    .button, .button:visited, .button:hover, input[type="submit"], input[type="submit"]:visited, input[type="button"], input[type="button"]:visited, .object-tools a, .object-tools a:visited {
+    .button,
+    .button:visited,
+    .button:hover,
+    input[type="submit"],
+    input[type="submit"]:visited,
+    input[type="button"],
+    input[type="button"]:visited,
+    .object-tools a,
+    .object-tools a:visited {
         background-color: #ddefdd;
         color: #93b785;
     }
@@ -152,7 +174,9 @@
         border-bottom: 0.07143rem solid #93b785;
     }
 
-    #user-tools, #user-tools a:link, #user-tools a:visited {
+    #user-tools,
+    #user-tools a:link,
+    #user-tools a:visited {
         color: #ddefdd;
     }
 
@@ -160,21 +184,31 @@
         color: #93b785;
     }
 
-    #toolbar form input[type="submit"], #toolbar form input[type="submit"]:visited {
+    #toolbar form input[type="submit"],
+    #toolbar form input[type="submit"]:visited {
         background-color: #ddefdd;
         color: #93b785;
     }
-    #changelist .actions .button, #changelist .actions .button:visited {
+
+    #changelist .actions .button,
+    #changelist .actions .button:visited {
         background-color: #ddefdd;
         color: #93b785;
     }
-    #changelist .actions .button:hover, #toolbar form input[type="submit"]:hover,.object-tools a:hover, input[type="submit"]:hover, input[type="button"]:hover {
+
+    #changelist .actions .button:hover,
+    #toolbar form input[type="submit"]:hover,
+    .object-tools a:hover,
+    input[type="submit"]:hover,
+    input[type="button"]:hover {
         background-color: #47bac1;
         color: #fff;
     }
+
     table thead th {
         background: #94c382;
     }
+
     .sidebar-container-toggle {
         background-color: #356b2e;
         color: #c0d4e8;
@@ -294,7 +328,7 @@
     });
 </script>
 <script type="text/javascript">
-    if('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search){
+    if ('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window.location.pathname + '?next=/engines/cluster';
     }
     function hasClassCustom(elements, cName) {
@@ -318,7 +352,7 @@
             }
         }
     }
-    
+
     var actionSubmitFun = function () { };
     window.onload = function () {
         // 多选平铺
@@ -481,31 +515,34 @@
                 }
             }
         }
+        // 查找所有a标签
         var aTagAll = document.getElementsByTagName('a');
-        var addMenu = '';
+        // 判空
         if (aTagAll && aTagAll.length > 0) {
+            // 移除不需要菜单
             for (var i = 0; i < aTagAll.length; i++) {
-                if ('sidebar-link' === aTagAll[i].getAttribute('class')) {
-                    if('/data/datainstance/' === aTagAll[i].getAttribute('href') || '/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
-                        addMenu = aTagAll[i].parentNode;
-                    break;
-                    }
-                }
-                if('sidebar-link' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
+                if ('sidebar-link icon' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
                     aTagAll[i].remove();
                 }
             }
-        }
-        if (addMenu) {
-            var analysisMenu = '<div>' +
-                '<a href="/?Analysis" class="sidebar-link">' +
-                '<span class="sidebar-right">' +
-                '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                '</span>' +
-                '<span class="sidebar-link-label">Data analysis</span>' +
-                '</a>' +
-                '</div>';
-            addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
+            // 添加新菜单
+            for (var i = 0; i < aTagAll.length; i++) {
+                if ('sidebar-link' === aTagAll[i].getAttribute('class')) {
+                    if ('/data/datainstance/' === aTagAll[i].getAttribute('href') || '/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
+                        var addMenu = aTagAll[i].parentNode;
+                        var analysisMenu = '<div>' +
+                            '<a href="/?Analysis" class="sidebar-link">' +
+                            '<span class="sidebar-right">' +
+                            '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                            '</span>' +
+                            '<span class="sidebar-link-label">Data analysis</span>' +
+                            '</a>' +
+                            '</div>';
+                        addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
+                        break;
+                    }
+                }
+            }
         }
         if ("/" === window.location.pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
