@@ -86,10 +86,14 @@ class ClusterOperationAdmin(M2MOperationAdmin):
 
 @admin.register(models.StepOperation)
 class StepOperationAdmin(M2MOperationAdmin):
-    def _target(self,obj):
+    def _target(self, obj):
         return  format_html(get_url(obj.cluster)+'/'+get_url(obj.target))
     def get_queryset_Q(self, request):
-        return Q(target__in=request.user.steps())
+        ret = Q(target__in=request.user.steps())
+        space=request.GET.get('space', None)
+        if space:
+            ret = ret & Q(target__cluster__in=[int(space)])
+        return ret
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):
