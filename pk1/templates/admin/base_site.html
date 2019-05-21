@@ -369,15 +369,13 @@
             }
         }
     }
-    if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
-        if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
-            document.getElementById('branding-pin').click();
-        }
-    }
-
-
     var actionSubmitFun = function () { };
     window.onload = function () {
+        if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
+            if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
+                document.getElementById('branding-pin').click();
+            }
+        }
         // 菜单调整
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
@@ -702,7 +700,8 @@
             // 删除无用导航
             removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
             removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
-            
+            document.getElementById('container').firstElementChild.remove();
+
             var contentElement = document.getElementById('content');
             var contentElementNew = '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
                 '<div class="dashboard-container columns_4 cf">';
