@@ -704,6 +704,9 @@
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
+                '<p style="text-align: right;">' +
+                '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>' +
+                '</p>' +
                 '<div class="dashboard-container columns_4 cf">';
             var result_list_cluster = document.getElementById('result_list');
             if (result_list_cluster) {
@@ -769,6 +772,16 @@
             }
             contentElementNew += '</div>';
             contentElement.innerHTML = contentElementNew;
+        }
+        if ('/engines/cluster/add/' === window.location.pathname) {
+            // 关闭菜单
+            if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
+                document.getElementById('branding-pin').click();
+            }
+            // 删除无用导航
+            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
+            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
+            document.getElementById('container').firstElementChild.remove();
         }
     }
 </script>
