@@ -331,6 +331,74 @@
     if ('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window.location.pathname + '?next=/engines/cluster';
     }
+    if ('/engines/cluster/' === window.location.pathname) {
+        var containerOld = document.getElementById('container');
+        if (containerOld) {
+            containerOld.style.display = "none";
+        }
+        var containerNew = '<div id="contentNew" class="colM">' +
+            '<h1 style="text-align: center;margin: 1.42857rem 0 1.42857rem;">Clusters</h1>' +
+            '<div class="dashboard-container columns_4 cf">';
+        var result_list_cluster = document.getElementById('result_list');
+        if (result_list_cluster) {
+            var result_list_cluster_tr = result_list_cluster.getElementsByTagName('tr');
+            if (result_list_cluster_tr && result_list_cluster_tr.length > 1) {
+                for (var i = 1; i < result_list_cluster_tr.length; i++) {
+                    containerNew += ('<div class="dashboard-column-wrapper">' +
+                        '<div class="dashboard-column ui-droppable ui-sortable">' +
+                        '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">' +
+                        '<div class="dashboard-item-header ui-sortable-handle">' +
+                        '<span class="dashboard-item-header-title">' +
+                        '<a href="javascript:openStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' +
+                        '<span class="dashboard-item-header-collapse-button icon-arrow-down"></span>' +
+                        '</a>' +
+                        '<a href="javascript:closedStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' +
+                        '<span class="dashboard-item-header-collapse-button icon-arrow-up"></span>' +
+                        result_list_cluster_tr[i].getElementsByTagName('th')[0].getElementsByTagName('a')[0].innerText +
+                        '</a>' +
+                        '</span>' +
+                        '<div class="cf"></div>' +
+                        '</div>' +
+                        '<div class="dashboard-item-content">' +
+                        '<table>' +
+                        '<tbody>');
+                    var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
+                    if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length === 13) {
+                        containerNew += ('<tr>' +
+                            '<td style="width: 31%;">Scale</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td style="width: 31%;">Remark</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[2].innerHTML + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td style="width: 31%;">Public</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td style="width: 31%;">Created Time</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>' +
+                            '</tr>' +
+                            '<td style="width: 31%;">Built Time</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>' +
+                            '</tr>' +
+                            '<td style="width: 31%;">Status</td>' +
+                            '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>' +
+                            '</tr>');
+                    }
+                    containerNew += ('</tbody>' +
+                        '</table>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>');
+                }
+            }
+        }
+        containerNew += '</div></div>';
+        containerOld.outerHTML = containerNew + containerOld.outerHTML;
+    }
     function hasClassCustom(elements, cName) {
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
@@ -355,6 +423,82 @@
 
     var actionSubmitFun = function () { };
     window.onload = function () {
+        // 菜单调整
+        // 查找所有的菜单组
+        var sidebar_section_array = document.getElementsByClassName('sidebar-section');
+        if (sidebar_section_array && sidebar_section_array.length > 2) {
+            // 用于存放data菜单组
+            var sidebar_section_array_i = "";
+            // 用于存放无用菜单组
+            var removeElementMenuGroups = [];
+            // 循环
+            for (var i = 0; i < sidebar_section_array.length; i++) {
+                var sidebar_section_array_fitst_child = sidebar_section_array[i].firstElementChild;
+                if (sidebar_section_array_fitst_child) {
+                    var sidebar_section_array_fitst_child_a = sidebar_section_array_fitst_child.getElementsByTagName("a")[0];
+                    if (sidebar_section_array_fitst_child_a) {
+                        if ("/space/data/" === sidebar_section_array_fitst_child_a.getAttribute("href") || "/data/" === sidebar_section_array_fitst_child_a.getAttribute("href")) {
+                            sidebar_section_array_i = sidebar_section_array[i];
+                        } else {
+                            //添加到要删掉的元素数组
+                            removeElementMenuGroups.push(sidebar_section_array[i]);
+                        }
+                    }
+                }
+            }
+            // 删除无用菜单组
+            if (removeElementMenuGroups && removeElementMenuGroups.length > 0) {
+                removeElementMenuGroups.forEach(element => {
+                    element.remove();
+                });
+            }
+            // 判断是否有data菜单组
+            if (sidebar_section_array_i) {
+                var removeElementMenus = [];
+                var sidebar_section_array_i_a_array = sidebar_section_array_i.getElementsByTagName("a");
+                if (sidebar_section_array_i_a_array && sidebar_section_array_i_a_array.length > 0) {
+                    for (var i = 0; i < sidebar_section_array_i_a_array.length; i++) {
+                        if ("/data/dataset/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
+                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Open Datasets";
+                        } else if ("/data/datainstance/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
+                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Instances";
+                        } else if ("/?Analysis" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
+                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Piflow";
+                        } else {
+                            removeElementMenus.push(sidebar_section_array_i_a_array[i]);
+                        }
+                    }
+                }
+                if (removeElementMenus && removeElementMenus.length > 0) {
+                    removeElementMenus.forEach(element => {
+                        element.remove();
+                    });
+                }
+
+                var addNewMenuLog = '<div class="sidebar-section">' +
+                    '<div class="sidebar-title">' +
+                    '<a href="/?logHome" class="sidebar-title-link">Log</a>' +
+                    '</div>' +
+                    '<div>' +
+                    '<a href="/space/data/datainstanceoperation/" class="sidebar-link">' +
+                    '<span class="sidebar-right">' +
+                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                    '</span>' +
+                    '<span class="sidebar-link-label">SciSpace Operations</span>' +
+                    '</a>' +
+                    '</div>' +
+                    '<div>' +
+                    '<a href="/engines/stepoperation?space=111" class="sidebar-link">' +
+                    '<span class="sidebar-right">' +
+                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                    '</span>' +
+                    '<span class="sidebar-link-label">Instances Operations</span>' +
+                    '</a>' +
+                    '</div>' +
+                    '</div>';
+                sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addNewMenuLog);
+            }
+        }
         // 多选平铺
         //查询到因select2隐藏的select
         var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
@@ -520,31 +664,42 @@
         // 判空
         if (aTagAll && aTagAll.length > 0) {
             // 移除不需要菜单
+            // 循环判断a标签
             for (var i = 0; i < aTagAll.length; i++) {
                 if ('sidebar-link icon' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
                     aTagAll[i].remove();
                 }
             }
-            // 添加新菜单
+            // 获取新菜单添加位置
+            var headStr = "";
+            var addMenu = "";
+            // 循环判断a标签
             for (var i = 0; i < aTagAll.length; i++) {
                 if ('sidebar-link' === aTagAll[i].getAttribute('class')) {
-                    if ('/data/datainstance/' === aTagAll[i].getAttribute('href') || '/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
-                        var addMenu = aTagAll[i].parentNode;
-                        var analysisMenu = '<div>' +
-                            '<a href="/?Analysis" class="sidebar-link">' +
-                            '<span class="sidebar-right">' +
-                            '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                            '</span>' +
-                            '<span class="sidebar-link-label">Data analysis</span>' +
-                            '</a>' +
-                            '</div>';
-                        addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
+                    if ('/data/datainstance/' === aTagAll[i].getAttribute('href')) {
+                        addMenu = aTagAll[i].parentNode;
+                        break;
+                    } else if ('/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
+                        addMenu = aTagAll[i].parentNode;
+                        headStr = "/space";
                         break;
                     }
                 }
             }
+            // 判断是否添加新菜单
+            if (addMenu) {
+                var analysisMenu = '<div>' +
+                    '<a href="' + headStr + '/?Analysis" class="sidebar-link">' +
+                    '<span class="sidebar-right">' +
+                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                    '</span>' +
+                    '<span class="sidebar-link-label">Piflow</span>' +
+                    '</a>' +
+                    '</div>';
+                addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
+            }
         }
-        if ("/" === window.location.pathname) {
+        if ("/" === window.location.pathname || "/space/" === window.location.pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                 var rightContent = document.getElementById("content");
                 rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
@@ -564,45 +719,19 @@
                         '</div>' +
                         '<div class="dashboard-item-content">' +
                         '<ul>' +
-                        '<li class="contrast">' +
-                        '<a href="#" title="Models in the data applica tion">state</a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>Spark：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>Impala：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>gStore：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                        '</li>' +
-                        '<li>' +
-                        '<a>Hive：<button type="button" class="stateBtnStyle">正常</button></a>' +
-                        '</li>' +
+                        '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>' +
+                        '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>' +
+                        '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>' +
+                        '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>' +
+                        '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>' +
+                        '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>' +
+                        '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>' +
+                        '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>' +
+                        '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
+                        '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
+                        '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
+                        '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
+                        '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
                         '</ul>' +
                         '</div>' +
                         '</div>';
