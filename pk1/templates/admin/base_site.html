@@ -485,9 +485,11 @@
         var addMenu = '';
         if (aTagAll && aTagAll.length > 0) {
             for (var i = 0; i < aTagAll.length; i++) {
-                if ('/data/datainstanceoperation/' === aTagAll[i].getAttribute('href') && 'sidebar-link' === aTagAll[i].getAttribute('class')) {
-                    addMenu = aTagAll[i].parentNode;
+                if ('sidebar-link' === aTagAll[i].getAttribute('class')) {
+                    if('/data/datainstance/' === aTagAll[i].getAttribute('href') || '/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
+                        addMenu = aTagAll[i].parentNode;
                     break;
+                    }
                 }
             }
         }
@@ -500,7 +502,7 @@
                 '<span class="sidebar-link-label">Data analysis</span>' +
                 '</a>' +
                 '</div>';
-            addMenu.outerHTML = analysisMenu + addMenu.outerHTML;
+            addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
         }
         if ("/" === window.location.pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
