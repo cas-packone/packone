@@ -340,6 +340,18 @@
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
 
+    function removeElementArray(array) {
+        if (array && array.length > 0) {
+            var removeArray = [];
+            for (var i = 0; i < array.length; i++) {
+                removeArray.push(array[i]);
+            }
+            removeArray.forEach(element => {
+                element.remove();
+            });
+        }
+    }
+
     function openStyle(elementId) {
         if (elementId) {
             var updateDivElement = document.getElementById(elementId);
@@ -677,6 +689,9 @@
             }
         }
         if ('/engines/cluster/' === window.location.pathname) {
+            if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
+                document.getElementById('branding-pin').click();
+            }
             var containerOld = document.getElementById('container');
             if (containerOld) {
                 containerOld.style.display = "none";
