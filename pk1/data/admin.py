@@ -69,12 +69,6 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('engine', admin.RelatedOnlyFieldListFilter),
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
-    def get_queryset_Q(self, request):
-        ret = super().get_queryset_Q(request)
-        space=request.GET.get('space', None)
-        if space:
-            ret = ret & Q(target__cluster__in=[int(space)])
-        return ret
 
 space_admin_site.register(models.DataInstance, DataInstanceAdmin)
 
