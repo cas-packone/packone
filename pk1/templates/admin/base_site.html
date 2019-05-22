@@ -384,6 +384,7 @@
         document.getElementById('content').style.display = "none";
     }
     var actionSubmitFun = function () { };
+    var actionSubmitByIdFun = function () { };
     window.onload = function () {
         if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
             if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
@@ -545,7 +546,7 @@
                                 var current_tr_first_td_input = current_tr_first_td.getElementsByTagName('input')[0];
                                 current_tr_first_td_input.checked = true;
                                 // 循环获取from并提交
-                                var current_from = current_tr;
+                                var current_from = current_table;
                                 while (true) {
                                     if (current_from.tagName === 'FORM' || current_from.tagName === 'form') {
                                         result_list_select_array[0].value = btnElement.getAttribute('selectValue');
@@ -563,7 +564,6 @@
                             }
                         }
                     }
-
                 }
                 // 获取查询到的select的option
                 var result_list_select_option = result_list_select_array[0].getElementsByTagName('option');
@@ -583,7 +583,6 @@
                             for (var i = 1; i < result_list_select_option.length; i++) {
                                 var result_list_select_option_i = result_list_select_option[i];
                                 var result_list_select_option_i_text = result_list_select_option_i.text.split(" ")[0];
-                                console.log('select text : ' + result_list_select_option_i_text);
                                 var append_element_obj = {};
                                 // 创建th
                                 var append_th_element = document.createElement('th');
@@ -624,6 +623,9 @@
                         }
                     }
                 }
+                actionSubmitByIdFun = function actionSubmitById(btnElementId){
+                    actionSubmitFun(document.getElementById(btnElementId));
+                };
             }
         }
         // 查找所有a标签
@@ -774,6 +776,7 @@
                                 '</tr>' +
                                 '<td colspan="2">' +
                                 '<a class="button aHrefHover" title="Enter Space" name="index" href="/?space=' + clusterSpace + '">Enter</a></td>' +
+                                //'<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun()" >Enter</a></td>' +
                                 '</tr>');
                         }
                         contentElementNew += ('</tbody>' +
