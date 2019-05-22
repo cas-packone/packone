@@ -94,6 +94,8 @@ class OperationAdmin(AutoModelAdmin):
         return powerful_form_field_queryset_Q(db_field, request)
     def has_change_permission(self, request, obj=None):
         return False
+    def has_delete_permission(self, request, obj=None):
+        return not obj or obj.target.owner == request.user or request.user.is_superuser
     @transaction.atomic
     def rerun(modeladmin, request, queryset):
         for op in queryset.select_for_update():
@@ -112,5 +114,3 @@ class M2MOperationAdmin(OperationAdmin):
         fs=super().get_readonly_fields(request, obj)
         if obj: fs+=('sub_operations',)
         return fs
-    def has_delete_permission(self, request, obj=None):
-        return not obj or obj.target.owner == request.user or request.user.is_superuser

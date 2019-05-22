@@ -37,7 +37,7 @@ class CloudStaticModelAdmin(StaticModelAdmin):
     def get_queryset_Q(self, request):
         return (super().get_queryset_Q(request)) & (Q(cloud__in=request.user.clouds()) | Q(cloud__owner=request.user))
     def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user or obj.cloud.owner == request.user
+        return not obj or obj.owner==request.user or obj.cloud.owner == request.user or request.user.is_superuser
 
 @admin.register(models.Image)
 class ImageAdmin(CloudStaticModelAdmin):
@@ -122,8 +122,8 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         return fs
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
-    def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
+    # def has_delete_permission(self, request, obj=None):
+    #     return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
     
 @admin.register(models.Volume)
 class VolumeAdmin(OwnershipModelAdmin):
@@ -150,8 +150,8 @@ class VolumeAdmin(OwnershipModelAdmin):
         return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_change_permission(self, request, obj=None):
         return False #obj.ready and super().has_change_permission(request,obj)
-    def has_delete_permission(self, request, obj=None):
-        return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
+    # def has_delete_permission(self, request, obj=None):
+    #     return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
         
 @admin.register(models.Mount)
 class MountAdmin(AutoModelAdmin):
@@ -200,8 +200,8 @@ class MountAdmin(AutoModelAdmin):
         return powerful_form_field_queryset_Q(db_field, request)
     def has_change_permission(self, request, obj=None):
         return False #not obj or obj.ready and obj.volume.owner == request.user
-    def has_delete_permission(self, request, obj=None):
-        return not obj or obj.volume.cloud.owner == request.user or (obj.instance.deleting or obj.ready) and obj.volume.owner == request.user
+    # def has_delete_permission(self, request, obj=None):
+    #     return not obj or obj.volume.cloud.owner == request.user or (obj.instance.deleting or obj.ready) and obj.volume.owner == request.user
 
 @admin.register(models.InstanceOperation)
 class InstanceOperationAdmin(OperationAdmin):
@@ -210,7 +210,7 @@ class InstanceOperationAdmin(OperationAdmin):
     def get_queryset_Q(self, request):
         return super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
     def has_delete_permission(self, request, obj=None):
-        return not obj or obj.target.owner == request.user or obj.target.cloud.owner == request.user
+        return super().has_delete_permission(request, obj) or obj.target.cloud.owner == request.user
 
 @admin.register(models.Group)
 class GroupAdmin(OwnershipModelAdmin,OperatableAdminMixin):

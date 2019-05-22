@@ -16,5 +16,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    install_requires = ['django-admin-auto','djangorestframework','djangorestframework-simplejwt', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers', 'python-novaclient', 'python-cinderclient', 'django-autocomplete-light']
+    install_requires = ['pk1-remedy','django-admin-auto','djangorestframework','djangorestframework-simplejwt', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers', 'python-novaclient', 'python-cinderclient', 'django-autocomplete-light']
 )
