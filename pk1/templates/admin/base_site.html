@@ -779,9 +779,9 @@
                 document.getElementById('branding-pin').click();
             }
             // 删除无用导航
-            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
-            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
             document.getElementById('container').firstElementChild.remove();
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
         }
     }
 </script>
