@@ -219,6 +219,16 @@
         color: #c0d4e8;
         min-height: 32px;
     }
+
+    input[type="submit"].default {
+        background-color: #ddefdd;
+        color: #93b785;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #47bac1;
+        color: #fff;
+    }
 </style>
 {% endblock %}
 {% block extrahead %}
@@ -782,6 +792,35 @@
             document.getElementById('container').firstElementChild.remove();
             document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
             document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
+            // 调整隐藏按钮
+            document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Add";
+            var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
+            if (submit_row_inputs && submit_row_inputs.length > 0) {
+                var submit_row_inputs_remove = [];
+                for (var i = 1; i < submit_row_inputs.length; i++) {
+                    submit_row_inputs_remove.push(submit_row_inputs[i]);
+                }
+                submit_row_inputs_remove.forEach(element => {
+                    element.remove();
+                });
+            }
+        }
+        // 调整load datasets页面
+        if ('/data/datainstance/add/' === window.location.pathname) {
+            // 调整隐藏按钮
+            document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Load";
+            var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
+            if (submit_row_inputs && submit_row_inputs.length > 0) {
+                var submit_row_inputs_remove = [];
+                for (var i = 1; i < submit_row_inputs.length; i++) {
+                    submit_row_inputs_remove.push(submit_row_inputs[i]);
+                }
+                submit_row_inputs_remove.forEach(element => {
+                    element.remove();
+                });
+            }
         }
     }
 </script>
