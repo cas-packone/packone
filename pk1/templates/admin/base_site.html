@@ -713,7 +713,8 @@
             document.getElementById('container').firstElementChild.remove();
 
             var contentElement = document.getElementById('content');
-            var contentElementNew = '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
+            var contentElementNew = '<div id="contentNew" class="flex">' +
+                '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
                 '<p style="text-align: right;">' +
                 '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>' +
                 '</p>' +
@@ -780,8 +781,8 @@
                     }
                 }
             }
-            contentElementNew += '</div>';
-            contentElement.innerHTML = contentElementNew;
+            contentElementNew += '</div></div>';
+            contentElement.outerHTML = contentElementNew + contentElement.outerHTML;
         }
         if ('/engines/cluster/add/' === window.location.pathname) {
             // 关闭菜单
