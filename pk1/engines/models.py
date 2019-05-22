@@ -283,6 +283,10 @@ def clusters_of_user(self):
     return Cluster.objects.filter(Q(public=True) | Q(owner=self))
 User.clusters=clusters_of_user
 
+def active_cluster_of_user(self):
+    return self.clusters().filter(active=True).first()
+User.active_cluster=active_cluster_of_user
+
 def steps_of_user(self):
     return Group.objects.filter(cluster__in=self.clusters()).distinct()
 User.steps=steps_of_user
