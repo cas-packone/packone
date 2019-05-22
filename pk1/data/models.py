@@ -46,7 +46,7 @@ class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     name=models.CharField(max_length=50)
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
-    cluster=models.ForeignKey(Cluster,on_delete=models.CASCADE)
+    cluster=models.ForeignKey(Cluster,on_delete=models.CASCADE, editable=False)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
     uri_suffix=models.CharField(max_length=200, verbose_name="suffix of the final uri",help_text='the only approach to access this data instance.')
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)

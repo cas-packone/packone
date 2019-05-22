@@ -69,6 +69,8 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('engine', admin.RelatedOnlyFieldListFilter),
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) and Q(cluster__active=True)
 
 space_admin_site.register(models.DataInstance, DataInstanceAdmin)
 
@@ -76,5 +78,7 @@ space_admin_site.register(models.DataInstance, DataInstanceAdmin)
 class DataInstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
         return super().get_list_display(request,obj)+('log',)
+    def get_queryset_Q(self, request):
+        return super().get_queryset_Q(request) and Q(target__cluster__active=True)
 
 space_admin_site.register(models.DataInstanceOperation, DataInstanceOperationAdmin)

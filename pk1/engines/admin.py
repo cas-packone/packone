@@ -66,6 +66,11 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def get_list_display_exclude(self, request, obj=None):
         if request.user.is_superuser: return ('instances',)
         return ('owner','deleting','instances')
+    def enter(modeladmin, request, queryset):
+        for cluster in queryset:
+            cluster.active=True
+            cluster.save()
+    enter.short_description = "Enter selected clusters"
     def start(modeladmin, request, queryset):
         for cluster in queryset:
             models.ClusterOperation(
@@ -86,7 +91,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[start,scale_out,scale_in,destroy]
+    actions=[enter,start,scale_out,scale_in,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):
@@ -105,7 +110,7 @@ class StepOperationAdmin(M2MOperationAdmin):
     def _target(self, obj):
         return  format_html(get_url(obj.cluster)+'/'+get_url(obj.target))
     def get_queryset_Q(self, request):
-        return Q(target__in=request.user.steps())
+        return Q(target__in=request.user.steps()) and Q(target__cluster__active=True)
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):

@@ -9,6 +9,7 @@ from threading import Thread
 from clouds import utils
 from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
 from clouds.signals import tidy_operation, select_operation
+from engines.models import Cluster
 
 # @receiver(post_save, sender=models.DataEngine)
 # def data_engine_post_save(sender,instance,created,**kwargs):
@@ -16,6 +17,11 @@ from clouds.signals import tidy_operation, select_operation
 #         if not instance.endpoint:
 #             instance.endpoint=instance.component.endpoint
 #             instance.save()
+
+@receiver(pre_save, sender=models.DataInstance)
+def pre_fill_data_instance(sender,instance,**kwargs):
+    if not instance.pk:
+        instance.cluster=Cluster.objects.filter(active=True, owner=instance.owner).first()
 
 @receiver(post_save, sender=models.DataInstance)
 def materialize_data_instance(sender,instance,**kwargs):
