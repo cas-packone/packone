@@ -381,6 +381,8 @@
     }
     var actionSubmitFun = function () { };
     var actionSubmitByIdFun = function () { };
+    var changelist_footer_div = "";
+    var result_list_select_array = "";
     window.onload = function () {
         if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
             if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
@@ -499,10 +501,10 @@
             }
         }
         //操作事件
-        var changelist_footer_div = document.getElementsByClassName("changelist-footer")[0];
+        changelist_footer_div = document.getElementsByClassName("changelist-footer")[0];
         if (changelist_footer_div) {
             // 查询select
-            var result_list_select_array = changelist_footer_div.getElementsByTagName('select');
+            result_list_select_array = changelist_footer_div.getElementsByTagName('select');
             // 判断查询到的select
             if (result_list_select_array && result_list_select_array.length > 0) {
                 actionSubmitFun = function actionSubmit(btnElement) {
