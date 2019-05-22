@@ -393,7 +393,7 @@
         // 菜单调整
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
-        if (sidebar_section_array && sidebar_section_array.length > 20) {
+        if (sidebar_section_array && sidebar_section_array.length > 2) {
             // 用于存放data菜单组
             var sidebar_section_array_i = "";
             // 用于存放无用菜单组
@@ -424,7 +424,7 @@
                 var removeElementMenus = [];
                 var sidebar_section_array_i_a_array = sidebar_section_array_i.getElementsByTagName("a");
                 if (sidebar_section_array_i_a_array && sidebar_section_array_i_a_array.length > 0) {
-                    for (var i = 0; i < sidebar_section_array_i_a_array.length; i++) {
+                    for (var i = 1; i < sidebar_section_array_i_a_array.length; i++) {
                         if ("/data/dataset/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Open Datasets";
                         } else if ("/data/datainstance/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
