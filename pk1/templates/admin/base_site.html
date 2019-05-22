@@ -351,15 +351,11 @@
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
 
-    function removeElementArray(array) {
+    function hideElementArray(array) {
         if (array && array.length > 0) {
-            var removeArray = [];
             for (var i = 0; i < array.length; i++) {
-                removeArray.push(array[i]);
+                array[i].style.display = none;
             }
-            removeArray.forEach(element => {
-                element.remove();
-            });
         }
     }
 
@@ -380,7 +376,7 @@
             }
         }
     }
-    if ('/engines/cluster/?' === window.location.pathname) {
+    if ('/engines/cluster/?' === window.location.pathname + "?") {
         document.getElementById('content').style.display = "none";
     }
     var actionSubmitFun = function () { };
@@ -397,8 +393,6 @@
         if (sidebar_section_array && sidebar_section_array.length > 2) {
             // 用于存放data菜单组
             var sidebar_section_array_i = "";
-            // 用于存放无用菜单组
-            var removeElementMenuGroups = [];
             // 循环
             for (var i = 0; i < sidebar_section_array.length; i++) {
                 var sidebar_section_array_fitst_child = sidebar_section_array[i].firstElementChild;
@@ -408,21 +402,14 @@
                         if ("/space/data/" === sidebar_section_array_fitst_child_a.getAttribute("href") || "/data/" === sidebar_section_array_fitst_child_a.getAttribute("href")) {
                             sidebar_section_array_i = sidebar_section_array[i];
                         } else {
-                            //添加到要删掉的元素数组
-                            removeElementMenuGroups.push(sidebar_section_array[i]);
+                            //隐藏菜单组
+                            sidebar_section_array[i].style.display = none;
                         }
                     }
                 }
             }
-            // 删除无用菜单组
-            if (removeElementMenuGroups && removeElementMenuGroups.length > 0) {
-                removeElementMenuGroups.forEach(element => {
-                    element.remove();
-                });
-            }
             // 判断是否有data菜单组
             if (sidebar_section_array_i) {
-                var removeElementMenus = [];
                 var sidebar_section_array_i_a_array = sidebar_section_array_i.getElementsByTagName("a");
                 if (sidebar_section_array_i_a_array && sidebar_section_array_i_a_array.length > 0) {
                     for (var i = 1; i < sidebar_section_array_i_a_array.length; i++) {
@@ -433,14 +420,10 @@
                         } else if ("/?Analysis" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Data Pipeline";
                         } else {
-                            removeElementMenus.push(sidebar_section_array_i_a_array[i]);
+                            // 隐藏菜单
+                            sidebar_section_array_i_a_array[i].style.display = none;
                         }
                     }
-                }
-                if (removeElementMenus && removeElementMenus.length > 0) {
-                    removeElementMenus.forEach(element => {
-                        element.remove();
-                    });
                 }
 
                 var addNewMenuLog = '<div class="sidebar-section">' +
@@ -602,6 +585,9 @@
                                 append_td_element_input.title = result_list_select_option_i.text;
                                 append_td_element_input.setAttribute('onclick', 'actionSubmitFun(this)');
                                 append_td_element_input.setAttribute('selectValue', result_list_select_option_i.value);
+                                if ("Enter" === result_list_select_option_i_text) {
+                                    append_td_element_input.id = "enterBtnId";
+                                }
                                 append_td_element.appendChild(append_td_element_input);
                                 append_element_obj.td = append_td_element;
                                 // push 
@@ -613,17 +599,23 @@
                                 for (var i = 0; i < append_element_obj_array.length; i++) {
                                     var append_element_obj_i = append_element_obj_array[i];
                                     if (append_element_obj_i.th && append_element_obj_i.td) {
+                                        var flag = false;
+                                        if ("enterBtnId" === append_element_obj_i.td.firstElementChild.id) {
+                                            flag = true;
+                                        }
                                         result_list_table_tr_all[0].appendChild(append_element_obj_i.th);
-                                    }
-                                    for (var j = 1; j < result_list_table_tr_all.length; j++) {
-                                        result_list_table_tr_all[j].appendChild(append_element_obj_i.td.cloneNode(true));
+                                        for (var j = 1; j < result_list_table_tr_all.length; j++) {
+                                            var append_element_obj_i_td_clone = append_element_obj_i.td.cloneNode(true);
+                                            append_element_obj_i_td_clone.firstElementChild.id = ("enterBtnId" + result_list_table_tr_all[j].firstElementChild.firstElementChild.value);
+                                            result_list_table_tr_all[j].appendChild(append_element_obj_i_td_clone);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-                actionSubmitByIdFun = function actionSubmitById(btnElementId){
+                actionSubmitByIdFun = function actionSubmitById(btnElementId) {
                     actionSubmitFun(document.getElementById(btnElementId));
                 };
             }
@@ -636,7 +628,7 @@
             // 循环判断a标签
             for (var i = 0; i < aTagAll.length; i++) {
                 if ('sidebar-link icon' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
-                    aTagAll[i].remove();
+                    aTagAll[i].style.display = none;
                 }
             }
             // 获取新菜单添加位置
@@ -708,15 +700,16 @@
                 }
             }
         }
-        if ('/engines/cluster/?' === window.location.pathname) {
+        // cluster table 转卡片显示
+        if ('/engines/cluster/?' ===  window.location.pathname + "?") {
             // 关闭菜单
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
-            // 删除无用导航
-            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
-            removeElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
-            document.getElementById('container').firstElementChild.remove();
+            // 隐藏无用导航
+            hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
+            hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
+            document.getElementById('container').firstElementChild.style.display = none;
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">' +
@@ -775,8 +768,7 @@
                                 '</tr>' +
                                 '</tr>' +
                                 '<td colspan="2">' +
-                                '<a class="button aHrefHover" title="Enter Space" name="index" href="/?space=' + clusterSpace + '">Enter</a></td>' +
-                                //'<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun()" >Enter</a></td>' +
+                                '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' +
                                 '</tr>');
                         }
                         contentElementNew += ('</tbody>' +
@@ -791,43 +783,36 @@
             contentElementNew += '</div></div>';
             contentElement.outerHTML = contentElementNew + contentElement.outerHTML;
         }
+        // modify cluster add page
         if ('/engines/cluster/add/' === window.location.pathname) {
-            // 关闭菜单
+            // close menu
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
-            // 删除无用导航
-            document.getElementById('container').firstElementChild.remove();
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.remove();
-            // 调整隐藏按钮
+            // hide useless navigation
+            document.getElementById('container').firstElementChild.style.display = none;
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
+            // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Add";
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
             if (submit_row_inputs && submit_row_inputs.length > 0) {
-                var submit_row_inputs_remove = [];
                 for (var i = 1; i < submit_row_inputs.length; i++) {
-                    submit_row_inputs_remove.push(submit_row_inputs[i]);
+                    submit_row_inputs[i].style.display = none;
                 }
-                submit_row_inputs_remove.forEach(element => {
-                    element.remove();
-                });
             }
         }
-        // 调整load datasets页面
+        // modify load datasets page
         if ('/data/datainstance/add/' === window.location.pathname) {
-            // 调整隐藏按钮
+            // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Load";
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
             if (submit_row_inputs && submit_row_inputs.length > 0) {
-                var submit_row_inputs_remove = [];
                 for (var i = 1; i < submit_row_inputs.length; i++) {
-                    submit_row_inputs_remove.push(submit_row_inputs[i]);
+                    submit_row_inputs[i].style.display = none;
                 }
-                submit_row_inputs_remove.forEach(element => {
-                    element.remove();
-                });
             }
         }
     }
