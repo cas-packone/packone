@@ -354,7 +354,7 @@
     function hideElementArray(array) {
         if (array && array.length > 0) {
             for (var i = 0; i < array.length; i++) {
-                array[i].style.display = none;
+                array[i].style.display = "none";
             }
         }
     }
@@ -403,7 +403,7 @@
                             sidebar_section_array_i = sidebar_section_array[i];
                         } else {
                             //隐藏菜单组
-                            sidebar_section_array[i].style.display = none;
+                            sidebar_section_array[i].style.display = "none";
                         }
                     }
                 }
@@ -421,7 +421,7 @@
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Data Pipeline";
                         } else {
                             // 隐藏菜单
-                            sidebar_section_array_i_a_array[i].style.display = none;
+                            sidebar_section_array_i_a_array[i].style.display = "none";
                         }
                     }
                 }
@@ -628,7 +628,7 @@
             // 循环判断a标签
             for (var i = 0; i < aTagAll.length; i++) {
                 if ('sidebar-link icon' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
-                    aTagAll[i].style.display = none;
+                    aTagAll[i].style.display = "none";
                 }
             }
             // 获取新菜单添加位置
@@ -709,7 +709,7 @@
             // 隐藏无用导航
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
-            document.getElementById('container').firstElementChild.style.display = none;
+            document.getElementById('container').firstElementChild.style.display = "none";
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">' +
@@ -790,17 +790,17 @@
                 document.getElementById('branding-pin').click();
             }
             // hide useless navigation
-            document.getElementById('container').firstElementChild.style.display = none;
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = none;
+            document.getElementById('container').firstElementChild.style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
             // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Add";
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
             if (submit_row_inputs && submit_row_inputs.length > 0) {
                 for (var i = 1; i < submit_row_inputs.length; i++) {
-                    submit_row_inputs[i].style.display = none;
+                    submit_row_inputs[i].style.display = "none";
                 }
             }
         }
@@ -811,7 +811,7 @@
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
             if (submit_row_inputs && submit_row_inputs.length > 0) {
                 for (var i = 1; i < submit_row_inputs.length; i++) {
-                    submit_row_inputs[i].style.display = none;
+                    submit_row_inputs[i].style.display = "none";
                 }
             }
         }
