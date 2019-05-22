@@ -379,6 +379,9 @@
             }
         }
     }
+    if ('/engines/cluster/' === window.location.pathname) {
+        document.getElementById('content').style.display = "none";
+    }
     var actionSubmitFun = function () { };
     window.onload = function () {
         if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
@@ -713,7 +716,6 @@
             document.getElementById('container').firstElementChild.remove();
 
             var contentElement = document.getElementById('content');
-            contentElement.style.display="none";
             var contentElementNew = '<div id="contentNew" class="flex">' +
                 '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
                 '<p style="text-align: right;">' +
@@ -744,7 +746,7 @@
                             '<table>' +
                             '<tbody>');
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
-                        if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length === 13) {
+                        if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length > 6) {
                             var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
                             contentElementNew += ('<tr>' +
                                 '<td style="width: 31%;">Scale</td>' +
