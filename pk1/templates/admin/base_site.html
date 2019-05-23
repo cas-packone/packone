@@ -376,7 +376,7 @@
             }
         }
     }
-    if ('/engines/cluster/?' === window.location.pathname + "?") {
+    if ('/engines/cluster/' === window.location.pathname) {
         document.getElementById('content').style.display = "none";
     }
     var actionSubmitFun = function () { };
@@ -441,7 +441,7 @@
                     '</a>' +
                     '</div>' +
                     '<div>' +
-                    '<a href="/data/datainstanceoperation?space=111" class="sidebar-link">' +
+                    '<a href="/data/datainstanceoperation" class="sidebar-link">' +
                     '<span class="sidebar-right">' +
                     '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
                     '</span>' +
@@ -659,13 +659,24 @@
                     '<span class="sidebar-link-label">Data Pipeline</span>' +
                     '</a>' +
                     '</div>';
-                addMenu.outerHTML = addMenu.outerHTML + analysisMenu;
+                var zeppelinNotebookMenu = '<div>' +
+                    '<a href="' + headStr + '/?ZeppelinNotebook" class="sidebar-link">' +
+                    '<span class="sidebar-right">' +
+                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                    '</span>' +
+                    '<span class="sidebar-link-label">Notebook</span>' +
+                    '</a>' +
+                    '</div>';
+                addMenu.outerHTML = addMenu.outerHTML + analysisMenu + zeppelinNotebookMenu;
             }
         }
         if ("/" === window.location.pathname || "/space/" === window.location.pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                 var rightContent = document.getElementById("content");
                 rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+            } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
+                var rightContent = document.getElementById("content");
+                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.78:9995"></iframe>';
             } else {
                 var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
                 if (element_first_div) {
@@ -703,7 +714,7 @@
             }
         }
         // cluster table 转卡片显示
-        if ('/engines/cluster/?' ===  window.location.pathname + "?") {
+        if ('/engines/cluster/' === window.location.pathname) {
             // 关闭菜单
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
