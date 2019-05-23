@@ -100,7 +100,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         if db_field.name == 'scale': return Q(pk__in=request.user.scales())
         return None
     def get_queryset_Q(self, request):
-        return Q(pk__in=request.user.clusters())
+        return Q(pk__in=request.user.clusters()) and Q(owner=request.user)
 
 @admin.register(models.ClusterOperation)
 class ClusterOperationAdmin(M2MOperationAdmin):
