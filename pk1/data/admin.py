@@ -70,7 +70,7 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) and Q(cluster__active=True)
+        return (super().get_queryset_Q(request)) and Q(cluster__active=True)
 
 space_admin_site.register(models.DataInstance, DataInstanceAdmin)
 

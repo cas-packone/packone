@@ -70,6 +70,8 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.active=True
             cluster.save()
+        from django.http import HttpResponseRedirect
+        return HttpResponseRedirect('/')
     enter.short_description = "Enter selected clusters"
     def start(modeladmin, request, queryset):
         for cluster in queryset:
@@ -110,7 +112,7 @@ class StepOperationAdmin(M2MOperationAdmin):
     def _target(self, obj):
         return  format_html(get_url(obj.cluster)+'/'+get_url(obj.target))
     def get_queryset_Q(self, request):
-        return Q(target__in=request.user.steps()) and Q(target__cluster__active=True)
+        return Q(target__in=request.user.active_steps())
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):

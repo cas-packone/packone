@@ -98,12 +98,14 @@ class OperationAdmin(AutoModelAdmin):
         return not obj or obj.target.owner == request.user or request.user.is_superuser
     @transaction.atomic
     def rerun(modeladmin, request, queryset):
-        for op in queryset.select_for_update():
+        for op in queryset:
+            op=op.__class__.objects.select_for_update().get(pk=op.pk)
             op.status=OPERATION_STATUS.running.value
             op.started_time=now()
             op.completed_time=None
             op.save()
             op.execute()
+
     rerun.short_description = "Re-run selected operations"
     actions=[rerun]
 

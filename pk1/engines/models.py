@@ -291,6 +291,12 @@ def steps_of_user(self):
     return Group.objects.filter(cluster__in=self.clusters()).distinct()
 User.steps=steps_of_user
 
+def active_steps_of_user(self):
+    c=self.active_cluster()
+    if not c: return Group.objects.none()
+    return c.steps.all()
+User.active_steps=active_steps_of_user
+
 class ClusterOperation(M2MOperationModel):
     target=models.ForeignKey(Cluster,on_delete=models.CASCADE)
     class Meta:
