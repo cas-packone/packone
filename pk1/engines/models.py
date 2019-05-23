@@ -203,6 +203,7 @@ class Cluster(models.Model,M2MOperatableMixin):
     built_time=models.DateTimeField(blank=True, null=True, editable=False)
     status= models.PositiveIntegerField(choices=[(status.value,status.name) for status in INSTANCE_STATUS],default=INSTANCE_STATUS.building.value,editable=False)
     deleting = models.BooleanField(default=False,editable=False)
+    active = models.BooleanField(default=True,editable=False)
     class Meta:
         unique_together = ('name', 'owner')
     def __str__(self):
