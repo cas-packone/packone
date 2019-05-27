@@ -537,7 +537,8 @@
                                         result_list_select_array[0].value
                                         current_from.getElementsByTagName("select")[0].value = btnElement.getAttribute('selectValue');
                                         current_from.submit();
-                                        window.location.href = "/";
+                                        window.history.back(-1);
+                                        window.open("/");
                                         break;
                                     } else {
                                         current_from = current_from.parentNode;
