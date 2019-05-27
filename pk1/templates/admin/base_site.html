@@ -807,10 +807,13 @@
             }
             // hide useless navigation
             document.getElementById('container').firstElementChild.style.display = "none";
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
-            document.getElementsByClassName('breadcrumbs initialized')[0].firstElementChild.style.display = "none";
+            var crumbs = document.getElementsByClassName('breadcrumbs initialized')[0].children;
+            if (crumbs && crumbs.length > 3) {
+                crumbs[0].style.display = "none";
+                crumbs[1].style.display = "none";
+                crumbs[2].style.display = "none";
+                crumbs[3].style.display = "none";
+            }
             // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Add";
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
