@@ -714,6 +714,59 @@
                         '</div>';
                     element_first_div.innerHTML = ss + element_first_div_inner_html;
                 }
+                var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+                if (cf_children && cf_children.length > 0) {
+                    for (var i = 0; i < cf_children.length; i++) {
+                        var titleElemet = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                        if (titleElemet) {
+                            if ("Applications" === titleElemet.textContent.trim()) {
+                                cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
+                                var cf_children_i_li_array = cf_children[i].getElementsByTagName("li");
+                                for (var j = 0; j < cf_children_i_li_array.length; j++) {
+                                    var aHref1 = cf_children_i_li_array[j].lastElementChild.getAttribute("href");
+                                    if ("/data/" !== aHref1 && "/data/datainstance/" !== aHref1 && "/data/dataset/" !== aHref1) {
+                                        cf_children_i_li_array[j].style.display = "none";
+                                    } else {
+                                        if (cf_children_i_li_array[j].getElementsByTagName("span")[0]) {
+                                            cf_children_i_li_array[j].getElementsByTagName("span")[0].style.display = "none";
+                                        }
+                                    }
+                                }
+                                var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
+                                var pipleine_li = '<li><a href="/?Analysis">Data Pipeline</a></li>';
+                                var notebook_li = '<li><a href="/?ZeppelinNotebook">Notebook</a></li>';
+                                var log_li = '<li class="contrast"><a href="/?logHome" title="Models in the log application">Log</a></li>';
+                                var sciSpace_operations_li = '<li><a href="/engines/stepoperation">SciSpace Operations</a></li>';
+                                var notebook_li = '<li><a href="/data/datainstanceoperation">Instances Operations</a></li>';
+                                cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleine_li + notebook_li + log_li + sciSpace_operations_li + notebook_li);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if ("/data/" === window.location.pathname || "/space/data/" === window.location.pathname) {
+            var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+            if (cf_children && cf_children.length > 0) {
+                for (var i = 0; i < cf_children.length; i++) {
+                    if ("Application models" === cf_children[i].getElementsByClassName("dashboard-item-header-title")[0].textContent.trim()) {
+                        cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
+                        var cf_children_i_li_array = cf_children[i].getElementsByTagName("li");
+                        for (var j = 0; j < cf_children_i_li_array.length; j++) {
+                            var aHref1 = cf_children_i_li_array[j].lastElementChild.getAttribute("href");
+                            if ("/data/datainstance/" !== aHref1 && "/data/dataset/" !== aHref1) {
+                                cf_children_i_li_array[j].style.display = "none";
+                            } else {
+                                cf_children_i_li_array[j].getElementsByTagName("span")[0].style.display = "none";
+                            }
+                        }
+                        var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
+                        var pipleineLi = '<li><a href="/?Analysis">Data Pipeline</a></li>';
+                        var notebookLi = '<li><a href="/?ZeppelinNotebook">Notebook</a></li>';
+                        cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleineLi + notebookLi);
+                    } else {
+                        cf_children[i].style.display = "none";
+                    }
+                }
             }
         }
         // cluster table 转卡片显示
