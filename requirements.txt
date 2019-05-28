@@ -12,4 +12,4 @@ python-cinderclient==4.1.0
 python-novaclient==11.1.0
 scp==0.13.0
 django-admin-auto
-pk1-remedy
+ambari
