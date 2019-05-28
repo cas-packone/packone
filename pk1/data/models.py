@@ -3,6 +3,7 @@ from enum import Enum
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.utils.functional import cached_property
 from engines.models import Component, Engine, COMPONENT_STATUS, COMPONENT_OPERATION
 from clouds.base.models import StaticModel, OperationModel, OperatableMixin
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS
@@ -26,13 +27,16 @@ class DATASET_TYPE(Enum):
 class Dataset(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     source=models.ForeignKey(DataSource,on_delete=models.PROTECT,blank=True,null=True)
-    uri=models.CharField(max_length=200)
+    uri=models.CharField(max_length=200, editable=False)
     type=models.PositiveIntegerField(blank=True,null=True,choices=[(type.value,type.name) for type in DATASET_TYPE])
     size=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     description=models.TextField(max_length=5120)
     @property
     def type_name(self):
         return DATASET_TYPE(self.type).name
+    @cached_property
+    def uri(self):#suffix of the final uri, the only approach to access this data instance.
+        return self.name.replace(' ','-')
 
 class DataEngine(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
@@ -48,7 +52,6 @@ class DataInstance(models.Model,OperatableMixin):
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
     cluster=models.ForeignKey(Cluster,on_delete=models.CASCADE)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
-    uri_suffix=models.CharField(max_length=200, verbose_name="suffix of the final uri",help_text='the only approach to access this data instance.')
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)
     created_time=models.DateTimeField(auto_now_add=True)
     built_time=models.DateTimeField(blank=True,null=True,editable=False)
@@ -57,9 +60,12 @@ class DataInstance(models.Model,OperatableMixin):
     remark = models.CharField(blank=True,null=True,max_length=100)
     deleting = models.BooleanField(default=False,editable=False)
     class Meta:
-        unique_together = (('name','cluster','owner'),('engine','uri_suffix',))
+        unique_together = (('name','cluster','owner'),('engine','name',))
     def __str__(self):
         return "{}".format(self.name)
+    @cached_property
+    def uri_suffix(self):#suffix of the final uri, the only approach to access this data instance.
+        return self.name.replace(' ','-')
     @property
     def startable(self):
         if self.status == COMPONENT_STATUS.null.value: return True#TODO stop
