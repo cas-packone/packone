@@ -350,8 +350,16 @@
     });
 </script>
 <script type="text/javascript">
-    if ('/login/' === window.location.pathname && '?next=/engines/cluster' !== window.location.search) {
-        window.location.href = window.location.origin + window.location.pathname + '?next=/engines/cluster';
+    var window_location_href = window.location.href;
+    var window_location_pathname = window.location.pathname;
+    var window_location_search = window.location.search;
+    var space_id = document.getElementById("current-space-id").innerHTML;
+    var space_home_url = '';
+    if (space_id) {
+        space_home_url = '/space/' + space_id;
+    }
+    if ('/login/' === window_location_pathname && '?next=/engines/cluster' !== window.location.search) {
+        window.location.href = window.location.origin + window_location_pathname + '?next=/engines/cluster';
     }
     function hasClassCustom(elements, cName) {
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
@@ -382,7 +390,7 @@
             }
         }
     }
-    if ('/engines/cluster/' === window.location.pathname) {
+    if ('/engines/cluster/' === window_location_pathname) {
         document.getElementById('content').style.display = "none";
     }
     var actionSubmitFun = function () { };
@@ -390,12 +398,26 @@
     var changelist_footer_div = "";
     var result_list_select_array = "";
     window.onload = function () {
-        if ('/' === window.location.pathname && '?Analysis' !== window.location.search) {
+        if (space_home_url + "/" === window_location_pathname && '?Analysis' !== window.location.search) {
             if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
         }
         // 菜单调整
+        // 查找所有a标签
+        var a_tag_all = document.getElementsByTagName('a');
+        // 判空
+        if (a_tag_all && a_tag_all.length > 0) {
+            // 移除不需要菜单
+            // 循环判断a标签
+            for (var i = 0; i < a_tag_all.length; i++) {
+                var a_tag_all_i_href = a_tag_all[i].getAttribute("href");
+                if ('https://github.com/cas-bigdatalab/packone' === a_tag_all_i_href) {
+                    a_tag_all[i].style.display = "none";
+                }
+                a_tag_all[i].setAttribute("href", space_home_url + a_tag_all_i_href);
+            }
+        }
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
         if (sidebar_section_array && sidebar_section_array.length > 2) {
@@ -407,7 +429,7 @@
                 if (sidebar_section_array_fitst_child) {
                     var sidebar_section_array_fitst_child_a = sidebar_section_array_fitst_child.getElementsByTagName("a")[0];
                     if (sidebar_section_array_fitst_child_a) {
-                        if ("/space/data/" === sidebar_section_array_fitst_child_a.getAttribute("href") || "/data/" === sidebar_section_array_fitst_child_a.getAttribute("href")) {
+                        if (space_home_url + "/data/" === sidebar_section_array_fitst_child_a.getAttribute("href")) {
                             sidebar_section_array_i = sidebar_section_array[i];
                         } else {
                             //隐藏菜单组
@@ -420,26 +442,47 @@
             if (sidebar_section_array_i) {
                 var sidebar_section_array_i_a_array = sidebar_section_array_i.getElementsByTagName("a");
                 if (sidebar_section_array_i_a_array && sidebar_section_array_i_a_array.length > 0) {
+                    var data_group_menu_datainstance_element = "";
                     for (var i = 1; i < sidebar_section_array_i_a_array.length; i++) {
-                        if ("/data/dataset/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
+                        var sidebar_section_array_i_a_array_i_href = sidebar_section_array_i_a_array[i].getAttribute("href");
+                        if (space_home_url+"/data/dataset/" === sidebar_section_array_i_a_array_i_href) {
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Open Datasets";
-                        } else if ("/data/datainstance/" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
+                        } else if (space_home_url+"/data/datainstance/" === sidebar_section_array_i_a_array_i_href) {
                             sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Instances";
-                        } else if ("/?Analysis" === sidebar_section_array_i_a_array[i].getAttribute("href")) {
-                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Data Pipeline";
+                            data_group_menu_datainstance_element = sidebar_section_array_i_a_array[i].parentNode;
                         } else {
                             // 隐藏菜单
                             sidebar_section_array_i_a_array[i].style.display = "none";
                         }
                     }
                 }
-
+                // 判断是否添加新菜单
+                if (data_group_menu_datainstance_element) {
+                    var analysisMenu = '<div>' +
+                        '<a href="' + space_home_url + '/?Analysis" class="sidebar-link">' +
+                        '<span class="sidebar-right">' +
+                        '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                        '</span>' +
+                        '<span class="sidebar-link-label">Data Pipeline</span>' +
+                        '</a>' +
+                        '</div>';
+                    var zeppelinNotebookMenu = '<div>' +
+                        '<a href="' + space_home_url + '/?ZeppelinNotebook" class="sidebar-link">' +
+                        '<span class="sidebar-right">' +
+                        '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
+                        '</span>' +
+                        '<span class="sidebar-link-label">Notebook</span>' +
+                        '</a>' +
+                        '</div>';
+                    data_group_menu_datainstance_element.outerHTML = data_group_menu_datainstance_element.outerHTML + analysisMenu + zeppelinNotebookMenu;
+                }
+                // 添加菜单组
                 var addNewMenuLog = '<div class="sidebar-section">' +
                     '<div class="sidebar-title">' +
-                    '<a href="/?logHome" class="sidebar-title-link">Admin</a>' +
+                    '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>' +
                     '</div>' +
                     '<div>' +
-                    '<a href="/engines/stepoperation" class="sidebar-link">' +
+                    '<a href="' + space_home_url + '/engines/stepoperation" class="sidebar-link">' +
                     '<span class="sidebar-right">' +
                     '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
                     '</span>' +
@@ -447,7 +490,7 @@
                     '</a>' +
                     '</div>' +
                     '<div>' +
-                    '<a href="/data/datainstanceoperation" class="sidebar-link">' +
+                    '<a href="' + space_home_url + '/data/datainstanceoperation" class="sidebar-link">' +
                     '<span class="sidebar-right">' +
                     '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
                     '</span>' +
@@ -629,55 +672,7 @@
                 };
             }
         }
-        // 查找所有a标签
-        var aTagAll = document.getElementsByTagName('a');
-        // 判空
-        if (aTagAll && aTagAll.length > 0) {
-            // 移除不需要菜单
-            // 循环判断a标签
-            for (var i = 0; i < aTagAll.length; i++) {
-                if ('sidebar-link icon' === aTagAll[i].getAttribute('class') && 'https://github.com/cas-bigdatalab/packone' === aTagAll[i].getAttribute('href')) {
-                    aTagAll[i].style.display = "none";
-                }
-            }
-            // 获取新菜单添加位置
-            var headStr = "";
-            var addMenu = "";
-            // 循环判断a标签
-            for (var i = 0; i < aTagAll.length; i++) {
-                if ('sidebar-link' === aTagAll[i].getAttribute('class')) {
-                    if ('/data/datainstance/' === aTagAll[i].getAttribute('href')) {
-                        addMenu = aTagAll[i].parentNode;
-                        break;
-                    } else if ('/space/data/datainstance/' === aTagAll[i].getAttribute('href')) {
-                        addMenu = aTagAll[i].parentNode;
-                        headStr = "/space";
-                        break;
-                    }
-                }
-            }
-            // 判断是否添加新菜单
-            if (addMenu) {
-                var analysisMenu = '<div>' +
-                    '<a href="' + headStr + '/?Analysis" class="sidebar-link">' +
-                    '<span class="sidebar-right">' +
-                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                    '</span>' +
-                    '<span class="sidebar-link-label">Data Pipeline</span>' +
-                    '</a>' +
-                    '</div>';
-                var zeppelinNotebookMenu = '<div>' +
-                    '<a href="' + headStr + '/?ZeppelinNotebook" class="sidebar-link">' +
-                    '<span class="sidebar-right">' +
-                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                    '</span>' +
-                    '<span class="sidebar-link-label">Notebook</span>' +
-                    '</a>' +
-                    '</div>';
-                addMenu.outerHTML = addMenu.outerHTML + analysisMenu + zeppelinNotebookMenu;
-            }
-        }
-        if ("/" === window.location.pathname || "/space/" === window.location.pathname) {
+        if (space_home_url + "/" === window_location_pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                 var rightContent = document.getElementById("content");
                 rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
@@ -748,7 +743,8 @@
                     }
                 }
             }
-        } else if ("/data/" === window.location.pathname || "/space/data/" === window.location.pathname) {
+        }
+        if (space_home_url + "/data/" === window_location_pathname) {
             var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
             if (cf_children && cf_children.length > 0) {
                 for (var i = 0; i < cf_children.length; i++) {
@@ -774,7 +770,7 @@
             }
         }
         // cluster table 转卡片显示
-        if ('/engines/cluster/' === window.location.pathname) {
+        if ('/engines/cluster/' === window_location_pathname) {
             // 关闭菜单
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
@@ -841,7 +837,8 @@
                                 '</tr>' +
                                 '</tr>' +
                                 '<td colspan="2">' +
-                                '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' +
+                                // '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' +
+                                '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" >Enter</a></td>' +
                                 '</tr>');
                         }
                         contentElementNew += ('</tbody>' +
@@ -857,7 +854,7 @@
             contentElement.outerHTML = contentElementNew + contentElement.outerHTML;
         }
         // modify cluster add page
-        if ('/engines/cluster/add/' === window.location.pathname) {
+        if ('/engines/cluster/add/' === window_location_pathname) {
             // close menu
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
@@ -881,7 +878,7 @@
             }
         }
         // modify load datasets page
-        if ('/data/datainstance/add/' === window.location.pathname) {
+        if (space_home_url + "/data/datainstance/add/" === window_location_pathname) {
             // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Load";
             var submit_row_inputs = document.getElementsByClassName("submit-row")[0].getElementsByTagName("input");
