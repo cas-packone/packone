@@ -6,24 +6,12 @@ from django.urls import reverse
 from django import forms
 from django.db.models import Q
 from dal import autocomplete
-from user.utils import get_current_user
-from engines.utils import get_space
+from user.utils import get_current_user, get_space
 
 @admin.register(models.DataEngine)
 class DataEngineAdmin(StaticModelAdmin):
     search_fields = ('description',)+StaticModelAdmin.search_fields
-    class DataEngineForm(forms.ModelForm):
-        class Meta:
-            model = models.DataEngine
-            fields = ('__all__')
-            widgets = {
-                'component': autocomplete.ModelSelect2(
-                    url='dataenginecomponent-autocomplete',
-                    forward=['engine']
-                ),
-            }
-    form = DataEngineForm
-
+    
 @admin.register(models.DataSource)
 class DataSourceAdmin(StaticModelAdmin):
     search_fields = ('description',)+StaticModelAdmin.search_fields
@@ -65,11 +53,11 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return (super().get_queryset_Q(request)) and Q(cluster__pk=get_space(request))
+        return (super().get_queryset_Q(request)) and Q(cluster=get_space())
 
 @admin.register(models.DataInstanceOperation)
 class DataInstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
         return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) and Q(target__cluster__pk=get_space(request))
+        return super().get_queryset_Q(request) and Q(target__cluster=get_space())

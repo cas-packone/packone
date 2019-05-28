@@ -11,12 +11,6 @@ from clouds.signals import materialized, executed, monitored, destroyed, tidied,
 from clouds.signals import tidy_operation, select_operation
 from engines.models import Cluster
 
-
-@receiver(pre_save, sender=models.DataInstance)
-def pre_fill_data_instance(sender,instance,**kwargs):
-    if not instance.pk:
-        instance.cluster=Cluster.objects.filter(active=True, owner=instance.owner).first()
-
 @receiver(post_save, sender=models.DataInstance)
 def materialize_data_instance(sender,instance,**kwargs):
     if not kwargs['created'] or instance.ready: return

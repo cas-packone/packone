@@ -249,8 +249,8 @@
     <a href="/">
         <img src="{% static '/logo-large.png' %}">
     </a>
-    <div style="display:none;" id="current-space">{{ user.active_cluster }}</div>
-    <div style="display:none;" id="current-space-id">{{ user.active_cluster.pk }}</div>
+    <div style="display:none;" id="current-space">{{ request.space }}</div>
+    <div style="display:none;" id="current-space-id">{{ request.space.pk }}</div>
 </h1>
 {% endblock %}
 
@@ -265,7 +265,7 @@
 </a>
 <a href="javascript:void(0);" class="sidebar-link icon">
     <span class="sidebar-link-label">
-        {{ user.active_cluster }}
+        {{ request.space }}
     </span>
 </a>
 {% endblock %}
