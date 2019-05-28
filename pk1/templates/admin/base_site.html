@@ -262,11 +262,8 @@
         {% trans 'Repo' %}
     </span>
 </a>
-<a href="javascript:void(0);">
+<a href="javascript:void(0);" class="sidebar-link icon">
     <span class="sidebar-link-label">
-        <span class="sidebar-link-icon">
-            <i class="fab fa-github"></i>
-        </span>
         {{ user.active_cluster }}
     </span>
 </a>
@@ -545,8 +542,6 @@
                                         result_list_select_array[0].value
                                         current_from.getElementsByTagName("select")[0].value = btnElement.getAttribute('selectValue');
                                         current_from.submit();
-                                        window.open("/");
-                                        window.location.href("/engines/cluster/");
                                         break;
                                     } else {
                                         current_from = current_from.parentNode;
@@ -790,7 +785,7 @@
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">' +
-                '<p style="text-align: center;font-size: 26px;">Clusters</p>' +
+                '<p style="text-align: center;font-size: 26px;">Scispace List</p>' +
                 '<p style="text-align: right;">' +
                 '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>' +
                 '</p>' +
