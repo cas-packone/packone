@@ -249,7 +249,8 @@
     <a href="/">
         <img src="{% static '/logo-large.png' %}">
     </a>
-    <div style="display:none;" id="current-space">'{{ user.active_cluster }}'</div>
+    <div style="display:none;" id="current-space">{{ user.active_cluster }}</div>
+    <div style="display:none;" id="current-space-id">{{ user.active_cluster.pk }}</div>
 </h1>
 {% endblock %}
 
