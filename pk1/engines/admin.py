@@ -49,13 +49,6 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def get_list_display_exclude(self, request, obj=None):
         if request.user.is_superuser: return ('instances',)
         return ('owner','deleting','instances')
-    def enter(modeladmin, request, queryset):
-        for cluster in queryset:
-            cluster.active=True
-            cluster.save()
-        from django.http import HttpResponseRedirect
-        return HttpResponseRedirect('/')
-    enter.short_description = "Enter selected clusters"
     def start(modeladmin, request, queryset):
         for cluster in queryset:
             models.ClusterOperation(
@@ -76,7 +69,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[enter,start,scale_out,scale_in,destroy]
+    actions=[start,scale_out,scale_in,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):

@@ -28,16 +28,6 @@ def create_stack(sender,instance,**kwargs):
         return
     if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script.endswith('###setup stack end###'):
         instance.target.stack_set.first().import_engine()
-    
-@receiver(pre_save, sender=models.Cluster)
-def choose_space(sender,instance,**kwargs):
-    if instance.pk:
-        if instance.active:
-            old=sender.objects.get(pk=instance.pk)
-            if not old.active:
-                sender.objects.exclude(pk=instance.pk).filter(owner=instance.owner).update(active=False)
-    elif instance.active:
-        sender.objects.filter(owner=instance.owner).update(active=False)
 
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
