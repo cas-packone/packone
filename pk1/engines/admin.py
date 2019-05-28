@@ -20,15 +20,9 @@ class StackAdmin(StaticModelAdmin):
     import_engine.short_description = "Refresh engines from selected stacks"
     actions = [import_engine]
 
-@admin.register(models.Component)
-class ComponentAdmin(StaticModelAdmin):
-    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
-    def has_module_permission(self, request):
-        return False
-
 @admin.register(models.Engine)
 class EngineAdmin(StaticModelAdmin):
-    list_filter = (('stack', admin.RelatedOnlyFieldListFilter),)+StaticModelAdmin.list_filter
+    pass
 
 @admin.register(models.Scale)
 class ScaleAdmin(StaticModelAdmin):
@@ -38,17 +32,6 @@ class ScaleAdmin(StaticModelAdmin):
 
 @admin.register(models.Cluster)
 class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
-    class ClusterForm(forms.ModelForm):
-        class Meta:
-            model = models.Cluster
-            fields = ('__all__')
-            widgets = {
-                'engines': autocomplete.ModelSelect2Multiple(
-                    url='clusterengines-autocomplete',
-                    forward=['scale']
-                ),
-            }
-    form = ClusterForm
     def access(self, obj):
         if not obj.ready: return None
         return format_html('<a href="{}" target="_blank" class="button">Manage</a>'.format(obj.portal))

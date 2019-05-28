@@ -12,11 +12,6 @@ ROUTER.register(r'datainstanceoperations', views.DataInstanceOperationViewSet,ba
 urlpatterns = [
     re_path(r'^', include(ROUTER.urls)),
     re_path(
-        r'^dataenginecomponent-autocomplete/$',
-        views.DataEngineComponentAutocompleteView.as_view(),
-        name='dataenginecomponent-autocomplete',
-    ),
-    re_path(
         r'^datainstanceengine-autocomplete/$',
         views.DataInstanceEngineAutocompleteView.as_view(),
         name='datainstanceengine-autocomplete',

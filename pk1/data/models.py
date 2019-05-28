@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.functional import cached_property
-from engines.models import Component, Engine, COMPONENT_STATUS, COMPONENT_OPERATION
+from engines.models import Engine, COMPONENT_STATUS, COMPONENT_OPERATION
 from clouds.base.models import StaticModel, OperationModel, OperatableMixin
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS
 from engines.models import Cluster#TODO use worldwide namespace when upload to pip
@@ -42,8 +42,6 @@ class DataEngine(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     type=models.PositiveIntegerField(choices=[(type.value,type.name) for type in DATASET_TYPE])
     engine=models.ForeignKey(Engine,on_delete=models.PROTECT)
-    component=models.ForeignKey(Component,on_delete=models.PROTECT)
-    endpoint=models.CharField(max_length=200,blank=True,null=True)#TODO keep it fault-tolerant
     description=models.TextField(max_length=5120)
     
 class DataInstance(models.Model,OperatableMixin):
