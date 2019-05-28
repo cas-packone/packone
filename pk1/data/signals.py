@@ -10,12 +10,6 @@ from clouds import utils
 from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
 from clouds.signals import tidy_operation, select_operation
 
-@receiver(post_save, sender=models.DataEngine)
-def data_engine_post_save(sender,instance,created,**kwargs):
-    if created:
-        if not instance.endpoint:
-            instance.endpoint=instance.component.endpoint
-            instance.save()
 
 @receiver(post_save, sender=models.DataInstance)
 def materialize_data_instance(sender,instance,**kwargs):

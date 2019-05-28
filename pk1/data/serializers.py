@@ -1,7 +1,7 @@
 from . import models
 from rest_framework import serializers
 from django.db.models import Q
-from engines.serializers import ComponentPKField,ClusterPKField
+from engines.serializers import ClusterPKField
 from data.models import DATASET_TYPE
 
 class DataSourceSerializer(serializers.ModelSerializer):
@@ -44,7 +44,6 @@ class DatasetPKField(serializers.PrimaryKeyRelatedField):
 
 class DataEngineSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    component = ComponentPKField()
     class Meta:
         model = models.DataEngine
         fields = '__all__'

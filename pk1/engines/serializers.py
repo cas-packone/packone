@@ -3,22 +3,8 @@ from django.db.models import Q
 from clouds.serializers import ImagePKField, InstanceBlueprintPKField
 from . import models
 
-class ComponentSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    images=ImagePKField(many=True)
-    class Meta:
-        model = models.Component
-        fields = '__all__'
-
-class ComponentPKField(serializers.PrimaryKeyRelatedField):
-    def get_queryset(self):
-        user = self.context['request'].user
-        queryset = models.Component.objects.filter(Q(public=True) | Q(owner=user))
-        return queryset
-
 class EngineSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    components=ComponentPKField(many=True)
     class Meta:
         model = models.Engine
         fields = '__all__'
