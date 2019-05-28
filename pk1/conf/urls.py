@@ -22,16 +22,9 @@ admin.site.index_title = 'Dashboard' # default: "Site administration"
 admin.site.site_title = 'PackOne Console' # default: "Django site admin"
 admin.site.site_url = None
 
-from data.admin import space_admin_site
-space_admin_site.site_header = 'SciSpace' # default: "Django Administration"
-space_admin_site.index_title = 'Dashboard' # default: "Site administration"
-space_admin_site.site_title = 'SciSpace' # default: "Django site admin"
-space_admin_site.site_url = None
-
-
 urlpatterns = [
     re_path(r'^', admin.site.urls),
-    re_path(r'^space/', space_admin_site.urls),
+    re_path(r'^space/[0-9]+/', admin.site.urls),
     re_path(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     re_path(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('api/user/', include('user.urls')),

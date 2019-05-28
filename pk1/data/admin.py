@@ -7,9 +7,7 @@ from django import forms
 from django.db.models import Q
 from dal import autocomplete
 from user.utils import get_current_user
-
-from django.contrib.admin import AdminSite
-space_admin_site = AdminSite(name='space_admin')
+from engines.utils import get_space
 
 @admin.register(models.DataEngine)
 class DataEngineAdmin(StaticModelAdmin):
@@ -26,7 +24,6 @@ class DataEngineAdmin(StaticModelAdmin):
             }
     form = DataEngineForm
 
-
 @admin.register(models.DataSource)
 class DataSourceAdmin(StaticModelAdmin):
     search_fields = ('description',)+StaticModelAdmin.search_fields
@@ -37,8 +34,6 @@ class DatasetAdmin(StaticModelAdmin):
     def action(self,obj):
         return format_html('<a href="{}?dataset={}" class="button">Load</a>'.format(reverse('admin:data_datainstance_add'),obj.pk))
     extra=('action',)
-
-space_admin_site.register(models.Dataset, DatasetAdmin)
 
 @admin.register(models.DataInstance)
 class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
@@ -70,15 +65,11 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
     def get_queryset_Q(self, request):
-        return (super().get_queryset_Q(request)) and Q(cluster__active=True)
-
-space_admin_site.register(models.DataInstance, DataInstanceAdmin)
+        return (super().get_queryset_Q(request)) and Q(cluster__pk=get_space(request))
 
 @admin.register(models.DataInstanceOperation)
 class DataInstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
         return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) and Q(target__cluster__active=True)
-
-space_admin_site.register(models.DataInstanceOperation, DataInstanceOperationAdmin)
+        return super().get_queryset_Q(request) and Q(target__cluster__pk=get_space(request))
