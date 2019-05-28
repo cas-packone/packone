@@ -26,6 +26,10 @@ class DatasetAdmin(StaticModelAdmin):
 @admin.register(models.DataInstance)
 class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     class DataInstanceForm(forms.ModelForm):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['cluster'].widget = forms.HiddenInput()
+            self.fields['cluster'].initial = get_space().pk
         class Meta:
             model = models.DataInstance
             fields = ('__all__')
