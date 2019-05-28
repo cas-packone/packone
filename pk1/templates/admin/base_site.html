@@ -264,6 +264,17 @@
 </a>
 {% endblock %}
 
+{% block nav-global %}
+<a href="javascript:void(0);">
+    <span class="sidebar-link-label">
+        <span class="sidebar-link-icon">
+            <i class="fab fa-github"></i>
+        </span>
+        { user.active_cluster }
+    </span>
+</a>
+{% endblock %}
+
 {% block footer %}
 {{ block.super }}
 <script type="text/javascript">
@@ -430,7 +441,7 @@
 
                 var addNewMenuLog = '<div class="sidebar-section">' +
                     '<div class="sidebar-title">' +
-                    '<a href="/?logHome" class="sidebar-title-link">Log</a>' +
+                    '<a href="/?logHome" class="sidebar-title-link">Admin</a>' +
                     '</div>' +
                     '<div>' +
                     '<a href="/engines/stepoperation" class="sidebar-link">' +
@@ -735,7 +746,7 @@
                                 var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                                 var pipleine_li = '<li><a href="/?Analysis">Data Pipeline</a></li>';
                                 var notebook_li = '<li><a href="/?ZeppelinNotebook">Notebook</a></li>';
-                                var log_li = '<li class="contrast"><a href="/?logHome" title="Models in the log application">Log</a></li>';
+                                var log_li = '<li class="contrast"><a href="/?logHome" title="Models in the log application">Admin</a></li>';
                                 var sciSpace_operations_li = '<li><a href="/engines/stepoperation">SciSpace Operations</a></li>';
                                 var notebook_li = '<li><a href="/data/datainstanceoperation">Instances Operations</a></li>';
                                 cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleine_li + notebook_li + log_li + sciSpace_operations_li + notebook_li);
