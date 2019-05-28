@@ -11,12 +11,12 @@ from clouds.signals import materialized, executed, monitored, destroyed, tidied,
 from clouds.signals import tidy_operation, select_operation
 from engines.models import Cluster
 
-# @receiver(post_save, sender=models.DataEngine)
-# def data_engine_post_save(sender,instance,created,**kwargs):
-#     if created:
-#         if not instance.endpoint:
-#             instance.endpoint=instance.component.endpoint
-#             instance.save()
+@receiver(post_save, sender=models.DataEngine)
+def data_engine_post_save(sender,instance,created,**kwargs):
+    if created:
+        if not instance.endpoint:
+            instance.endpoint=instance.component.endpoint
+            instance.save()
 
 @receiver(pre_save, sender=models.DataInstance)
 def pre_fill_data_instance(sender,instance,**kwargs):
