@@ -13,19 +13,7 @@ from django.db.models import Sum, Count
 from rest_framework.response import Response
 from datetime import timedelta, datetime
 from dal import autocomplete
-from engines.models import Component,Engine,Cluster
-
-class DataEngineComponentAutocompleteView(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Component.objects.none()
-        engine_id = self.forwarded.get('engine', None)
-        if not engine_id:
-            return Component.objects.none()
-        qs = Engine.objects.get(pk=engine_id).components.all()
-        if self.q:
-            qs = qs.filter(name__istartswith=self.q)
-        return qs
+from engines.models import Engine,Cluster
 
 class DataInstanceEngineAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
