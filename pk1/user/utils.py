@@ -11,7 +11,7 @@ class CurrentUserMiddleware(object):
         if not request.user.is_anonymous:
             parts=request.get_full_path().split('/')
             if len(parts)>2 and parts[1]=='space':
-                _user.space=request.user.clusters.get(pk=parts[2])
+                _user.space=request.user.clusters().get(pk=parts[2])
         request.space=_user.space
         return self.get_response(request)
 
