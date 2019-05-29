@@ -355,9 +355,14 @@
     var window_location_pathname = window.location.pathname;
     var window_location_search = window.location.search;
     var space_id = document.getElementById("current-space-id").innerHTML;
+    var current_space_portal = document.getElementById("current-space-portal").innerHTML;
     var space_home_url = '';
     if (space_id) {
         space_home_url = '/space/' + space_id;
+    }
+    var site_name_a = document.getElementById("site-name").firstElementChild;
+    if (site_name_a) {
+        site_name_a.setAttribute("href", space_home_url + "/");
     }
     if ('/login/' === window_location_pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window_location_pathname + '?next=/engines/cluster';
@@ -578,14 +583,16 @@
         // 菜单调整
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
-        if (sidebar_section_array && sidebar_section_array.length > 2) {
+        if (sidebar_section_array && sidebar_section_array.length > 1) {
             // 用于存放data菜单组
             var sidebar_section_array_i = "";
             // 循环
-            for (var i = 0; i < sidebar_section_array.length; i++) {
+            for (var i = 1; i < sidebar_section_array.length; i++) {
                 //隐藏菜单组
                 sidebar_section_array[i].style.display = "none";
-                sidebar_section_array_i = sidebar_section_array[i];
+                if (i === sidebar_section_array.length - 1) {
+                    sidebar_section_array_i = sidebar_section_array[i];
+                }
             }
             // 判断是否添加菜单组
             if (sidebar_section_array_i) {
@@ -598,7 +605,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + ' <span class="sidebar-link-label">Datasets</span>'
+                    + ' <span class="sidebar-link-label">Open Datasets</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -606,7 +613,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Data instances</span>'
+                    + '<span class="sidebar-link-label">Instances</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -632,7 +639,7 @@
                     + '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>'
                     + '</div>'
                     + '<div>'
-                    + '<a href="' + space_home_url + '/engines/stepoperation" class="sidebar-link">'
+                    + '<a href="' + space_home_url + '/engines/stepoperation/" class="sidebar-link">'
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
@@ -640,15 +647,33 @@
                     + '</a>'
                     + '</div>'
                     + '<div>'
-                    + '<a href="' + space_home_url + '/data/datainstanceoperation" class="sidebar-link">'
+                    + '<a href="' + space_home_url + '/data/datainstanceoperation/" class="sidebar-link">'
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
                     + '<span class="sidebar-link-label">Instances Operations</span>'
                     + '</a>'
                     + '</div>'
+                    + '<div>'
+                    + '<a href="' + current_space_portal + '" target="_blank" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">Cluster Manage</span>'
+                    + '</a>'
+                    + '</div>'
                     + '</div>';
                 sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addNewMenuData + addNewMenuAdmin);
+            }
+            //替换Home的href
+            var sidebar_section_array_first_array = sidebar_section_array[0].getElementsByTagName("a");
+            if (sidebar_section_array_first_array && sidebar_section_array_first_array.length > 0) {
+                for (var i = 0; i < sidebar_section_array_first_array.length; i++) {
+                    if ("/" === sidebar_section_array_first_array[i].getAttribute("href")) {
+                        sidebar_section_array_first_array[i].setAttribute("href", space_home_url + "/");
+                        break;
+                    }
+                }
             }
         }
         if (space_home_url + "/" === window_location_pathname) {
@@ -658,6 +683,31 @@
             } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
                 var rightContent = document.getElementById("content");
                 rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.78:9995"></iframe>';
+            } else if ("?QueryHue" === window.location.search || "?QueryHue#" === window.location.search) {
+                var rightContent = document.getElementById("content");
+                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:8000/notebook/editor?type=hive"></iframe>';
+            } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
+                var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+                if (cf_children && cf_children.length > 0) {
+                    for (var i = 0; i < cf_children.length; i++) {
+                        var cf_children_dashboard_item_header_title = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                        if (cf_children_dashboard_item_header_title && "Applications" === cf_children_dashboard_item_header_title.textContent.trim()) {
+                            cf_children[i].getElementsByClassName("dashboard-item-header-title")[0].textContent = "Application models";
+                            cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
+                            var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
+                            cf_children_i_ul.style.display = "none";
+                            var cf_children_i_ul_new = "<ul>"
+                                + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
+                                + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
+                                + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
+                                + "</ul>";
+                            cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
+                        } else {
+                            cf_children[i].style.display = "none";
+                        }
+                    }
+                }
             } else {
                 var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
                 if (element_first_div) {
@@ -708,8 +758,9 @@
                                     + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
                                     + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
                                     + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
-                                    + '<li><a href="' + space_home_url + '/engines/stepoperation">SciSpace Operations</a></li>'
-                                    + '<li><a href="' + space_home_url + '/data/datainstanceoperation">Instances Operations</a></li>'
+                                    + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
+                                    + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                    + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                     + "</ul>";
                                 cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
                             }
@@ -718,29 +769,67 @@
                 }
             }
         }
+        var breadcrumbs_initialized_a_array = document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a');
+        if (breadcrumbs_initialized_a_array && breadcrumbs_initialized_a_array.length > 0) {
+            for (var i = 0; i < breadcrumbs_initialized_a_array.length; i++) {
+                var breadcrumbs_initialized_a_array_i_href = breadcrumbs_initialized_a_array[i].getAttribute("href");
+                if (breadcrumbs_initialized_a_array_i_href) {
+                    breadcrumbs_initialized_a_array[i].setAttribute("href", space_home_url + breadcrumbs_initialized_a_array_i_href);
+                }
+            }
+        }
         if (space_home_url + "/data/" === window_location_pathname) {
             var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
             if (cf_children && cf_children.length > 0) {
                 for (var i = 0; i < cf_children.length; i++) {
-                    if ("Application models" === cf_children[i].getElementsByClassName("dashboard-item-header-title")[0].textContent.trim()) {
+                    var cf_children_dashboard_item_header_title = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                    if (cf_children_dashboard_item_header_title && "Application models" === cf_children_dashboard_item_header_title.textContent.trim()) {
                         cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
-                        var cf_children_i_li_array = cf_children[i].getElementsByTagName("li");
-                        for (var j = 0; j < cf_children_i_li_array.length; j++) {
-                            var aHref1 = cf_children_i_li_array[j].lastElementChild.getAttribute("href");
-                            if ("/data/datainstance/" !== aHref1 && "/data/dataset/" !== aHref1) {
-                                cf_children_i_li_array[j].style.display = "none";
-                            } else {
-                                cf_children_i_li_array[j].getElementsByTagName("span")[0].style.display = "none";
-                                cf_children_i_li_array[j].lastElementChild.setAttribute("href", space_home_url + aHref1);
-                            }
-                        }
                         var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
-                        var pipleineLi = '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>';
-                        var notebookLi = '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>';
-                        cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleineLi + notebookLi);
+                        cf_children_i_ul.style.display = "none";
+                        var cf_children_i_ul_new = "<ul>"
+                            + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
+                            + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
+                            + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
+                            + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
+                            + "</ul>";
+                        cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
                     } else {
                         cf_children[i].style.display = "none";
                     }
+                }
+            }
+        }
+        if (space_home_url + "/data/dataset/" === window_location_pathname) {
+            var result_list_table = document.getElementById('result_list');
+            var result_list_table_array = result_list_table.getElementsByClassName("button");
+            if (result_list_table_array && result_list_table_array.length > 0) {
+                for (var i = 0; i < result_list_table_array.length; i++) {
+                    if ("Load" === result_list_table_array[i].text) {
+                        var result_list_table_array_i_href = result_list_table_array[i].getAttribute("href");
+                        if (result_list_table_array_i_href) {
+                            result_list_table_array[i].setAttribute("href", space_home_url + result_list_table_array_i_href);
+                        }
+                    }
+                }
+            }
+        }
+        if (space_home_url + "/data/datainstance/" === window_location_pathname) {
+            var result_list_table = document.getElementById('result_list');
+            var result_list_table_array = result_list_table.getElementsByClassName("button");
+            var hide_result_list_table_array = [];
+            if (result_list_table_array && result_list_table_array.length > 0) {
+                for (var i = 0; i < result_list_table_array.length; i++) {
+                    if ("Query" === result_list_table_array[i].text) {
+                        hide_result_list_table_array.push(result_list_table_array[i]);
+                    }
+                }
+            }
+            if (hide_result_list_table_array && hide_result_list_table_array.length > 0) {
+                var query_a = '<a href="' + space_home_url + '/?QueryHue" class="button">Query</a>';
+                for (var i = 0; i < hide_result_list_table_array.length; i++) {
+                    hide_result_list_table_array[i].style.display = "none";
+                    hide_result_list_table_array[i].outerHTML = (hide_result_list_table_array[i].outerHTML + query_a);
                 }
             }
         }
