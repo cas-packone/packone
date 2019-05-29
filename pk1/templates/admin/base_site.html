@@ -255,7 +255,7 @@
 {% endblock %}
 
 {% block nav-global %}
-<a href="https://github.com/cas-bigdatalab/packone" class="sidebar-link icon">
+<a href="https://github.com/cas-bigdatalab/packone" class="sidebar-link icon" style="display:none;">
     <span class="sidebar-link-label">
         <span class="sidebar-link-icon">
             <i class="fab fa-github"></i>
@@ -398,107 +398,9 @@
     var changelist_footer_div = "";
     var result_list_select_array = "";
     window.onload = function () {
-        if (space_home_url + "/" === window_location_pathname && '?Analysis' !== window.location.search) {
+        if (space_home_url + "/" === window_location_pathname) {
             if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
-            }
-        }
-        // 菜单调整
-        // 查找所有a标签
-        var a_tag_all = document.getElementsByTagName('a');
-        // 判空
-        if (a_tag_all && a_tag_all.length > 0) {
-            // 移除不需要菜单
-            // 循环判断a标签
-            for (var i = 0; i < a_tag_all.length; i++) {
-                var a_tag_all_i_href = a_tag_all[i].getAttribute("href");
-                if ('https://github.com/cas-bigdatalab/packone' === a_tag_all_i_href) {
-                    a_tag_all[i].style.display = "none";
-                }
-                a_tag_all[i].setAttribute("href", space_home_url + a_tag_all_i_href);
-            }
-        }
-        // 查找所有的菜单组
-        var sidebar_section_array = document.getElementsByClassName('sidebar-section');
-        if (sidebar_section_array && sidebar_section_array.length > 2) {
-            // 用于存放data菜单组
-            var sidebar_section_array_i = "";
-            // 循环
-            for (var i = 0; i < sidebar_section_array.length; i++) {
-                var sidebar_section_array_fitst_child = sidebar_section_array[i].firstElementChild;
-                if (sidebar_section_array_fitst_child) {
-                    var sidebar_section_array_fitst_child_a = sidebar_section_array_fitst_child.getElementsByTagName("a")[0];
-                    if (sidebar_section_array_fitst_child_a) {
-                        if (space_home_url + "/data/" === sidebar_section_array_fitst_child_a.getAttribute("href")) {
-                            sidebar_section_array_i = sidebar_section_array[i];
-                        } else {
-                            //隐藏菜单组
-                            sidebar_section_array[i].style.display = "none";
-                        }
-                    }
-                }
-            }
-            // 判断是否有data菜单组
-            if (sidebar_section_array_i) {
-                var sidebar_section_array_i_a_array = sidebar_section_array_i.getElementsByTagName("a");
-                if (sidebar_section_array_i_a_array && sidebar_section_array_i_a_array.length > 0) {
-                    var data_group_menu_datainstance_element = "";
-                    for (var i = 1; i < sidebar_section_array_i_a_array.length; i++) {
-                        var sidebar_section_array_i_a_array_i_href = sidebar_section_array_i_a_array[i].getAttribute("href");
-                        if (space_home_url+"/data/dataset/" === sidebar_section_array_i_a_array_i_href) {
-                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Open Datasets";
-                        } else if (space_home_url+"/data/datainstance/" === sidebar_section_array_i_a_array_i_href) {
-                            sidebar_section_array_i_a_array[i].getElementsByClassName('sidebar-link-label')[0].innerText = "Instances";
-                            data_group_menu_datainstance_element = sidebar_section_array_i_a_array[i].parentNode;
-                        } else {
-                            // 隐藏菜单
-                            sidebar_section_array_i_a_array[i].style.display = "none";
-                        }
-                    }
-                }
-                // 判断是否添加新菜单
-                if (data_group_menu_datainstance_element) {
-                    var analysisMenu = '<div>' +
-                        '<a href="' + space_home_url + '/?Analysis" class="sidebar-link">' +
-                        '<span class="sidebar-right">' +
-                        '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                        '</span>' +
-                        '<span class="sidebar-link-label">Data Pipeline</span>' +
-                        '</a>' +
-                        '</div>';
-                    var zeppelinNotebookMenu = '<div>' +
-                        '<a href="' + space_home_url + '/?ZeppelinNotebook" class="sidebar-link">' +
-                        '<span class="sidebar-right">' +
-                        '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                        '</span>' +
-                        '<span class="sidebar-link-label">Notebook</span>' +
-                        '</a>' +
-                        '</div>';
-                    data_group_menu_datainstance_element.outerHTML = data_group_menu_datainstance_element.outerHTML + analysisMenu + zeppelinNotebookMenu;
-                }
-                // 添加菜单组
-                var addNewMenuLog = '<div class="sidebar-section">' +
-                    '<div class="sidebar-title">' +
-                    '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>' +
-                    '</div>' +
-                    '<div>' +
-                    '<a href="' + space_home_url + '/engines/stepoperation" class="sidebar-link">' +
-                    '<span class="sidebar-right">' +
-                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                    '</span>' +
-                    '<span class="sidebar-link-label">SciSpace Operations</span>' +
-                    '</a>' +
-                    '</div>' +
-                    '<div>' +
-                    '<a href="' + space_home_url + '/data/datainstanceoperation" class="sidebar-link">' +
-                    '<span class="sidebar-right">' +
-                    '<span class="sidebar-right-arrow icon-arrow-right"></span>' +
-                    '</span>' +
-                    '<span class="sidebar-link-label">Instances Operations</span>' +
-                    '</a>' +
-                    '</div>' +
-                    '</div>';
-                sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addNewMenuLog);
             }
         }
         // 多选平铺
@@ -672,6 +574,82 @@
                 };
             }
         }
+        // 菜单调整
+        // 查找所有的菜单组
+        var sidebar_section_array = document.getElementsByClassName('sidebar-section');
+        if (sidebar_section_array && sidebar_section_array.length > 2) {
+            // 用于存放data菜单组
+            var sidebar_section_array_i = "";
+            // 循环
+            for (var i = 0; i < sidebar_section_array.length; i++) {
+                //隐藏菜单组
+                sidebar_section_array[i].style.display = "none";
+                sidebar_section_array_i = sidebar_section_array[i];
+            }
+            // 判断是否添加菜单组
+            if (sidebar_section_array_i) {
+                var addNewMenuData = '<div class="sidebar-section">'
+                    + '<div class="sidebar-title">'
+                    + '<a href="/data/" class="sidebar-title-link">Data</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/data/dataset/" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + ' <span class="sidebar-link-label">Datasets</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/data/datainstance/" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">Data instances</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/?Analysis" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">Data Pipeline</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/?ZeppelinNotebook" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">Notebook</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '</div>';
+                // 添加Admin菜单组
+                var addNewMenuAdmin = '<div class="sidebar-section">'
+                    + '<div class="sidebar-title">'
+                    + '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/engines/stepoperation" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">SciSpace Operations</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '<div>'
+                    + '<a href="' + space_home_url + '/data/datainstanceoperation" class="sidebar-link">'
+                    + '<span class="sidebar-right">'
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
+                    + '</span>'
+                    + '<span class="sidebar-link-label">Instances Operations</span>'
+                    + '</a>'
+                    + '</div>'
+                    + '</div>';
+                sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addNewMenuData + addNewMenuAdmin);
+            }
+        }
         if (space_home_url + "/" === window_location_pathname) {
             if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                 var rightContent = document.getElementById("content");
@@ -683,35 +661,35 @@
                 var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
                 if (element_first_div) {
                     var element_first_div_inner_html = element_first_div.innerHTML;
-                    var ss = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">' +
-                        '<div class="dashboard-item-header ui-sortable-handle">' +
-                        '<span class="dashboard-item-header-drag icon-grid"></span>' +
-                        '<span class="dashboard-item-header-title">' +
-                        '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>' +
-                        '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>' +
-                        'State' +
-                        '</span>' +
-                        '<div class="cf"></div>' +
-                        '</div>' +
-                        '<div class="dashboard-item-content">' +
-                        '<ul>' +
-                        '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>' +
-                        '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>' +
-                        '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>' +
-                        '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>' +
-                        '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>' +
-                        '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>' +
-                        '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>' +
-                        '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>' +
-                        '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
-                        '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
-                        '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
-                        '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
-                        '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>' +
-                        '</ul>' +
-                        '</div>' +
-                        '</div>';
-                    element_first_div.innerHTML = ss + element_first_div_inner_html;
+                    var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
+                        + '<div class="dashboard-item-header ui-sortable-handle">'
+                        + '<span class="dashboard-item-header-drag icon-grid"></span>'
+                        + '<span class="dashboard-item-header-title">'
+                        + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
+                        + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
+                        + 'State'
+                        + '</span>'
+                        + '<div class="cf"></div>'
+                        + '</div>'
+                        + '<div class="dashboard-item-content">'
+                        + '<ul>'
+                        + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
+                        + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
+                        + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
+                        + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
+                        + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
+                        + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
+                        + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
+                        + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
+                        + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                        + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                        + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                        + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                        + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                        + '</ul>'
+                        + '</div>'
+                        + '</div>';
+                    element_first_div.innerHTML = state_div + element_first_div_inner_html;
                 }
                 var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                 if (cf_children && cf_children.length > 0) {
@@ -720,24 +698,19 @@
                         if (titleElemet) {
                             if ("Applications" === titleElemet.textContent.trim()) {
                                 cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
-                                var cf_children_i_li_array = cf_children[i].getElementsByTagName("li");
-                                for (var j = 0; j < cf_children_i_li_array.length; j++) {
-                                    var aHref1 = cf_children_i_li_array[j].lastElementChild.getAttribute("href");
-                                    if ("/data/" !== aHref1 && "/data/datainstance/" !== aHref1 && "/data/dataset/" !== aHref1) {
-                                        cf_children_i_li_array[j].style.display = "none";
-                                    } else {
-                                        if (cf_children_i_li_array[j].getElementsByTagName("span")[0]) {
-                                            cf_children_i_li_array[j].getElementsByTagName("span")[0].style.display = "none";
-                                        }
-                                    }
-                                }
                                 var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
-                                var pipleine_li = '<li><a href="/?Analysis">Data Pipeline</a></li>';
-                                var notebook_li = '<li><a href="/?ZeppelinNotebook">Notebook</a></li>';
-                                var log_li = '<li class="contrast"><a href="/?logHome" title="Models in the log application">Admin</a></li>';
-                                var sciSpace_operations_li = '<li><a href="/engines/stepoperation">SciSpace Operations</a></li>';
-                                var notebook_li = '<li><a href="/data/datainstanceoperation">Instances Operations</a></li>';
-                                cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleine_li + notebook_li + log_li + sciSpace_operations_li + notebook_li);
+                                cf_children_i_ul.style.display = "none";
+                                var cf_children_i_ul_new = "<ul>"
+                                    + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">data</a>Data</a></li>'
+                                    + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
+                                    + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
+                                    + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
+                                    + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
+                                    + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
+                                    + '<li><a href="' + space_home_url + '/engines/stepoperation">SciSpace Operations</a></li>'
+                                    + '<li><a href="' + space_home_url + '/data/datainstanceoperation">Instances Operations</a></li>'
+                                    + "</ul>";
+                                cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
                             }
                         }
                     }
@@ -757,11 +730,12 @@
                                 cf_children_i_li_array[j].style.display = "none";
                             } else {
                                 cf_children_i_li_array[j].getElementsByTagName("span")[0].style.display = "none";
+                                cf_children_i_li_array[j].lastElementChild.setAttribute("href", space_home_url + aHref1);
                             }
                         }
                         var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
-                        var pipleineLi = '<li><a href="/?Analysis">Data Pipeline</a></li>';
-                        var notebookLi = '<li><a href="/?ZeppelinNotebook">Notebook</a></li>';
+                        var pipleineLi = '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>';
+                        var notebookLi = '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>';
                         cf_children_i_ul.innerHTML = (cf_children_i_ul.innerHTML + pipleineLi + notebookLi);
                     } else {
                         cf_children[i].style.display = "none";
@@ -781,72 +755,72 @@
             document.getElementById('container').firstElementChild.style.display = "none";
 
             var contentElement = document.getElementById('content');
-            var contentElementNew = '<div id="contentNew" class="flex">' +
-                '<p style="text-align: center;font-size: 26px;">Scispace List</p>' +
-                '<p style="text-align: right;">' +
-                '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>' +
-                '</p>' +
-                '<div class="dashboard-container columns_4 cf">';
+            var contentElementNew = '<div id="contentNew" class="flex">'
+                + '<p style="text-align: center;font-size: 26px;">Scispace List</p>'
+                + '<p style="text-align: right;">'
+                + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>'
+                + '</p>'
+                + '<div class="dashboard-container columns_4 cf">';
             var result_list_cluster = document.getElementById('result_list');
             if (result_list_cluster) {
                 var result_list_cluster_tr = result_list_cluster.getElementsByTagName('tr');
                 if (result_list_cluster_tr && result_list_cluster_tr.length > 1) {
                     for (var i = 1; i < result_list_cluster_tr.length; i++) {
-                        contentElementNew += ('<div class="dashboard-column-wrapper">' +
-                            '<div class="dashboard-column ui-droppable ui-sortable">' +
-                            '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">' +
-                            '<div class="dashboard-item-header ui-sortable-handle">' +
-                            '<span class="dashboard-item-header-title">' +
-                            '<a href="javascript:openStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' +
-                            '<span class="dashboard-item-header-collapse-button icon-arrow-down"></span>' +
-                            '</a>' +
-                            '<a href="javascript:closedStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' +
-                            '<span class="dashboard-item-header-collapse-button icon-arrow-up"></span>' +
-                            result_list_cluster_tr[i].getElementsByTagName('th')[0].getElementsByTagName('a')[0].innerText +
-                            '</a>' +
-                            '</span>' +
-                            '<div class="cf"></div>' +
-                            '</div>' +
-                            '<div class="dashboard-item-content">' +
-                            '<table>' +
-                            '<tbody>');
+                        contentElementNew += ('<div class="dashboard-column-wrapper">'
+                            + '<div class="dashboard-column ui-droppable ui-sortable">'
+                            + '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">'
+                            + '<div class="dashboard-item-header ui-sortable-handle">'
+                            + '<span class="dashboard-item-header-title">'
+                            + '<a href="javascript:openStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">'
+                            + '<span class="dashboard-item-header-collapse-button icon-arrow-down"></span>'
+                            + '</a>'
+                            + '<a href="javascript:closedStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">'
+                            + '<span class="dashboard-item-header-collapse-button icon-arrow-up"></span>'
+                            + result_list_cluster_tr[i].getElementsByTagName('th')[0].getElementsByTagName('a')[0].innerText
+                            + '</a>'
+                            + '</span>'
+                            + '<div class="cf"></div>'
+                            + '</div>'
+                            + '<div class="dashboard-item-content">'
+                            + '<table>'
+                            + '<tbody>');
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
                         if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length > 6) {
                             var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
-                            contentElementNew += ('<tr>' +
-                                '<td style="width: 31%;">Scale</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>' +
-                                '</tr>' +
-                                '<tr>' +
-                                '<td style="width: 31%;">Remark</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[2].innerHTML + '</td>' +
-                                '</tr>' +
-                                '<tr>' +
-                                '<td style="width: 31%;">Public</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>' +
-                                '</tr>' +
-                                '<tr>' +
-                                '<td style="width: 31%;">Created Time</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>' +
-                                '</tr>' +
-                                '<td style="width: 31%;">Built Time</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>' +
-                                '</tr>' +
-                                '<td style="width: 31%;">Status</td>' +
-                                '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>' +
-                                '</tr>' +
-                                '</tr>' +
-                                '<td colspan="2">' +
-                                // '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' +
-                                '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" >Enter</a></td>' +
-                                '</tr>');
+                            contentElementNew += ('<tr>'
+                                + '<td style="width: 31%;">Scale</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<tr>'
+                                + '<td style="width: 31%;">Remark</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[2].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<tr>'
+                                + '<td style="width: 31%;">Public</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<tr>'
+                                + '<td style="width: 31%;">Created Time</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<td style="width: 31%;">Built Time</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<td style="width: 31%;">Status</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>'
+                                + '</tr>'
+                                + '</tr>'
+                                + '<td colspan="2">'
+                                // + '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' 
+                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" >Enter</a></td>'
+                                + '</tr>');
                         }
-                        contentElementNew += ('</tbody>' +
-                            '</table>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>');
+                        contentElementNew += ('</tbody>'
+                            + '</table>'
+                            + '</div>'
+                            + '</div>'
+                            + '</div>'
+                            + '</div>');
                     }
                 }
             }
