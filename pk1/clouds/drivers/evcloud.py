@@ -169,7 +169,8 @@ def template_list(credential):
         {'id': '1', 'name': 'm1.tiny', 'mem': 512, 'vcpu': 1}, 
         {'id': '2', 'name': 'm1.small', 'mem': 2048, 'vcpu': 1},
         {'id': '3', 'name': 'm1.medium', 'mem': 4096, 'vcpu': 2},
-        {'id': '4', 'name': 'm1.large', 'mem': 8192, 'vcpu': 4}, 
-        {'id': '5', 'name': 'm1.xlarge', 'mem': 16384, 'vcpu': 8}, 
-        {'id': '6', 'name': 'l1.medium', 'mem': 4096, 'vcpu': 2},
+        {'id': '4', 'name': 'm1.large', 'mem': 8192, 'vcpu': 2}, 
+        {'id': '5', 'name': 'm1.xlarge', 'mem': 16384, 'vcpu': 4}, 
+        {'id': '6', 'name': 'm1.xxlarge', 'mem': 32768, 'vcpu': 8},
+        {'id': '7', 'name': 'm1.xxxlarge', 'mem': 65536, 'vcpu': 16},
     )
