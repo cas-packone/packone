@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import Max
 from django.utils.timezone import now
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save, pre_delete
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
 from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
@@ -346,6 +346,12 @@ def close_group_operation(sender, instance, **kwargs):
             running_op.status=running_op.get_status()
             running_op.save()
             executed.send(sender=GroupOperation, instance=running_op, name='executed')
+
+@receiver(post_delete, sender=InstanceOperation)
+def purge_group_operation(sender, instance, **kwargs):
+    g_op=GroupOperation.objects.filter(uuid=instance.batch_uuid).first()
+    if not g_op.get_sub_operations().exists():
+        g_op.delete()
 
 @receiver(monitored, sender=Instance)
 @receiver(destroyed, sender=Mount)
