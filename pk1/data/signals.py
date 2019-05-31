@@ -14,12 +14,16 @@ from clouds.signals import tidy_operation, select_operation
 @receiver(post_save, sender=models.DataInstance)
 def materialize_data_instance(sender,instance,**kwargs):
     if not kwargs['created'] or instance.ready: return
+    tmpdir="/data/packone/"+instance.uri_suffix
+    scripts="mkdir -p "+tmpdir+'\n'
+    scripts+=instance.dataset.remedy_script+'\n\n'
+    scripts+='cd '+tmpdir+';'+instance.engine.remedy_script.format(tmpdir)
+    ins=instance.engine.engine.get_host(instance.cluster)
+    ins.remedy(scripts, manual=False)
     # (host,cmd,path)=instance.uri_elected.split('://')
     # ins=instance.cluster.find_instance(host)
     # if not ins: raise Exception('cannot find the uri located instance: {}'.format(host))
     # ssh=utils.open_ssh(ins.ipv4,ins.location.instance_credential)
-    # tmpdir="/data/space/"+instance.uri_suffix
-    # utils.exec_batch(ssh,"mkdir -p "+tmpdir)
     # cmd='cd '+tmpdir+';'+instance.dataset.uri+";"
     # if instance.dataset.remedy_script: cmd+=instance.dataset.remedy_script
     # utils.exec_batch(ssh,cmd)

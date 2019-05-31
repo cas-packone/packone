@@ -42,18 +42,9 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     name=models.CharField(max_length=50, unique=True)
     description=models.TextField(max_length=5120,blank=True,default='')
-    def start(self, pilot):
-        print(utils.ambari_service_start('admin','admin',pilot.portal,self.name.upper()))
-    def stop(self, pilot):
-        print(utils.ambari_service_stop('admin','admin',pilot.portal,self.name.upper()))
-    def status(self, pilot):
-        state=utils.ambari_service_status('admin','admin',pilot.portal,self.name.upper())['ServiceInfo']['state']
-        if state=='INSTALLED':
-            return COMPONENT_STATUS.stop.value
-        elif state=='STARTED':
-            return COMPONENT_STATUS.running.value
-        else:
-            return COMPONENT_STATUS.null.value
+    def get_host(self, cluster):
+        hostname=self.stack_set.first().driver.get_engine_host(cluster.portal, self.name)
+        return cluster.find_instance(hostname)
 
 import importlib
 class Stack(StaticModel):
@@ -237,8 +228,7 @@ class Cluster(models.Model,M2MOperatableMixin):
     #         size+=ib.quantity
     #     return size
     def find_instance(self,hostname):
-        matched_ins=self.instances.filter(hostname=hostname)
-        return matched_ins[0] if matched_ins.exists() else None
+        return self.get_instances.filter(hostname=hostname).first()
 
 def clusters_of_user(self):
     return Cluster.objects.filter(Q(public=True) | Q(owner=self))

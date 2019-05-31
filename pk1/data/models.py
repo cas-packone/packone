@@ -48,7 +48,7 @@ class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     name=models.CharField(max_length=50)
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
-    cluster=models.ForeignKey(Cluster,on_delete=models.CASCADE)
+    cluster=models.ForeignKey(Cluster,on_delete=models.PROTECT)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)
     created_time=models.DateTimeField(auto_now_add=True)
@@ -78,29 +78,32 @@ class DataInstance(models.Model,OperatableMixin):
     def building(self):
         return self.built_time and not self.ready
     @property
-    def uri_total(self):#TODO opt. perf.
-        endpoints=[]
-        for ins in self.space.pilot.cluster.instance_set.filter(image__in=self.engine.component.images.all()):
-            endpoints.append(ins.hostname+"://"+self.engine.endpoint)
-        return [endpoint+"://"+self.uri_suffix for endpoint in endpoints]
-    @property
-    def uri_alive(self):
-        endpoints=[]
-        for ins in self.space.pilot.cluster.instance_set.filter(image__in=self.engine.component.images.all(),status=clouds.models.INSTANCE_STATUS.running.value):
-            endpoints.append(ins.hostname+"://"+self.engine.endpoint)
-        return [endpoint+"://"+self.uri_suffix for endpoint in endpoints]
-    @property
-    def uri_elected(self):
-        if not self.uri_alive:
-            return None
-        return self.uri_alive[0]#TODO make load banlance
-    @property
-    def status_name(self):
-        return COMPONENT_STATUS(self.status).name
-    def update_status(self):
-        pes=self.engine.component.engine_set.filter(id__in=self.space.pilot.engines.all())
-        self.status=pes[0].status(self.space.pilot)
-        self.save()
+    def host(self):
+        return self.built_time and not self.ready
+    # @property
+    # def uri_total(self):#TODO opt. perf.
+    #     endpoints=[]
+    #     for ins in self.cluster.instances.filter(image__in=self.engine.component.images.all()):
+    #         endpoints.append(ins.hostname+"://"+self.engine.endpoint)
+    #     return [endpoint+"://"+self.uri_suffix for endpoint in endpoints]
+    # @property
+    # def uri_alive(self):
+    #     endpoints=[]
+    #     for ins in self.space.pilot.cluster.instance_set.filter(image__in=self.engine.component.images.all(),status=clouds.models.INSTANCE_STATUS.running.value):
+    #         endpoints.append(ins.hostname+"://"+self.engine.endpoint)
+    #     return [endpoint+"://"+self.uri_suffix for endpoint in endpoints]
+    # @property
+    # def uri_elected(self):
+    #     if not self.uri_alive:
+    #         return None
+    #     return self.uri_alive[0]#TODO make load banlance
+    # @property
+    # def status_name(self):
+    #     return COMPONENT_STATUS(self.status).name
+    # def update_status(self):
+    #     pes=self.engine.component.engine_set.filter(id__in=self.space.pilot.engines.all())
+    #     self.status=pes[0].status(self.space.pilot)
+    #     self.save()
 
 class DataInstanceOperation(OperationModel):
     #TODO add custom validator for operation 'start' on 'running' instance. model.clean()?
@@ -109,8 +112,6 @@ class DataInstanceOperation(OperationModel):
     target=models.ForeignKey(DataInstance,on_delete=models.CASCADE)
     log=models.TextField(max_length=51200,null=True,editable=False)
     def execute(self):
-        # EngineOperation(operation=instance.operation, pilot=instance.target.space.pilot, engine=e).save()
-        # instance.target.update_status()
         self.completed_time=datetime.datetime.now()
         self.save()
         #TODO add data instance monitoring
