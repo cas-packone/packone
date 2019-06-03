@@ -228,7 +228,7 @@ class Cluster(models.Model,M2MOperatableMixin):
     #         size+=ib.quantity
     #     return size
     def find_instance(self,hostname):
-        return self.get_instances.filter(hostname=hostname).first()
+        return self.get_instances().filter(hostname=hostname).first()
 
 def clusters_of_user(self):
     return Cluster.objects.filter(Q(public=True) | Q(owner=self))
