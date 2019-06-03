@@ -42,7 +42,8 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     form = DataInstanceForm
     def query(self, obj):
         # if not obj.ready: return None
-        return format_html('<a href="{}" target="_blank" class="button">Query</a>'.format('obj.uri_elected'))
+        url=obj.cluster.portal.split('//')[-1].split(':')[0]
+        return format_html('<a href="{}" type="{}" target="_blank" class="button">Query</a>'.format(url, obj.dataset.type_name))
     def action(self, obj):
         if obj.deleting:
             if not get_current_user().is_superuser: 
