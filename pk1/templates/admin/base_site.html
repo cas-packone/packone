@@ -705,92 +705,123 @@
             }
         }
         if (space_home_url + "/" === window_location_pathname) {
-            if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
-                var rightContent = document.getElementById("content");
-                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
-            } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
-                var rightContent = document.getElementById("content");
-                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.78:9995"></iframe>';
-            } else if ("?QueryHue" === window.location.search || "?QueryHue#" === window.location.search) {
-                var rightContent = document.getElementById("content");
-                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.141:8888/beeswax/#query"></iframe>';
-            } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
-                var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
-                if (cf_children && cf_children.length > 0) {
-                    for (var i = 0; i < cf_children.length; i++) {
-                        var cf_children_dashboard_item_header_title = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
-                        if (cf_children_dashboard_item_header_title && "Applications" === cf_children_dashboard_item_header_title.textContent.trim()) {
-                            cf_children[i].getElementsByClassName("dashboard-item-header-title")[0].textContent = "Application models";
-                            cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
-                            var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
-                            cf_children_i_ul.style.display = "none";
-                            var cf_children_i_ul_new = "<ul>"
-                                + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
-                                + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
-                                + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
-                                + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
-                                + "</ul>";
-                            cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
-                        } else {
-                            cf_children[i].style.display = "none";
-                        }
-                    }
+            var rightContent = document.getElementById("content");
+            var window_location_search_param = window.location.search;
+            var window_location_search_param_array_hive = window_location_search_param.split("?query_hive_");
+            var window_location_search_param_array_hdfs = window_location_search_param.split("?query_hdfs_");
+            var window_location_search_param_array_hbase = window_location_search_param.split("?query_hbase_");
+            var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB_");
+            var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore_");
+
+            if (window_location_search_param_array_hive && window_location_search_param_array_hive.length > 1 && "" === window_location_search_param_array_hive[0]) {
+                var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("_");
+                if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 0) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query"></iframe>';
+                }
+
+            } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
+                var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("_");
+                if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 0) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/"></iframe>';
+                }
+            } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
+                var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("_");
+                if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/"></iframe>';
+                }
+            } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
+                var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
+                if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_eventDB_param[0] + ':8081"></iframe>';
+                }
+            } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
+                var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
+                if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/"></iframe>';
                 }
             } else {
-                var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-                if (element_first_div) {
-                    var element_first_div_inner_html = element_first_div.innerHTML;
-                    var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
-                        + '<div class="dashboard-item-header ui-sortable-handle">'
-                        + '<span class="dashboard-item-header-drag icon-grid"></span>'
-                        + '<span class="dashboard-item-header-title">'
-                        + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
-                        + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
-                        + 'State'
-                        + '</span>'
-                        + '<div class="cf"></div>'
-                        + '</div>'
-                        + '<div class="dashboard-item-content">'
-                        + '<ul>'
-                        + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
-                        + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
-                        + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
-                        + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
-                        + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
-                        + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
-                        + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
-                        + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
-                        + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                        + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                        + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                        + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                        + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                        + '</ul>'
-                        + '</div>'
-                        + '</div>';
-                    element_first_div.innerHTML = state_div + element_first_div_inner_html;
-                }
-                var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
-                if (cf_children && cf_children.length > 0) {
-                    for (var i = 0; i < cf_children.length; i++) {
-                        var titleElemet = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
-                        if (titleElemet) {
-                            if ("Applications" === titleElemet.textContent.trim()) {
+                if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+                } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
+                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.78:9995"></iframe>';
+                } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
+                    var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+                    if (cf_children && cf_children.length > 0) {
+                        for (var i = 0; i < cf_children.length; i++) {
+                            var cf_children_dashboard_item_header_title = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                            if (cf_children_dashboard_item_header_title && "Applications" === cf_children_dashboard_item_header_title.textContent.trim()) {
+                                cf_children[i].getElementsByClassName("dashboard-item-header-title")[0].textContent = "Application models";
                                 cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
                                 var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                                 cf_children_i_ul.style.display = "none";
                                 var cf_children_i_ul_new = "<ul>"
-                                    + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">data</a>Data</a></li>'
-                                    + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
-                                    + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
-                                    + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
-                                    + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
                                     + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
                                     + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
                                     + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
                                     + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                     + "</ul>";
                                 cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
+                            } else {
+                                cf_children[i].style.display = "none";
+                            }
+                        }
+                    }
+                } else {
+                    var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
+                    if (element_first_div) {
+                        var element_first_div_inner_html = element_first_div.innerHTML;
+                        var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
+                            + '<div class="dashboard-item-header ui-sortable-handle">'
+                            + '<span class="dashboard-item-header-drag icon-grid"></span>'
+                            + '<span class="dashboard-item-header-title">'
+                            + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
+                            + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
+                            + 'State'
+                            + '</span>'
+                            + '<div class="cf"></div>'
+                            + '</div>'
+                            + '<div class="dashboard-item-content">'
+                            + '<ul>'
+                            + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
+                            + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
+                            + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
+                            + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
+                            + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
+                            + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
+                            + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
+                            + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
+                            + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                            + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                            + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                            + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                            + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                            + '</ul>'
+                            + '</div>'
+                            + '</div>';
+                        element_first_div.innerHTML = state_div + element_first_div_inner_html;
+                    }
+                    var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+                    if (cf_children && cf_children.length > 0) {
+                        for (var i = 0; i < cf_children.length; i++) {
+                            var titleElemet = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                            if (titleElemet) {
+                                if ("Applications" === titleElemet.textContent.trim()) {
+                                    cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
+                                    var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
+                                    cf_children_i_ul.style.display = "none";
+                                    var cf_children_i_ul_new = "<ul>"
+                                        + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">data</a>Data</a></li>'
+                                        + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
+                                        + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
+                                        + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
+                                        + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
+                                        + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
+                                        + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
+                                        + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                        + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
+                                        + "</ul>";
+                                    cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
+                                }
                             }
                         }
                     }
@@ -854,10 +885,24 @@
                 }
             }
             if (hide_result_list_table_array && hide_result_list_table_array.length > 0) {
-                var query_a = '<a href="' + space_home_url + '/?QueryHue" class="button">Query</a>';
+                var type_array_obj = new Object();
+                type_array_obj["ralational"] = "hive";
+                type_array_obj["raw"] = "hdfs";
+                type_array_obj["semistructed"] = "hbase";
+                type_array_obj["event"] = "eventDB";
+                type_array_obj["graph"] = "gstore";
                 for (var i = 0; i < hide_result_list_table_array.length; i++) {
-                    hide_result_list_table_array[i].style.display = "none";
-                    hide_result_list_table_array[i].outerHTML = (hide_result_list_table_array[i].outerHTML + query_a);
+                    var hide_result_list_table_array_i = hide_result_list_table_array[i];
+                    if (hide_result_list_table_array_i) {
+                        var query_a = '<a href="javascript:void(0);" class="button">Query</a>';
+                        hide_result_list_table_array_i.style.display = "none";
+                        var hide_result_list_table_array_i_type = hide_result_list_table_array_i.getAttribute("type");
+                        var hide_result_list_table_array_i_href = hide_result_list_table_array_i.getAttribute("href");
+                        if (type_array_obj[hide_result_list_table_array_i_type]) {
+                            query_a = '<a href="' + space_home_url + '/?query_' + type_array_obj[hide_result_list_table_array_i_type] + '_' + hide_result_list_table_array_i_href + '" class="button">Query</a>';
+                        }
+                        hide_result_list_table_array_i.outerHTML = (hide_result_list_table_array_i.outerHTML + query_a);
+                    }
                 }
             }
         }
