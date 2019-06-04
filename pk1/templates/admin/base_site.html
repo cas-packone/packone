@@ -712,38 +712,43 @@
             var window_location_search_param_array_hbase = window_location_search_param.split("?query_hbase_");
             var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB_");
             var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore_");
-
+            var iframe_src = "";
             if (window_location_search_param_array_hive && window_location_search_param_array_hive.length > 1 && "" === window_location_search_param_array_hive[0]) {
                 var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("_");
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 0) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query"></iframe>';
+                    //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
+                    iframe_src='http://10.0.88.141:8888/beeswax/#query';
                 }
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
                 var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("_");
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 0) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/"></iframe>';
+                    //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/';
+                    iframe_src='http://10.0.88.141:8888/filebrowser/';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
                 var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("_");
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/"></iframe>';
+                    //iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
+                    iframe_src='http://10.0.88.141:8888/hbase/';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_eventDB_param[0] + ':8081"></iframe>';
+                    //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8081';
+                    iframe_src='http://10.0.88.41:8081/';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/"></iframe>';
+                    //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/';
+                    iframe_src='http://10.0.88.41:8006/gStorems/';
                 }
             } else {
                 if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.86.131:6001/piflow-web/"></iframe>';
+                    iframe_src='http://10.0.86.131:6001/piflow-web/';
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
-                    rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="http://10.0.88.78:9995"></iframe>';
+                    iframe_src='http://10.0.88.78:9995';
                 } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
                     var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                     if (cf_children && cf_children.length > 0) {
@@ -826,6 +831,9 @@
                         }
                     }
                 }
+            }
+            if (iframe_src) {
+                rightContent.innerHTML = '<iframe style="width: 100%; height: -webkit-fill-available;border-width: 0px;" src="' + iframe_src + '"></iframe>';
             }
         }
         var breadcrumbs_initialized_a_array = document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a');
