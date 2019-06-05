@@ -4,7 +4,7 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-    .select2-container--default+.select2-container--jet {
+    .select2-container--default + .select2-container--jet {
         display: None;
     }
 
@@ -74,7 +74,7 @@
         border-radius: 4px
     }
 
-    .RadioStyle input:checked+label {
+    .RadioStyle input:checked + label {
         background: url(images/ico_checkon.svg) no-repeat right bottom;
         background-size: 21px 21px;
         color: #00a4ff
@@ -323,6 +323,7 @@
         }
         return cookieValue;
     }
+
     var csrftoken = getCookie('csrftoken');
     jQuery(function ($) {
         function operate(e) {
@@ -353,6 +354,7 @@
                         .fadeIn(800).fadeOut(5000);
                 });
         }
+
         $('form[method=post] a.button[data-op]').click(operate);
 
         function umount(e) {
@@ -375,6 +377,7 @@
                         .fadeIn(800).fadeOut(5000);
                 })
         }
+
         $('form[method=post] a.button[umount]').click(umount);
     });
 </script>
@@ -395,6 +398,7 @@
     if ('/login/' === window_location_pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window_location_pathname + '?next=/engines/cluster';
     }
+
     function hasClassCustom(elements, cName) {
         return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     }
@@ -424,11 +428,46 @@
             }
         }
     }
+
+    function getNoteBookList(requestHead) {
+        var rightContent_ = document.getElementById("content");
+        jQuery(function ($) {
+            $.get(requestHead + "/api/notebook", function (result) {
+                if (result) {
+                    if ("OK" === result.status) {
+                        var result_body = result.body;
+                        if (result_body && result_body.length > 0) {
+                            var table_element = '<table id="table_id" style="width: 100%;">'
+                                + '<thead><tr><th>Id</th><th>Name</th></tr></thead>';
+                            var table_tr = "";
+                            for (var i = 0; i < result_body.length; i++) {
+                                table_tr += ('<tr>'
+                                    + '<td><a href="javascript:changeIframeSrc(\'iframe_id\',\'http://10.0.88.78:9995/#/notebook/' + result_body[i].id + '\');" >' + result_body[i].id + '</a></td>'
+                                    + '<td>' + result_body[i].name + '</td>');
+                            }
+                            if (table_tr) {
+                                table_element += (table_tr + '</table>');
+                                rightContent_.innerHTML = (table_element + '<iframe id="iframe_id" style="width: 100%; height: 660px;border-width: 0px;" src=""></iframe>');
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function changeIframeSrc(iframe_id, url) {
+        var iframe_element = document.getElementById(iframe_id);
+        iframe_element.setAttribute("src", url);
+    }
+
     if ('/engines/cluster/' === window_location_pathname) {
         document.getElementById('content').style.display = "none";
     }
-    var actionSubmitFun = function () { };
-    var actionSubmitByIdFun = function () { };
+    var actionSubmitFun = function () {
+    };
+    var actionSubmitByIdFun = function () {
+    };
     var changelist_footer_div = "";
     var result_list_select_array = "";
     window.onload = function () {
@@ -717,38 +756,38 @@
                 var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("_");
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
-                    iframe_src='http://10.0.88.141:8888/beeswax/#query';
+                    iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
                 }
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
                 var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("_");
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/';
-                    iframe_src='http://10.0.88.141:8888/filebrowser/';
+                    iframe_src = 'http://10.0.88.141:8888/filebrowser/';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
                 var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("_");
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
-                    iframe_src='http://10.0.88.141:8888/hbase/';
+                    iframe_src = 'http://10.0.88.141:8888/hbase/';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8081';
-                    iframe_src='http://10.0.88.41:8081/';
+                    iframe_src = 'http://10.0.88.41:8081/';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/';
-                    iframe_src='http://10.0.88.41:8006/gStorems/';
+                    iframe_src = 'http://10.0.88.41:8006/gStorems/';
                 }
             } else {
                 if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
-                    iframe_src='http://10.0.86.131:6001/piflow-web/';
+                    iframe_src = 'http://10.0.86.131:6001/piflow-web/';
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
-                    iframe_src='http://10.0.88.78:9995';
+                    getNoteBookList('http://10.0.88.78:9995');
                 } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
                     var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                     if (cf_children && cf_children.length > 0) {
