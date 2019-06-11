@@ -4,7 +4,7 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-    .select2-container--default + .select2-container--jet {
+    .select2-container--default+.select2-container--jet {
         display: None;
     }
 
@@ -74,7 +74,7 @@
         border-radius: 4px
     }
 
-    .RadioStyle input:checked + label {
+    .RadioStyle input:checked+label {
         background: url(images/ico_checkon.svg) no-repeat right bottom;
         background-size: 21px 21px;
         color: #00a4ff
@@ -476,6 +476,9 @@
                 document.getElementById('branding-pin').click();
             }
         }
+        if ('/engines/cluster/' !== window_location_pathname && document.getElementById("add-dashboard-module-form")) {
+            document.getElementById("add-dashboard-module-form").parentElement.style.display = "none";
+        }
         // 多选平铺
         //查询到因select2隐藏的select
         var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
@@ -812,38 +815,38 @@
                     }
                 } else {
                     var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-                    if (element_first_div) {
-                        var element_first_div_inner_html = element_first_div.innerHTML;
-                        var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
-                            + '<div class="dashboard-item-header ui-sortable-handle">'
-                            + '<span class="dashboard-item-header-drag icon-grid"></span>'
-                            + '<span class="dashboard-item-header-title">'
-                            + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
-                            + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
-                            + 'State'
-                            + '</span>'
-                            + '<div class="cf"></div>'
-                            + '</div>'
-                            + '<div class="dashboard-item-content">'
-                            + '<ul>'
-                            + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
-                            + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
-                            + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
-                            + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
-                            + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
-                            + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
-                            + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
-                            + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
-                            + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                            + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                            + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                            + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                            + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                            + '</ul>'
-                            + '</div>'
-                            + '</div>';
-                        element_first_div.innerHTML = state_div + element_first_div_inner_html;
-                    }
+                    // if (element_first_div) {
+                    //     var element_first_div_inner_html = element_first_div.innerHTML;
+                    //     var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
+                    //         + '<div class="dashboard-item-header ui-sortable-handle">'
+                    //         + '<span class="dashboard-item-header-drag icon-grid"></span>'
+                    //         + '<span class="dashboard-item-header-title">'
+                    //         + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
+                    //         + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
+                    //         + 'State'
+                    //         + '</span>'
+                    //         + '<div class="cf"></div>'
+                    //         + '</div>'
+                    //         + '<div class="dashboard-item-content">'
+                    //         + '<ul>'
+                    //         + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
+                    //         + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
+                    //         + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
+                    //         + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
+                    //         + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
+                    //         + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
+                    //         + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
+                    //         + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
+                    //         + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                    //         + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                    //         + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                    //         + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                    //         + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
+                    //         + '</ul>'
+                    //         + '</div>'
+                    //         + '</div>';
+                    //     element_first_div.innerHTML = state_div + element_first_div_inner_html;
+                    // }
                     var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                     if (cf_children && cf_children.length > 0) {
                         for (var i = 0; i < cf_children.length; i++) {
@@ -875,12 +878,15 @@
                 rightContent.innerHTML = '<iframe style="width: 100%; height: 660px;border-width: 0px;" src="' + iframe_src + '"></iframe>';
             }
         }
-        var breadcrumbs_initialized_a_array = document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a');
-        if (breadcrumbs_initialized_a_array && breadcrumbs_initialized_a_array.length > 0) {
-            for (var i = 0; i < breadcrumbs_initialized_a_array.length; i++) {
-                var breadcrumbs_initialized_a_array_i_href = breadcrumbs_initialized_a_array[i].getAttribute("href");
-                if (breadcrumbs_initialized_a_array_i_href) {
-                    breadcrumbs_initialized_a_array[i].setAttribute("href", space_home_url + breadcrumbs_initialized_a_array_i_href);
+        var breadcrumbs_initialized = document.getElementsByClassName('breadcrumbs initialized');
+        if (breadcrumbs_initialized && breadcrumbs_initialized.length > 0) {
+            var breadcrumbs_initialized_a_array = breadcrumbs_initialized[0].getElementsByTagName('a');
+            if (breadcrumbs_initialized_a_array && breadcrumbs_initialized_a_array.length > 0) {
+                for (var i = 0; i < breadcrumbs_initialized_a_array.length; i++) {
+                    var breadcrumbs_initialized_a_array_i_href = breadcrumbs_initialized_a_array[i].getAttribute("href");
+                    if (breadcrumbs_initialized_a_array_i_href) {
+                        breadcrumbs_initialized_a_array[i].setAttribute("href", space_home_url + breadcrumbs_initialized_a_array_i_href);
+                    }
                 }
             }
         }
@@ -922,33 +928,35 @@
         }
         if (space_home_url + "/data/datainstance/" === window_location_pathname) {
             var result_list_table = document.getElementById('result_list');
-            var result_list_table_array = result_list_table.getElementsByClassName("button");
-            var hide_result_list_table_array = [];
-            if (result_list_table_array && result_list_table_array.length > 0) {
-                for (var i = 0; i < result_list_table_array.length; i++) {
-                    if ("Query" === result_list_table_array[i].text) {
-                        hide_result_list_table_array.push(result_list_table_array[i]);
+            if (result_list_table) {
+                var result_list_table_array = result_list_table.getElementsByClassName("button");
+                var hide_result_list_table_array = [];
+                if (result_list_table_array && result_list_table_array.length > 0) {
+                    for (var i = 0; i < result_list_table_array.length; i++) {
+                        if ("Query" === result_list_table_array[i].text) {
+                            hide_result_list_table_array.push(result_list_table_array[i]);
+                        }
                     }
                 }
-            }
-            if (hide_result_list_table_array && hide_result_list_table_array.length > 0) {
-                var type_array_obj = new Object();
-                type_array_obj["ralational"] = "hive";
-                type_array_obj["raw"] = "hdfs";
-                type_array_obj["semistructed"] = "hbase";
-                type_array_obj["event"] = "eventDB";
-                type_array_obj["graph"] = "gstore";
-                for (var i = 0; i < hide_result_list_table_array.length; i++) {
-                    var hide_result_list_table_array_i = hide_result_list_table_array[i];
-                    if (hide_result_list_table_array_i) {
-                        var query_a = '<a href="javascript:void(0);" class="button">Query</a>';
-                        hide_result_list_table_array_i.style.display = "none";
-                        var hide_result_list_table_array_i_type = hide_result_list_table_array_i.getAttribute("type");
-                        var hide_result_list_table_array_i_href = hide_result_list_table_array_i.getAttribute("href");
-                        if (type_array_obj[hide_result_list_table_array_i_type]) {
-                            query_a = '<a href="' + space_home_url + '/?query_' + type_array_obj[hide_result_list_table_array_i_type] + '_' + hide_result_list_table_array_i_href + '" class="button">Query</a>';
+                if (hide_result_list_table_array && hide_result_list_table_array.length > 0) {
+                    var type_array_obj = new Object();
+                    type_array_obj["ralational"] = "hive";
+                    type_array_obj["raw"] = "hdfs";
+                    type_array_obj["semistructed"] = "hbase";
+                    type_array_obj["event"] = "eventDB";
+                    type_array_obj["graph"] = "gstore";
+                    for (var i = 0; i < hide_result_list_table_array.length; i++) {
+                        var hide_result_list_table_array_i = hide_result_list_table_array[i];
+                        if (hide_result_list_table_array_i) {
+                            var query_a = '<a href="javascript:void(0);" class="button">Query</a>';
+                            hide_result_list_table_array_i.style.display = "none";
+                            var hide_result_list_table_array_i_type = hide_result_list_table_array_i.getAttribute("type");
+                            var hide_result_list_table_array_i_href = hide_result_list_table_array_i.getAttribute("href");
+                            if (type_array_obj[hide_result_list_table_array_i_type]) {
+                                query_a = '<a href="' + space_home_url + '/?query_' + type_array_obj[hide_result_list_table_array_i_type] + '_' + hide_result_list_table_array_i_href + '" class="button">Query</a>';
+                            }
+                            hide_result_list_table_array_i.outerHTML = (hide_result_list_table_array_i.outerHTML + query_a);
                         }
-                        hide_result_list_table_array_i.outerHTML = (hide_result_list_table_array_i.outerHTML + query_a);
                     }
                 }
             }
@@ -1022,7 +1030,7 @@
                                 + '</tr>'
                                 + '<td colspan="2">'
                                 // + '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' 
-                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" >Enter</a></td>'
+                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" >USE</a></td>'
                                 + '</tr>');
                         }
                         contentElementNew += ('</tbody>'
