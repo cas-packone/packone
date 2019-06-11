@@ -386,10 +386,15 @@
     var window_location_pathname = window.location.pathname;
     var window_location_search = window.location.search;
     var space_id = document.getElementById("current-space-id").innerHTML;
+    var space_name = document.getElementById("current-space").innerHTML;
     var current_space_portal = document.getElementById("current-space-portal").innerHTML;
     var space_home_url = '';
     if (space_id) {
         space_home_url = '/space/' + space_id;
+    }
+    if (space_name) {
+        var html_head_title = document.getElementsByTagName("head")[0].getElementsByTagName("title")[0];
+        html_head_title.text = html_head_title.text.replace("PackOne Console", space_name);
     }
     var site_name_a = document.getElementById("site-name").firstElementChild;
     if (site_name_a) {
@@ -437,7 +442,8 @@
                     if ("OK" === result.status) {
                         var result_body = result.body;
                         if (result_body && result_body.length > 0) {
-                            var table_element = '<table id="table_id" style="width: 100%;">'
+                            var table_element = '<p style="text-align: center;font-size: 26px;">Notebook List</p>'
+                                + '<table id="table_id" style="width: 100%;">'
                                 + '<thead><tr><th>Id</th><th>Name</th></tr></thead>';
                             var table_tr = "";
                             for (var i = 0; i < result_body.length; i++) {
@@ -668,7 +674,7 @@
             if (sidebar_section_array_i) {
                 var addNewMenuData = '<div class="sidebar-section">'
                     + '<div class="sidebar-title">'
-                    + '<a href="/data/" class="sidebar-title-link">Data</a>'
+                    + '<a href="' + space_home_url + '/data/" class="sidebar-title-link">Data</a>'
                     + '</div>'
                     + '<div>'
                     + '<a href="' + space_home_url + '/data/dataset/" class="sidebar-link">'
@@ -857,7 +863,7 @@
                                     var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                                     cf_children_i_ul.style.display = "none";
                                     var cf_children_i_ul_new = "<ul>"
-                                        + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">data</a>Data</a></li>'
+                                        + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">Data</a></li>'
                                         + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
                                         + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
                                         + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
