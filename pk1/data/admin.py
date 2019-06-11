@@ -3,6 +3,7 @@ from . import models
 from clouds.base.admin import StaticModelAdmin, OwnershipModelAdmin, OperatableAdminMixin, OperationAdmin
 from django.utils.html import format_html
 from django.urls import reverse
+from django.shortcuts import redirect
 from django import forms
 from django.db.models import Q
 from dal import autocomplete
@@ -59,6 +60,11 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     )+OwnershipModelAdmin.list_filter
     def get_queryset_Q(self, request):
         return (super().get_queryset_Q(request)) and Q(cluster=get_space())
+    def response_add(self, request, obj, post_url_continue=None):
+        url=reverse("admin:data_datainstance_changelist")
+        space=get_space()
+        if space: url='/space/{}'.format(space.pk)+url
+        return redirect(url)
 
 @admin.register(models.DataInstanceOperation)
 class DataInstanceOperationAdmin(OperationAdmin):
