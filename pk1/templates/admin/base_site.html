@@ -297,6 +297,7 @@
         {{ request.space }}
     </span>
 </a>
+<input id="iframe_value_input" style="display:none;" />
 {% endblock %}
 
 {% block footer %}
@@ -491,6 +492,8 @@
     if ('/engines/cluster/' === window_location_pathname) {
         document.getElementById('content').style.display = "none";
     }
+    var pre_execution = function pre_execution() {
+    };
     var actionSubmitFun = function () {
     };
     var actionSubmitByIdFun = function () {
@@ -790,6 +793,52 @@
                     //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
                     iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
+                    var function_param_str = "test";
+                    var param_database_fun = function (function_param) {
+                        var selectDom = [];
+                        var dom = document.getElementsByTagName("a");
+                        for (var i = 0; i < dom.length; i++) {
+                            if ("click: back" === dom[i].getAttribute("data-bind")) {
+                                selectDom.push(dom[i]);
+                            }
+                        }
+                        if (selectDom && selectDom.length > 0) {
+                            selectDom[0].click();
+                            var database_list = document.getElementsByClassName("assist-flex-fill assist-db-scrollable")[0];
+                            var database_list_table_link = database_list.getElementsByClassName("assist-table-link");
+                            if (database_list_table_link && database_list_table_link.length > 0) {
+                                console.log(function_param);
+                                for (var i = 0; i < database_list_table_link.length; i++) {
+                                    if (function_param.trim() === database_list_table_link[i].text.trim()) {
+                                        database_list_table_link[i].click();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    pre_execution = function pre_execution() {
+                        var iframe_element = document.getElementById("iframe_id");
+                        if (iframe_element.attachEvent) {
+                            iframe_element.attachEvent("onload", function () {
+                                //alert("本地iframe现在已加载。");
+                                var hue_hive_choice_base_json = {
+                                    "function_name": param_database_fun,
+                                    "function_param": function_param_str,
+                                }
+                                sendMessage("iframe_id", hue_hive_choice_base_json);
+                            });
+                        } else {
+                            iframe_element.onload = function () {
+                                //alert("本地iframe现在已加载。");
+                                var hue_hive_choice_base_json = {
+                                    "function_name": param_database_fun,
+                                    "function_param": function_param_str,
+                                }
+                                sendMessage("iframe_id", hue_hive_choice_base_json);
+                            };
+                        }
+                    };
                 }
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
@@ -1115,6 +1164,7 @@
                 }
             }
         }
+        pre_execution();
     }
 </script>
 {% endblock %}
