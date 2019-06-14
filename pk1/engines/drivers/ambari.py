@@ -1,7 +1,11 @@
 from ambari.client import Client
 
-def list_engines(host):
-    c=Client('http://{}:8080'.format(host))
+def get_engine_host(portal, engine):
+    c=Client(portal)
+    return c.cluster.hosts[-1].name
+
+def list_engines(portal):
+    c=Client(portal)
     engines=[]
     for s in c.stack_services():
         engines.append({
@@ -10,8 +14,8 @@ def list_engines(host):
         })
     return engines
 
-def list_components(host,engine):
-    c=Client('http://{}:8080'.format(host))
+def list_components(portal,engine):
+    c=Client(portal)
     components=[]
     for cpn in c.stack_service_components(service_name=engine):
         components.append({

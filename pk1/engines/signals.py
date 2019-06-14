@@ -6,7 +6,7 @@ from django.db.models.functions import Concat
 from django.db.models import Max
 from django.utils.timezone import now
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save, pre_delete
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
 from clouds.signals import tidy_operation, select_operation
 from clouds import utils
@@ -121,6 +121,12 @@ def close_cluster_operation(sender, instance, **kwargs):
         # else:
         #     raise Exception('illegal operation')
         # instance.completed_time=now()
+
+@receiver(post_delete, sender=GroupOperation)
+def purge_cluster_operation(sender, instance, **kwargs):
+    c_op=models.ClusterOperation.objects.filter(uuid=instance.batch_uuid).first()
+    if not c_op.get_sub_operations().exists():
+        c_op.delete()
 
 # @receiver(post_save, sender=models.EngineOperation)
 # def operate_engine(sender,instance,created,**kwargs):
