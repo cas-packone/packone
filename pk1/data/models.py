@@ -27,16 +27,13 @@ class DATASET_TYPE(Enum):
 class Dataset(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     source=models.ForeignKey(DataSource,on_delete=models.PROTECT,blank=True,null=True)
-    uri=models.CharField(max_length=200, editable=False)
+    uri=models.CharField(max_length=2000)
     type=models.PositiveIntegerField(blank=True,null=True,choices=[(type.value,type.name) for type in DATASET_TYPE])
     size=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     description=models.TextField(max_length=5120)
     @property
     def type_name(self):
         return DATASET_TYPE(self.type).name
-    @cached_property
-    def uri(self):#suffix of the final uri, the only approach to access this data instance.
-        return self.name.replace(' ','-')
 
 class DataEngine(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
