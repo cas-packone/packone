@@ -444,12 +444,11 @@
                         if (result_body && result_body.length > 0) {
                             var table_element = '<p style="text-align: center;font-size: 26px;">Notebook List</p>'
                                 + '<table id="table_id" style="width: 100%;">'
-                                + '<thead><tr><th>Id</th><th>Name</th></tr></thead>';
+                                + '<thead><tr><th>Name</th></tr></thead>';
                             var table_tr = "";
                             for (var i = 0; i < result_body.length; i++) {
                                 table_tr += ('<tr>'
-                                    + '<td><a href="javascript:changeIframeSrc(\'iframe_id\',\'http://10.0.88.78:9995/#/notebook/' + result_body[i].id + '\');" >' + result_body[i].id + '</a></td>'
-                                    + '<td>' + result_body[i].name + '</td>');
+                                    + '<td><a href="javascript:changeIframeSrc(\'iframe_id\',\'' + requestHead + '/#/notebook/' + result_body[i].id + '\');" >' + result_body[i].name + '</a></td></tr>');
                             }
                             if (table_tr) {
                                 table_element += (table_tr + '</table>');
@@ -465,6 +464,28 @@
     function changeIframeSrc(iframe_id, url) {
         var iframe_element = document.getElementById(iframe_id);
         iframe_element.setAttribute("src", url);
+    }
+
+    function sendMessage(iframe_id, json_object) {
+        // json对象转换成字符串
+        var data_json = JSON.stringify(json_object, function (key, val) {
+            if (typeof val === 'function') {
+                return val + '';
+            }
+            return val;
+        });
+        document.getElementById(iframe_id).contentWindow.postMessage(data_json, '*');
+    }
+    function goBakeFunIframe(iframe_id) {
+        var go_bake_json = {
+            "function_name": function () {
+                window.history.go(-1);
+            }
+        }
+        sendMessage(iframe_id, go_bake_json);
+    }
+    function goBakeFunMain() {
+        window.location.href = space_home_url + "/data/datainstance/";
     }
 
     if ('/engines/cluster/' === window_location_pathname) {
@@ -761,11 +782,14 @@
             var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB_");
             var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore_");
             var iframe_src = "";
+            var iframe_js_data = "";
+            var bake_instances_button = "";
             if (window_location_search_param_array_hive && window_location_search_param_array_hive.length > 1 && "" === window_location_search_param_array_hive[0]) {
                 var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("_");
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
                     iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
@@ -773,24 +797,28 @@
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/';
                     iframe_src = 'http://10.0.88.141:8888/filebrowser/';
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
                 var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("_");
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
                     iframe_src = 'http://10.0.88.141:8888/hbase/';
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8081';
                     iframe_src = 'http://10.0.88.41:8081/';
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/';
                     iframe_src = 'http://10.0.88.41:8006/gStorems/';
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else {
                 if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
@@ -881,7 +909,8 @@
                 }
             }
             if (iframe_src) {
-                rightContent.innerHTML = '<iframe style="width: 100%; height: 660px;border-width: 0px;" src="' + iframe_src + '"></iframe>';
+                rightContent.innerHTML = (bake_instances_button + '<input type="button" value="GO BACK" onclick="goBakeFunIframe(\'iframe_id\');" /><br><br>'
+                    + '<iframe id="iframe_id" style="width: 100%; height: 660px;border-width: 0px;" src="' + iframe_src + '"></iframe>');
             }
         }
         var breadcrumbs_initialized = document.getElementsByClassName('breadcrumbs initialized');
