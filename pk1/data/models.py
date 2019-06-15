@@ -39,6 +39,7 @@ class DataEngine(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     type=models.PositiveIntegerField(choices=[(type.value,type.name) for type in DATASET_TYPE])
     engine=models.ForeignKey(Engine,on_delete=models.PROTECT)
+    uri_prefix=models.CharField(max_length=2000, default='', blank=True)
     description=models.TextField(max_length=5120)
     
 class DataInstance(models.Model,OperatableMixin):
@@ -59,8 +60,14 @@ class DataInstance(models.Model,OperatableMixin):
     def __str__(self):
         return "{}".format(self.name)
     @cached_property
+    def entry_host(self):#the host to execute load dataset operations
+        return self.engine.engine.get_host(self.cluster)
+    @cached_property
     def uri_suffix(self):#suffix of the final uri, the only approach to access this data instance.
         return self.name.replace(' ','-')
+    @cached_property
+    def uri(self):#suffix of the final uri, the only approach to access this data instance.
+        return self.engine.uri_prefix.format(instance=self.entry_host)+self.uri_suffix
     @property
     def startable(self):
         if self.status == COMPONENT_STATUS.null.value: return True#TODO stop
