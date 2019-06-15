@@ -857,16 +857,18 @@
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
-                if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
-                    //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8081';
-                    iframe_src = 'http://10.0.88.41:8081/';
+                if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 1) {
+                    var param = window_location_search_param_array_eventDB_param[1].split("+")[0];
+                    iframe_src = param.replace(RegExp( '%20' , "g" ),"");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
                 var window_location_search_param_array_gstore_param = window_location_search_param_array_gstore[1].split("_");
-                if (window_location_search_param_array_gstore_param && window_location_search_param_array_gstore_param.length > 0) {
-                    //iframe_src='http://' + window_location_search_param_array_gstore_param[0] + ':8006/gStorems/admin_root.html';
-                    iframe_src = 'http://10.0.88.41:8006/gStorems/admin_root.html';
+                if (window_location_search_param_array_gstore_param && window_location_search_param_array_gstore_param.length > 1) {
+                    // var param = window_location_search_param_array_gstore_param[1].split("+")[0];
+                    // iframe_src = param + '/admin_root.html';
+                    iframe_src = 'http://10.0.88.81:8006/gStorems/admin_root.html';
+                    iframe_src = iframe_src.replace(RegExp( '%20' , "g" ),"");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else {
