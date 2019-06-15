@@ -843,9 +843,9 @@
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
                 var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("_");
-                if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 0) {
-                    //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/';
-                    iframe_src = 'http://10.0.88.141:8888/filebrowser/';
+                if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 1) {
+                    //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
+                    iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
@@ -863,9 +863,9 @@
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
-                var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
-                if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 0) {
-                    //iframe_src='http://' + window_location_search_param_array_eventDB_param[0] + ':8006/gStorems/admin_root.html';
+                var window_location_search_param_array_gstore_param = window_location_search_param_array_gstore[1].split("_");
+                if (window_location_search_param_array_gstore_param && window_location_search_param_array_gstore_param.length > 0) {
+                    //iframe_src='http://' + window_location_search_param_array_gstore_param[0] + ':8006/gStorems/admin_root.html';
                     iframe_src = 'http://10.0.88.41:8006/gStorems/admin_root.html';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
@@ -1013,33 +1013,38 @@
         if (space_home_url + "/data/datainstance/" === window_location_pathname) {
             var result_list_table = document.getElementById('result_list');
             if (result_list_table) {
-                var result_list_table_array = result_list_table.getElementsByClassName("button");
+                var result_list_table_td_array = document.getElementsByClassName("field-query");
                 var hide_result_list_table_array = [];
-                if (result_list_table_array && result_list_table_array.length > 0) {
-                    for (var i = 0; i < result_list_table_array.length; i++) {
-                        if ("Query" === result_list_table_array[i].text) {
-                            hide_result_list_table_array.push(result_list_table_array[i]);
-                        }
-                    }
-                }
-                if (hide_result_list_table_array && hide_result_list_table_array.length > 0) {
+                if (result_list_table_td_array && result_list_table_td_array.length > 0) {
                     var type_array_obj = new Object();
                     type_array_obj["ralational"] = "hive";
                     type_array_obj["raw"] = "hdfs";
                     type_array_obj["semistructed"] = "hbase";
                     type_array_obj["event"] = "eventDB";
                     type_array_obj["graph"] = "gstore";
-                    for (var i = 0; i < hide_result_list_table_array.length; i++) {
-                        var hide_result_list_table_array_i = hide_result_list_table_array[i];
-                        if (hide_result_list_table_array_i) {
+                    for (var i = 0; i < result_list_table_td_array.length; i++) {
+                        var result_list_table_td_array_i_f_child = result_list_table_td_array[i].firstElementChild
+                        if (result_list_table_td_array_i_f_child) {
                             var query_a = '<a href="javascript:void(0);" class="button">Query</a>';
-                            hide_result_list_table_array_i.style.display = "none";
-                            var hide_result_list_table_array_i_type = hide_result_list_table_array_i.getAttribute("type");
-                            var hide_result_list_table_array_i_href = hide_result_list_table_array_i.getAttribute("href");
-                            if (type_array_obj[hide_result_list_table_array_i_type]) {
-                                query_a = '<a href="' + space_home_url + '/?query_' + type_array_obj[hide_result_list_table_array_i_type] + '_' + hide_result_list_table_array_i_href + '" class="button">Query</a>';
+                            result_list_table_td_array_i_f_child.style.display = "none";
+                            var result_list_table_td_array_i_f_child_type = result_list_table_td_array_i_f_child.getAttribute("type");
+                            var result_list_table_td_array_i_f_child_href = result_list_table_td_array_i_f_child.getAttribute("href");
+                            var query_url = "";
+                            var result_list_table_td_array_i_parent = result_list_table_td_array[i].parentElement.getElementsByClassName("field-uri")[0];
+                            if (result_list_table_td_array_i_parent && result_list_table_td_array_i_parent.textContent) {
+                                query_url = result_list_table_td_array_i_parent.textContent;
                             }
-                            hide_result_list_table_array_i.outerHTML = (hide_result_list_table_array_i.outerHTML + query_a);
+                            if (type_array_obj[result_list_table_td_array_i_f_child_type]) {
+                                var query_a_href = space_home_url
+                                    + '/?query_'
+                                    + type_array_obj[result_list_table_td_array_i_f_child_type] + '_'
+                                    + result_list_table_td_array_i_f_child_href;
+                                if (query_url) {
+                                    query_a_href += ('_' + query_url);
+                                }
+                                query_a = '<a href="' + query_a_href + '" class="button">Query</a>';
+                            }
+                            result_list_table_td_array_i_f_child.outerHTML = (result_list_table_td_array_i_f_child.outerHTML + query_a);
                         }
                     }
                 }
