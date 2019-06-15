@@ -15,11 +15,9 @@ from clouds.signals import tidy_operation, select_operation
 def materialize_data_instance(sender,instance,**kwargs):
     if not kwargs['created'] or instance.ready: return
     tmpdir="/data/packone/"+instance.uri_suffix
-    scripts="mkdir -p "+tmpdir+'\n'
-    scripts+=instance.dataset.remedy_script+'\n\n'
-    scripts+='cd '+tmpdir+';'+instance.engine.remedy_script.format(tmpdir)
-    ins=instance.engine.engine.get_host(instance.cluster)
-    ins.remedy(scripts, manual=False)
+    scripts="mkdir -p "+tmpdir+' && cd '+tmpdir+'\n'
+    scripts+=instance.dataset.remedy_script.format(dataset=instance.dataset, instance=instance)+'\n\n'
+    instance.entry_host.remedy(scripts)
     # (host,cmd,path)=instance.uri_elected.split('://')
     # ins=instance.cluster.find_instance(host)
     # if not ins: raise Exception('cannot find the uri located instance: {}'.format(host))

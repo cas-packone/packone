@@ -56,7 +56,7 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 return 'deleting'
         op_url=reverse('datainstanceoperation-list')
         return self.action_button(obj,op_url)
-    extra=('action','query')
+    extra=('uri','action','query')
     search_fields = ('name', 'dataset__name', 'cluster__name', 'engine__name')+OwnershipModelAdmin.search_fields
     list_filter = (
         ('dataset', admin.RelatedOnlyFieldListFilter),

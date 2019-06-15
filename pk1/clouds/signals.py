@@ -349,8 +349,8 @@ def close_group_operation(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=InstanceOperation)
 def purge_group_operation(sender, instance, **kwargs):
-    g_op=GroupOperation.objects.filter(uuid=instance.batch_uuid).first()
-    if not g_op.get_sub_operations().exists():
+    g_op=GroupOperation.objects.filter(batch_uuid=instance.batch_uuid).first()
+    if g_op and not g_op.get_sub_operations().exists():
         g_op.delete()
 
 @receiver(monitored, sender=Instance)
