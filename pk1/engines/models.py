@@ -43,8 +43,9 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
     name=models.CharField(max_length=50, unique=True)
     description=models.TextField(max_length=5120,blank=True,default='')
     def get_host(self, cluster):
-        hostname=self.stack_set.first().driver.get_engine_host(cluster.portal, self.name)
-        return cluster.find_instance(hostname)
+        return cluster.get_instances().first()
+        # hostname=self.stack_set.first().driver.get_engine_host(cluster.portal, self.name)
+        # return cluster.find_instance(hostname)
 
 import importlib
 class Stack(StaticModel):
