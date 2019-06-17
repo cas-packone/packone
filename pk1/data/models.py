@@ -22,7 +22,7 @@ class DATASET_TYPE(Enum):
     semistructed=3
     event=4
     graph=5
-    star_catalogue=6
+    star=6
 
 #TODO security exposure risk: data load histoy cmd in the relying cluster
 class Dataset(StaticModel):
