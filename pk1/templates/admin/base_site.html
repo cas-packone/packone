@@ -784,6 +784,7 @@
             var window_location_search_param_array_hbase = window_location_search_param.split("?query_hbase&");
             var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB&");
             var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore&");
+            var window_location_search_param_array_astroServ = window_location_search_param.split("?query_astroServ&");
             var iframe_src = "";
             var iframe_js_data = "";
             var bake_instances_button = "";
@@ -869,6 +870,13 @@
                     // iframe_src = param + '/admin_root.html';
                     iframe_src = 'http://10.0.88.81:8006/gStorems/admin_root.html';
                     iframe_src = iframe_src.replace(RegExp( '%20' , "g" ),"");
+                    bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
+                }
+            } if (window_location_search_param_array_astroServ && window_location_search_param_array_astroServ.length > 1 && "" === window_location_search_param_array_astroServ[0]) {
+                var window_location_search_param_array_astroServ_param = window_location_search_param_array_astroServ[1].split("&");
+                if (window_location_search_param_array_astroServ_param && window_location_search_param_array_astroServ_param.length > 1) {
+                    var param = window_location_search_param_array_astroServ_param[1].split("+")[0];
+                    iframe_src = param.replace(RegExp( '%20' , "g" ),"");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else {
@@ -1024,6 +1032,7 @@
                     type_array_obj["semistructed"] = "hbase";
                     type_array_obj["event"] = "eventDB";
                     type_array_obj["graph"] = "gstore";
+                    type_array_obj["star"] = "astroServ";
                     for (var i = 0; i < result_list_table_td_array.length; i++) {
                         var result_list_table_td_array_i_f_child = result_list_table_td_array[i].firstElementChild
                         if (result_list_table_td_array_i_f_child) {
