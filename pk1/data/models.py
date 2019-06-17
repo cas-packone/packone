@@ -16,7 +16,7 @@ class DataSource(StaticModel):
     description=models.TextField(max_length=5120)
     
 class DATASET_TYPE(Enum):
-    ralational=0
+    relational=0
     raw=1 #无结构
     freetext=2
     semistructed=3
