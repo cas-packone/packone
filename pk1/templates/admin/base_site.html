@@ -779,21 +779,21 @@
         if (space_home_url + "/" === window_location_pathname) {
             var rightContent = document.getElementById("content");
             var window_location_search_param = window.location.search;
-            var window_location_search_param_array_hive = window_location_search_param.split("?query_hive_");
-            var window_location_search_param_array_hdfs = window_location_search_param.split("?query_hdfs_");
-            var window_location_search_param_array_hbase = window_location_search_param.split("?query_hbase_");
-            var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB_");
-            var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore_");
+            var window_location_search_param_array_hive = window_location_search_param.split("?query_hive&");
+            var window_location_search_param_array_hdfs = window_location_search_param.split("?query_hdfs&");
+            var window_location_search_param_array_hbase = window_location_search_param.split("?query_hbase&");
+            var window_location_search_param_array_eventDB = window_location_search_param.split("?query_eventDB&");
+            var window_location_search_param_array_gstore = window_location_search_param.split("?query_gstore&");
             var iframe_src = "";
             var iframe_js_data = "";
             var bake_instances_button = "";
             if (window_location_search_param_array_hive && window_location_search_param_array_hive.length > 1 && "" === window_location_search_param_array_hive[0]) {
-                var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("_");
-                if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 0) {
+                var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("&");
+                if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 1) {
                     //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
                     iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
-                    var function_param_str = "test";
+                    var function_param_str = window_location_search_param_array_hive_param[1].split(".")[0];
                     var param_database_fun = function (function_param) {
                         var selectDom = [];
                         var dom = document.getElementsByTagName("a");
@@ -842,28 +842,28 @@
                 }
 
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
-                var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("_");
+                var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("&");
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 1) {
                     //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
-                var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("_");
+                var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("&");
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
                     //iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
                     iframe_src = 'http://10.0.88.141:8888/hbase/';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
-                var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("_");
+                var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("&");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 1) {
                     var param = window_location_search_param_array_eventDB_param[1].split("+")[0];
                     iframe_src = param.replace(RegExp( '%20' , "g" ),"");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
-                var window_location_search_param_array_gstore_param = window_location_search_param_array_gstore[1].split("_");
+                var window_location_search_param_array_gstore_param = window_location_search_param_array_gstore[1].split("&");
                 if (window_location_search_param_array_gstore_param && window_location_search_param_array_gstore_param.length > 1) {
                     // var param = window_location_search_param_array_gstore_param[1].split("+")[0];
                     // iframe_src = param + '/admin_root.html';
@@ -1038,11 +1038,10 @@
                             }
                             if (type_array_obj[result_list_table_td_array_i_f_child_type]) {
                                 var query_a_href = space_home_url
-                                    + '/?query_'
-                                    + type_array_obj[result_list_table_td_array_i_f_child_type] + '_'
+                                    + '/?query_' + type_array_obj[result_list_table_td_array_i_f_child_type] + '&'
                                     + result_list_table_td_array_i_f_child_href;
                                 if (query_url) {
-                                    query_a_href += ('_' + query_url);
+                                    query_a_href += ('&' + query_url);
                                 }
                                 query_a = '<a href="' + query_a_href + '" class="button">Query</a>';
                             }
