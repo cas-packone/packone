@@ -65,7 +65,7 @@ class DataInstance(models.Model,OperatableMixin):
         return self.engine.engine.get_host(self.cluster)
     @cached_property
     def uri_suffix(self):#suffix of the final uri, the only approach to access this data instance.
-        return self.name.replace(' ','-')
+        return self.name.replace(' ','_')
     @cached_property
     def uri(self):#suffix of the final uri, the only approach to access this data instance.
         return self.engine.uri_prefix.format(instance=self.entry_host)+self.uri_suffix
