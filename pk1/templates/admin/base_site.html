@@ -34,9 +34,12 @@
 </style>
 <style>
     div.breadcrumbs a,
-    #header a:link,
-    #header a:visited {
-        color: #6f7e95;
+    div.breadcrumbs a:visited {
+        color: #ffffff;
+    }
+
+    div.breadcrumbs a:hover {
+        color: #000000;
     }
 
     #user-tools,
@@ -47,7 +50,8 @@
 
     div.breadcrumbs,
     #header {
-        background-color: #ecf2f6;
+        background-color: #338BB8;
+        color: #00ffff;
     }
 
     #branding img {
@@ -143,11 +147,6 @@
 
     .sidebar-right-arrow:hover {
         color: #020202;
-    }
-
-    div.breadcrumbs,
-    #header {
-        background-color: #338BB8;
     }
 
     body {
@@ -290,11 +289,6 @@
             <i class="fab fa-github"></i>
         </span>
         {% trans 'Repo' %}
-    </span>
-</a>
-<a href="javascript:void(0);" class="sidebar-link icon">
-    <span class="sidebar-link-label">
-        {{ request.space }}
     </span>
 </a>
 <input id="iframe_value_input" style="display:none;" />
@@ -443,17 +437,31 @@
                     if ("OK" === result.status) {
                         var result_body = result.body;
                         if (result_body && result_body.length > 0) {
-                            var table_element = '<p style="text-align: center;font-size: 26px;">Notebook List</p>'
-                                + '<table id="table_id" style="width: 100%;">'
-                                + '<thead><tr><th>Name</th></tr></thead>';
+                            var p_element = '<p style="text-align: center;font-size: 26px;">Notebook List</p>';
+                            var table_element = '<table id="table_id" style="width: 100%; display: none;"><thead><tr><th>Name</th></tr></thead>';
+                            var select_element = '<div style="display: inline-block;"><span style="width: 10%;font-size: 20px;">Please choose:&nbsp;&nbsp;</span></div>'
+                                + '<div style="display: inline-block;">'
+                                + '<select tabindex="-1" aria-hidden="true" style="width: 100%;" onchange="changeIframeSrc(\'iframe_id\',this.value);">';
                             var table_tr = "";
+                            var select_options = "";
+                            var iframe_element_src = ""
                             for (var i = 0; i < result_body.length; i++) {
-                                table_tr += ('<tr>'
-                                    + '<td><a href="javascript:changeIframeSrc(\'iframe_id\',\'' + requestHead + '/#/notebook/' + result_body[i].id + '\');" >' + result_body[i].name + '</a></td></tr>');
+                                table_tr += ('<tr><td><a href="javascript:changeIframeSrc(\'iframe_id\',\'' + requestHead + '/#/notebook/' + result_body[i].id + '\');" >' + result_body[i].name + '</a></td></tr>');
+                                var option_element = '<option value="' + requestHead + '/#/notebook/' + result_body[i].id + '">' + result_body[i].name + '</option>';
+                                if ("simbademo" === result_body[i].name) {
+                                    iframe_element_src = (requestHead + '/#/notebook/' + result_body[i].id + '">' + result_body[i].name);
+                                    select_options = (option_element + select_options);
+                                } else {
+                                    select_options += option_element;
+                                }
                             }
-                            if (table_tr) {
+                            if (table_tr && select_options) {
                                 table_element += (table_tr + '</table>');
-                                rightContent_.innerHTML = (table_element + '<iframe id="iframe_id" style="width: 100%; height: 660px;border-width: 0px;" src=""></iframe>');
+                                select_element += (select_options + '</select></div></div><br/><br/>');
+                                rightContent_.innerHTML = (p_element + select_element + table_element +
+                                    '<iframe id="iframe_id" style="width: 100%; height: 1500px;border-width: 0px;" '
+                                    + 'frameborder="no" border="0" marginwidth="0" marginheight="0" allowtransparency="yes" src="'
+                                    + iframe_element_src + '"></iframe>');
                             }
                         }
                     }
@@ -684,10 +692,10 @@
         // 查找所有的菜单组
         var sidebar_section_array = document.getElementsByClassName('sidebar-section');
         if (sidebar_section_array && sidebar_section_array.length > 1) {
-            // 用于存放data菜单组
+            // 用于存放最后一组菜单组
             var sidebar_section_array_i = "";
             // 循环
-            for (var i = 1; i < sidebar_section_array.length; i++) {
+            for (var i = 0; i < sidebar_section_array.length; i++) {
                 //隐藏菜单组
                 sidebar_section_array[i].style.display = "none";
                 if (i === sidebar_section_array.length - 1) {
@@ -696,6 +704,16 @@
             }
             // 判断是否添加菜单组
             if (sidebar_section_array_i) {
+                var space_name_tmp = space_name;
+                if (!space_name_tmp) {
+                    space_name_tmp = 'HOME'
+                }
+                var addMenuSciSpace = '<div class="sidebar-section">'
+                    + '<a href="/space/259/" class="sidebar-link icon">'
+                    + '<span class="sidebar-link-label">'
+                    + '<span class="sidebar-link-icon icon-data"></span>' + space_name_tmp + '</span>'
+                    + '</a>'
+                    + '</div>';
                 var addNewMenuData = '<div class="sidebar-section">'
                     + '<div class="sidebar-title">'
                     + '<a href="' + space_home_url + '/data/" class="sidebar-title-link">Data</a>'
@@ -763,7 +781,7 @@
                     + '</a>'
                     + '</div>'
                     + '</div>';
-                sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addNewMenuData + addNewMenuAdmin);
+                sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addMenuSciSpace + addNewMenuData + addNewMenuAdmin);
             }
             //替换Home的href
             var sidebar_section_array_first_array = sidebar_section_array[0].getElementsByTagName("a");
@@ -860,7 +878,7 @@
                 var window_location_search_param_array_eventDB_param = window_location_search_param_array_eventDB[1].split("&");
                 if (window_location_search_param_array_eventDB_param && window_location_search_param_array_eventDB_param.length > 1) {
                     var param = window_location_search_param_array_eventDB_param[1].split("+")[0];
-                    iframe_src = param.replace(RegExp( '%20' , "g" ),"");
+                    iframe_src = param.replace(RegExp('%20', "g"), "");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_gstore && window_location_search_param_array_gstore.length > 1 && "" === window_location_search_param_array_gstore[0]) {
@@ -869,14 +887,14 @@
                     // var param = window_location_search_param_array_gstore_param[1].split("+")[0];
                     // iframe_src = param + '/admin_root.html';
                     iframe_src = 'http://10.0.88.81:8006/gStorems/admin_root.html';
-                    iframe_src = iframe_src.replace(RegExp( '%20' , "g" ),"");
+                    iframe_src = iframe_src.replace(RegExp('%20', "g"), "");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } if (window_location_search_param_array_astroServ && window_location_search_param_array_astroServ.length > 1 && "" === window_location_search_param_array_astroServ[0]) {
                 var window_location_search_param_array_astroServ_param = window_location_search_param_array_astroServ[1].split("&");
                 if (window_location_search_param_array_astroServ_param && window_location_search_param_array_astroServ_param.length > 1) {
                     var param = window_location_search_param_array_astroServ_param[1].split("+")[0];
-                    iframe_src = param.replace(RegExp( '%20' , "g" ),"");
+                    iframe_src = param.replace(RegExp('%20', "g"), "");
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else {
