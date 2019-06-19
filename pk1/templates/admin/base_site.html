@@ -987,7 +987,7 @@
             }
             if (iframe_src) {
                 rightContent.innerHTML = (bake_instances_button + '<input type="button" value="GO BACK" onclick="goBakeFunIframe(\'iframe_id\');" /><br><br>'
-                    + '<iframe id="iframe_id" style="width: 100%; height: 660px;border-width: 0px;" src="' + iframe_src + '"></iframe>');
+                    + '<iframe id="iframe_id" style="width: 100%; height: 1500px;border-width: 0px;" src="' + iframe_src + '"></iframe>');
             }
         }
         var breadcrumbs_initialized = document.getElementsByClassName('breadcrumbs initialized');
@@ -1037,6 +1037,14 @@
                     }
                 }
             }
+            var addlink_element_array = document.getElementsByClassName("addlink");
+            if (addlink_element_array && addlink_element_array.length > 0) {
+                for (var i = 0; i < addlink_element_array.length; i++) {
+                    if ("/data/dataset/add/" === addlink_element_array[i].getAttribute("href")) {
+                        addlink_element_array[i].style.display = "none";
+                    }
+                }
+            }
         }
         if (space_home_url + "/data/datainstance/" === window_location_pathname) {
             var result_list_table = document.getElementById('result_list');
@@ -1074,6 +1082,18 @@
                             }
                             result_list_table_td_array_i_f_child.outerHTML = (result_list_table_td_array_i_f_child.outerHTML + query_a);
                         }
+                    }
+                }
+                var column_action_elements = document.getElementsByClassName("column-action");
+                if (column_action_elements && column_action_elements.length > 0) {
+                    for (var i = 0; i < column_action_elements.length; i++) {
+                        column_action_elements[i].style.display = "none";
+                    }
+                }
+                var field_action_elements = document.getElementsByClassName("field-action");
+                if (field_action_elements && field_action_elements.length > 0) {
+                    for (var i = 0; i < field_action_elements.length; i++) {
+                        field_action_elements[i].style.display = "none";
                     }
                 }
             }
