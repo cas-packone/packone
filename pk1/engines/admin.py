@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django import forms
 from dal import autocomplete
-from user.utils import get_current_user
+from user.utils import get_current_user, get_space
 from clouds.utils import get_url, get_formated_url
 
 @admin.register(models.Stack)
@@ -85,10 +85,10 @@ class ClusterOperationAdmin(M2MOperationAdmin):
 
 @admin.register(models.StepOperation)
 class StepOperationAdmin(M2MOperationAdmin):
-    def _target(self,obj):
+    def _target(self, obj):
         return  format_html(get_url(obj.cluster)+'/'+get_url(obj.target))
     def get_queryset_Q(self, request):
-        return Q(target__in=request.user.steps())
+        return Q(target__cluster=get_space())
     def has_add_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):

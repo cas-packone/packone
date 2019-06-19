@@ -10,6 +10,7 @@ from clouds import utils
 from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
 from clouds.signals import tidy_operation, select_operation, executed
 from clouds.models import InstanceOperation
+from engines.models import Cluster
 
 loading_instance_operations={}
 
