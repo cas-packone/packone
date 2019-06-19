@@ -10,6 +10,7 @@ from django.db.models.signals import pre_save, post_save, pre_delete, post_delet
 from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
 from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
+from user.utils import get_space
 
 from django.dispatch import Signal
 materialized = Signal(providing_args=["instance","name"])

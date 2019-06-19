@@ -208,7 +208,8 @@ class InstanceOperationAdmin(OperationAdmin):
     def get_list_display(self,request,obj=None):
         return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))
+        from user.utils import get_space
+        return (super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))) & Q(target__group__cluster=get_space())
     def has_delete_permission(self, request, obj=None):
         return super().has_delete_permission(request, obj) or obj.target.cloud.owner == request.user
 
