@@ -45,19 +45,17 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         # if not obj.ready: return None
         url=obj.cluster.portal.split('//')[-1].split(':')[0]
         return format_html('<a href="{}" type="{}" target="_blank" class="button">Query</a>'.format(url, obj.dataset.type_name))
-    def action(self, obj):
-        if obj.deleting:
-            if not get_current_user().is_superuser: 
-                return 'deleting'
-        op_url=reverse('datainstanceoperation-list')
-        return self.action_button(obj,op_url)
-    extra=('uri','action','query')
+    extra=('uri','query')#,'action'
     search_fields = ('name', 'dataset__name', 'cluster__name', 'engine__name')+OwnershipModelAdmin.search_fields
     list_filter = (
         ('dataset', admin.RelatedOnlyFieldListFilter),
         ('engine', admin.RelatedOnlyFieldListFilter),
         ('cluster', admin.RelatedOnlyFieldListFilter),
     )+OwnershipModelAdmin.list_filter
+    def get_list_display_exclude(self, request, obj=None):
+        if request.user.is_superuser: 
+            return ()
+        return ('owner','deleting')
     def get_queryset_Q(self, request):
         return (super().get_queryset_Q(request)) and Q(cluster=get_space())
     def response_add(self, request, obj, post_url_continue=None):

@@ -65,13 +65,15 @@ class OperatableMixin(object):
                 self.remedy_script_todo=''
                 self.save()
             if script:
-                self.get_operation_model()(
+                op=self.get_operation_model()(
                     operation=INSTANCE_OPERATION.remedy.value,
                     script=script,
                     target=self,
                     manual=manual
-                ).save()
-            self.refresh_from_db()
+                )
+                op.save()
+                return op
+            return None
     def update_remedy_script(self,script,heading=False):
         if heading:
             v=models.Value(script+'\n')
