@@ -462,7 +462,19 @@
     if ('/engines/cluster/' === window_location_pathname) {
         document.getElementById('content').style.display = "none";
     }
-    var pre_execution = function pre_execution() {
+
+    function select_all() {
+        var kk = document.getElementById("select_all_btn");
+        var kk_table = kk.parentElement.parentElement.parentElement;
+        var kk_table_label_array = kk_table.getElementsByTagName("td");
+        for (var i = 0; i < kk_table_label_array.length; i++) {
+            var kk_table_label_array_i_input = kk_table_label_array[i].getElementsByTagName("input")[0]
+            if (kk_table_label_array_i_input && !kk_table_label_array_i_input.checked) {
+                kk_table_label_array[i].firstElementChild.click();
+            }
+        }
+    };
+    var pre_execution = function () {
     };
     var actionSubmitFun = function () {
     };
@@ -514,7 +526,7 @@
                     var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL"><table>';
                     for (var i = 0; i < select_elements_j_opt.length; i++) {
                         if (i === 0) {
-                            elements_checkbox += '<tr><td><button type="button" class="button">Select All</button></td>';
+                            elements_checkbox += '<tr><th colspan="4"><button id="select_all_btn" type="button" onclick="select_all()" class="button">Select All</button></th></tr><tr>';
                         } else if ((i + 1) % 4 === 1) {
                             elements_checkbox += '</tr><tr>';
                         }
@@ -651,6 +663,10 @@
                                 }
                             }
                         }
+                        var result_list_element_column_size = result_list_table.getElementsByClassName("column-size")[0];
+                        if (result_list_element_column_size) {
+                            result_list_element_column_size.getElementsByTagName("a")[0].text = "Size(KB)";
+                        }
                     }
                 }
                 actionSubmitByIdFun = function actionSubmitById(btnElementId) {
@@ -736,7 +752,7 @@
                     + '</div>'
                     + '<div>'
                     //+ '<a href="' + space_home_url + '/data/datainstanceoperation/" class="sidebar-link">'
-                    + '<a href="' + space_home_url + '/clouds/instanceoperation/" class="sidebar-link">'
+                    + '<a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F" class="sidebar-link">'
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
@@ -887,7 +903,7 @@
                                     + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
                                     + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
                                     //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
-                                    + '<li><a href="' + space_home_url + '/clouds/instanceoperation/">Instances Operations</a></li>'
+                                    + '<li><a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F">Instances Operations</a></li>'
 
                                     + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                     + "</ul>";
@@ -949,7 +965,7 @@
                                         + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
                                         + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
                                         //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
-                                        + '<li><a href="' + space_home_url + '/clouds/instanceoperation/">Instances Operations</a></li>'
+                                        + '<li><a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F">Instances Operations</a></li>'
                                         + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                         + "</ul>";
                                     cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
