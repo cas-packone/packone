@@ -50,8 +50,8 @@
 
     div.breadcrumbs,
     #header {
-        background-color: #338BB8;
-        color: #00ffff;
+        background-color: #1970b2;
+        color: #a6f3c1;
     }
 
     #branding img {
@@ -113,37 +113,11 @@
         border-bottom: 0.07143rem solid #ececec;
     }
 
-    /* 
-    .sidebar-title-link,
-    .sidebar-title-link:visited,
-    .sidebar-title-link:hover {
-        color: #0b6913;
-    }
-    */
-
-    /* 
-    .sidebar-link-icon {
-        color: #4fa252;
-    }
-    */
-
-    /* 
-    .sidebar-link-icon:hover {
-        color: #4fa252;
-    }
-    */
-
     .sidebar-link,
     .sidebar-link:visited,
     .sidebar-link:hover {
         color: #020202;
     }
-
-    /* 
-    .sidebar-right-arrow {
-        color: #4fa252;
-    }
-    */
 
     .sidebar-right-arrow:hover {
         color: #020202;
@@ -180,9 +154,8 @@
     input[type="button"]:visited,
     .object-tools a,
     .object-tools a:visited {
-        /* background-color: #ddefdd; */
-        /* color: #93b785; */
-        color: #657a90;
+        background-color: #d3efff;
+        color: #5d95ab;
     }
 
     .aHrefHover:hover {
@@ -194,46 +167,31 @@
         border: 0.07143rem solid #86c1df;
     }
 
-    /* 
-    .user-tools ul.opened .user-tools-welcome-msg {
-        border-bottom: 0.07143rem solid #93b785;
-    }
-    */
-
     #user-tools,
     #user-tools a:link,
     #user-tools a:visited {
         color: #ddefdd;
     }
 
-    /* 
-    .user-tools ul li.user-tools-welcome-msg:before {
-        color: #93b785;
-    }
-    */
-
     #toolbar form input[type="submit"],
     #toolbar form input[type="submit"]:visited {
-        /* background-color: #ddefdd; */
-        /* color: #93b785; */
-        background-color: #d0dbe6;
-        color: #657a90;
+        background-color: #99c58a;
+        color: #ffffff;
     }
 
     #changelist .actions .button,
     #changelist .actions .button:visited {
-        /* background-color: #ddefdd; */
-        /* color: #93b785; */
-        background-color: #d0dbe6;
-        color: #657a90;
+        background-color: #99c58a;
+        color: #fff;
     }
 
     #changelist .actions .button:hover,
     #toolbar form input[type="submit"]:hover,
     .object-tools a:hover,
+    a.button:hover,
     input[type="submit"]:hover,
     input[type="button"]:hover {
-        background-color: #47bac1;
+        background-color: #76bae4;
         color: #fff;
     }
 
@@ -255,6 +213,10 @@
     input[type="submit"]:hover {
         background-color: #47bac1;
         color: #fff;
+    }
+
+    .dashboard-item {
+        background: #73b6e2;
     }
 </style>
 {% endblock %}
@@ -1107,12 +1069,14 @@
             // 隐藏无用导航
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
+            document.getElementsByClassName('breadcrumbs initialized')[0].innerHTML = ('<img style="position: fixed;width: 91px;" src="/static/logo-large1.png"><span style="margin-left: 100px;"></span>'
+                + document.getElementsByClassName('breadcrumbs initialized')[0].innerHTML);
             document.getElementById('container').firstElementChild.style.display = "none";
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">'
-                + '<p style="text-align: center;font-size: 26px;">Scispace List</p>'
-                + '<p style="text-align: right;">'
+                //+ '<p style="text-align: center;font-size: 26px;">Scispace List</p>'
+                + '<p style="text-align: right;margin-top: 10px;">'
                 + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>'
                 + '</p>'
                 + '<div class="dashboard-container columns_4 cf">';
