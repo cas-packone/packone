@@ -8,8 +8,10 @@ from multiprocessing.pool import ThreadPool
 from threading import Thread
 from clouds import utils
 from clouds.signals import materialized, executed, monitored, destroyed, tidied, selected
-from clouds.signals import tidy_operation, select_operation
+from clouds.signals import tidy_operation, select_operation, executed
+from clouds.models import InstanceOperation
 
+loading_instance_operations={}
 
 @receiver(post_save, sender=models.DataInstance)
 def materialize_data_instance(sender,instance,**kwargs):
@@ -17,18 +19,18 @@ def materialize_data_instance(sender,instance,**kwargs):
     tmpdir="/data/packone/"+instance.uri_suffix
     scripts="mkdir -p "+tmpdir+' && cd '+tmpdir+'\n'
     scripts+=instance.dataset.remedy_script.format(dataset=instance.dataset, instance=instance)+'\n\n'
-    instance.entry_host.remedy(scripts)
-    # (host,cmd,path)=instance.uri_elected.split('://')
-    # ins=instance.cluster.find_instance(host)
-    # if not ins: raise Exception('cannot find the uri located instance: {}'.format(host))
-    # ssh=utils.open_ssh(ins.ipv4,ins.location.instance_credential)
-    # cmd='cd '+tmpdir+';'+instance.dataset.uri+";"
-    # if instance.dataset.remedy_script: cmd+=instance.dataset.remedy_script
-    # utils.exec_batch(ssh,cmd)
-    # utils.exec_batch(ssh,'cd '+tmpdir+';'+instance.engine.remedy_script.format(tmpdir))
-    # ssh.close()
-    # instance.created_time=datetime.datetime.now()
-    # instance.save()
+    io=instance.entry_host.remedy(scripts)
+    loading_instance_operations[io.pk]=instance.pk
+
+@receiver(executed, sender=InstanceOperation)
+@transaction.atomic
+def update_data_instance_status(sender,instance,**kwargs):
+    if instance.pk not in loading_instance_operations: return
+    for di in models.DataInstance.objects.filter(pk=loading_instance_operations[instance.pk]).select_for_update():
+        del loading_instance_operations[instance.pk]
+        di.built_time=datetime.datetime.now()
+        di.status=models.COMPONENT_STATUS.active.value
+        di.save()
 
 @receiver(materialized, sender=models.DataInstance)
 @receiver(tidied, sender=models.DataInstanceOperation)
