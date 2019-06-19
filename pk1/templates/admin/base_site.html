@@ -68,11 +68,11 @@
     }
 
     .RadioStyle label {
-        border: 1px solid #00a4ff;
+        /* border: 1px solid #00a4ff; */
         padding: 2px 10px 2px 5px;
         line-height: 28px;
         min-width: 80px;
-        text-align: center;
+        /* text-align: center; */
         float: left;
         margin: 2px;
         border-radius: 4px
@@ -511,15 +511,23 @@
                 // 判断取出的select的option是否为空
                 if (select_elements_j_opt && select_elements_j_opt.length > 0) {
                     // 把select转为checkbox并添加样式
-                    var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL">';
+                    var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL"><table>';
                     for (var i = 0; i < select_elements_j_opt.length; i++) {
-                        elements_checkbox += ('<input type="checkbox" name="' +
+                        if (i === 0) {
+                            elements_checkbox += '<tr><td><button type="button" class="button">Select All</button></td>';
+                        } else if ((i + 1) % 4 === 1) {
+                            elements_checkbox += '</tr><tr>';
+                        }
+                        elements_checkbox += ('<td><input type="checkbox" name="' +
                             select_elements_j_name + '" id="love' +
                             j + i + '" value="' +
                             select_elements_j_opt[i].value + '" />' +
-                            '<label for="love' + j + i + '">' + select_elements_j_opt[i].text + '</label>');
+                            '<label for="love' + j + i + '">' + select_elements_j_opt[i].text + '</label></td>');
+                        if (i === select_elements_j_opt.length - 1) {
+                            elements_checkbox += '</tr>'
+                        }
                     }
-                    elements_checkbox += '</div></div>';
+                    elements_checkbox += '</table></div></div>';
                     // 判断是否转换成功,若成功则进行替换
                     if (elements_checkbox) {
                         select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
@@ -727,7 +735,8 @@
                     + '</a>'
                     + '</div>'
                     + '<div>'
-                    + '<a href="' + space_home_url + '/data/datainstanceoperation/" class="sidebar-link">'
+                    //+ '<a href="' + space_home_url + '/data/datainstanceoperation/" class="sidebar-link">'
+                    + '<a href="' + space_home_url + '/clouds/instanceoperation/" class="sidebar-link">'
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
@@ -877,7 +886,9 @@
                                 var cf_children_i_ul_new = "<ul>"
                                     + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
                                     + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
-                                    + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                    //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                    + '<li><a href="' + space_home_url + '/clouds/instanceoperation/">Instances Operations</a></li>'
+
                                     + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                     + "</ul>";
                                 cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
@@ -937,7 +948,8 @@
                                         + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
                                         + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
                                         + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
-                                        + '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                        //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                                        + '<li><a href="' + space_home_url + '/clouds/instanceoperation/">Instances Operations</a></li>'
                                         + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
                                         + "</ul>";
                                     cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
