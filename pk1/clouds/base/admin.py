@@ -73,6 +73,7 @@ class OperatableAdminMixin(object):
         return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or request.user.is_superuser
 
 class OperationAdmin(AutoModelAdmin):
+    search_fields = ('script',)
     list_filter = (
         'operation',
         ('target', admin.RelatedOnlyFieldListFilter),
