@@ -74,7 +74,7 @@
         min-width: 80px;
         /* text-align: center; */
         float: left;
-        margin: 2px;
+        /* margin: 2px; */
         border-radius: 4px
     }
 
@@ -491,58 +491,60 @@
         if ('/engines/cluster/' !== window_location_pathname && document.getElementById("add-dashboard-module-form")) {
             document.getElementById("add-dashboard-module-form").parentElement.style.display = "none";
         }
-        // 多选平铺
-        //查询到因select2隐藏的select
-        var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
-        //判断select是否有下拉项
-        if (select_elements_array && select_elements_array.length > 0) {
-            // 需要修改的数组
-            var select_element_update_array = [];
-            // 循环处理select(筛选需要修改的)
-            for (var j = 0; j < select_elements_array.length; j++) {
-                if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
-                    var update_select_obj = {}
-                    // 需要修改的select
-                    update_select_obj.select = select_elements_array[j];
-                    // 需要修改select的父元素
-                    update_select_obj.parent = select_elements_array[j].parentElement;
-                    // 需要修改select父元素
-                    update_select_obj.parent_last_child = select_elements_array[j].parentElement.lastElementChild;
-                    // push进需修改的数组
-                    select_element_update_array.push(update_select_obj);
-                }
-            }
-            // 循环处理需要修改的数组
-            for (var j = 0; j < select_element_update_array.length; j++) {
-                // 数组中第一个元素
-                var select_element_obj_j = select_element_update_array[j];
-                // 取select的name
-                var select_elements_j_name = select_element_obj_j.select.getAttribute("name");
-                // 取select的option
-                var select_elements_j_opt = select_element_obj_j.select.getElementsByTagName('option');
-                // 判断取出的select的option是否为空
-                if (select_elements_j_opt && select_elements_j_opt.length > 0) {
-                    // 把select转为checkbox并添加样式
-                    var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL"><table>';
-                    for (var i = 0; i < select_elements_j_opt.length; i++) {
-                        if (i === 0) {
-                            elements_checkbox += '<tr><th colspan="4"><button id="select_all_btn" type="button" onclick="select_all()" class="button">Select All</button></th></tr><tr>';
-                        } else if ((i + 1) % 4 === 1) {
-                            elements_checkbox += '</tr><tr>';
-                        }
-                        elements_checkbox += ('<td><input type="checkbox" name="' +
-                            select_elements_j_name + '" id="love' +
-                            j + i + '" value="' +
-                            select_elements_j_opt[i].value + '" />' +
-                            '<label for="love' + j + i + '">' + select_elements_j_opt[i].text + '</label></td>');
-                        if (i === select_elements_j_opt.length - 1) {
-                            elements_checkbox += '</tr>'
-                        }
+        if (space_home_url + '/engines/cluster/add/' !== window_location_pathname) {
+            // 多选平铺
+            //查询到因select2隐藏的select
+            var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
+            //判断select是否有下拉项
+            if (select_elements_array && select_elements_array.length > 0) {
+                // 需要修改的数组
+                var select_element_update_array = [];
+                // 循环处理select(筛选需要修改的)
+                for (var j = 0; j < select_elements_array.length; j++) {
+                    if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
+                        var update_select_obj = {}
+                        // 需要修改的select
+                        update_select_obj.select = select_elements_array[j];
+                        // 需要修改select的父元素
+                        update_select_obj.parent = select_elements_array[j].parentElement;
+                        // 需要修改select父元素
+                        update_select_obj.parent_last_child = select_elements_array[j].parentElement.lastElementChild;
+                        // push进需修改的数组
+                        select_element_update_array.push(update_select_obj);
                     }
-                    elements_checkbox += '</table></div></div>';
-                    // 判断是否转换成功,若成功则进行替换
-                    if (elements_checkbox) {
-                        select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
+                }
+                // 循环处理需要修改的数组
+                for (var j = 0; j < select_element_update_array.length; j++) {
+                    // 数组中第一个元素
+                    var select_element_obj_j = select_element_update_array[j];
+                    // 取select的name
+                    var select_elements_j_name = select_element_obj_j.select.getAttribute("name");
+                    // 取select的option
+                    var select_elements_j_opt = select_element_obj_j.select.getElementsByTagName('option');
+                    // 判断取出的select的option是否为空
+                    if (select_elements_j_opt && select_elements_j_opt.length > 0) {
+                        // 把select转为checkbox并添加样式
+                        var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL"><table>';
+                        for (var i = 0; i < select_elements_j_opt.length; i++) {
+                            if (i === 0) {
+                                elements_checkbox += '<tr><th colspan="4"><button id="select_all_btn" type="button" onclick="select_all()" class="button">Select All</button></th></tr><tr>';
+                            } else if ((i + 1) % 4 === 1) {
+                                elements_checkbox += '</tr><tr>';
+                            }
+                            var checkBox_id = ('love' + j + i);
+                            elements_checkbox += ('<td><input type="checkbox" name="' +
+                                select_elements_j_name + '" id="' + checkBox_id + '" value="' +
+                                select_elements_j_opt[i].value + '" />' +
+                                '<label for="' + checkBox_id + '">' + select_elements_j_opt[i].text + '</label></td>');
+                            if (i === select_elements_j_opt.length - 1) {
+                                elements_checkbox += '</tr>'
+                            }
+                        }
+                        elements_checkbox += '</table></div></div>';
+                        // 判断是否转换成功,若成功则进行替换
+                        if (elements_checkbox) {
+                            select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
+                        }
                     }
                 }
             }
@@ -915,38 +917,11 @@
                     }
                 } else {
                     var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-                    // if (element_first_div) {
-                    //     var element_first_div_inner_html = element_first_div.innerHTML;
-                    //     var state_div = '<div id="updateDivElementId" class="dashboard-item collapsible deletable draggable" data-module-id="26">'
-                    //         + '<div class="dashboard-item-header ui-sortable-handle">'
-                    //         + '<span class="dashboard-item-header-drag icon-grid"></span>'
-                    //         + '<span class="dashboard-item-header-title">'
-                    //         + '<a href="javascript:openStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-down"></span></a>'
-                    //         + '<a href="javascript:closedStyle(\'updateDivElementId\');" class="dashboard-item-collapse"><span class="dashboard-item-header-collapse-button icon-arrow-up"></span></a>'
-                    //         + 'State'
-                    //         + '</span>'
-                    //         + '<div class="cf"></div>'
-                    //         + '</div>'
-                    //         + '<div class="dashboard-item-content">'
-                    //         + '<ul>'
-                    //         + '<li class="contrast"><a href="#" title="Models in the data applica tion">state</a></li>'
-                    //         + '<li><a>gStore三元组：<button ty pe="button" class="stateBtnStyle">5,098,650</button></a></li>'
-                    //         + '<li><a>EventDB事例：<button ty pe="button" class="stateBtnStyle">1,536,156,943</button></a></li>'
-                    //         + '<li><a>Aserv行数：<button type ="button" class="stateBtnStyle">1,410,192,278</button></a></li>'
-                    //         + '<li><a>节点数：<button type="bu tton" class="stateBtnStyle">4</button></a></li>'
-                    //         + '<li><a>CPU：<button type="bu tton" class="stateBtnStyle">36</button></a></li>'
-                    //         + '<li><a>内存：<button type="but ton" class="stateBtnStyle">54 GB</button></a></li>'
-                    //         + '<li><a>本地磁盘：<button type="button" class="stateBtnStyle">570 GB</button></a></li>'
-                    //         + '<li><a>Spark：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                    //         + '<li><a>Hadoop：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                    //         + '<li><a>Impala：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                    //         + '<li><a>gStore：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                    //         + '<li><a>Hive：<button type="button" class="stateBtnStyle">正常</button></a></li>'
-                    //         + '</ul>'
-                    //         + '</div>'
-                    //         + '</div>';
-                    //     element_first_div.innerHTML = state_div + element_first_div_inner_html;
-                    // }
+                    if (element_first_div) {
+                        var element_first_div_inner_html = element_first_div.innerHTML;
+                        var state_div = '';
+                        element_first_div.innerHTML = state_div + element_first_div_inner_html;
+                    }
                     var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                     if (cf_children && cf_children.length > 0) {
                         for (var i = 0; i < cf_children.length; i++) {
@@ -1097,15 +1072,16 @@
             // 隐藏无用导航
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
-            document.getElementsByClassName('breadcrumbs initialized')[0].innerHTML = ('<img style="position: fixed;width: 91px;" src="/static/logo-large1.png"><span style="margin-left: 100px;"></span>'
-                + document.getElementsByClassName('breadcrumbs initialized')[0].innerHTML);
+            document.getElementsByClassName('breadcrumbs initialized')[0].style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML = ('<p style="text-align: center;margin-top: 10px;"><img style="width: 180px;" src="/static/logo-large.png"></p>'
+                + document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML);
             document.getElementById('container').firstElementChild.style.display = "none";
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">'
                 //+ '<p style="text-align: center;font-size: 26px;">Scispace List</p>'
-                + '<p style="text-align: right;margin-top: 10px;">'
-                + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">Add cluster</a>'
+                + '<p style="text-align: right;margin-top: -10px;">'
+                + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">New Space</a>'
                 + '</p>'
                 + '<div class="dashboard-container columns_4 cf">';
             var result_list_cluster = document.getElementById('result_list');
@@ -1175,19 +1151,20 @@
             contentElement.outerHTML = contentElementNew + contentElement.outerHTML;
         }
         // modify cluster add page
-        if ('/engines/cluster/add/' === window_location_pathname) {
+        if (space_home_url + '/engines/cluster/add/' === window_location_pathname) {
             // close menu
             if (hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
             // hide useless navigation
             document.getElementById('container').firstElementChild.style.display = "none";
-            var crumbs = document.getElementsByClassName('breadcrumbs initialized')[0].children;
-            if (crumbs && crumbs.length > 3) {
-                crumbs[0].style.display = "none";
-                crumbs[1].style.display = "none";
-                crumbs[2].style.display = "none";
-                crumbs[3].style.display = "none";
+            var breadcrumbs_initialized_element = document.getElementsByClassName('breadcrumbs initialized')[0];
+            if (breadcrumbs_initialized_element) {
+                breadcrumbs_initialized_element.style.display = "none";
+                breadcrumbs_initialized_element.outerHTML = (breadcrumbs_initialized_element.outerHTML + '<div class="breadcrumbs initialized">'
+                    + '<a href="/engines/cluster/">Spaces</a>'
+                    + '<span class="icon-arrow-right breadcrumbs-separator"></span> New Space'
+                    + '</div>');
             }
             // modify and hide button
             document.getElementsByClassName("submit-row")[0].firstElementChild.value = "Add";
@@ -1195,6 +1172,79 @@
             if (submit_row_inputs && submit_row_inputs.length > 0) {
                 for (var i = 1; i < submit_row_inputs.length; i++) {
                     submit_row_inputs[i].style.display = "none";
+                }
+            }
+            // 多选平铺
+            //查询到因select2隐藏的select
+            var select_elements_array = document.getElementsByClassName("select2-hidden-accessible");
+            //判断select是否有下拉项
+            if (select_elements_array && select_elements_array.length > 0) {
+                // 需要修改的数组
+                var select_element_update_array = [];
+                // 循环处理select(筛选需要修改的)
+                for (var j = 0; j < select_elements_array.length; j++) {
+                    if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
+                        var update_select_obj = {}
+                        // 需要修改的select
+                        update_select_obj.select = select_elements_array[j];
+                        // 需要修改select的父元素
+                        update_select_obj.parent = select_elements_array[j].parentElement;
+                        // 需要修改select父元素
+                        update_select_obj.parent_last_child = select_elements_array[j].parentElement.lastElementChild;
+                        // push进需修改的数组
+                        select_element_update_array.push(update_select_obj);
+                    }
+                }
+                // 循环处理需要修改的数组
+                for (var j = 0; j < select_element_update_array.length; j++) {
+                    // 数组中第一个元素
+                    var select_element_obj_j = select_element_update_array[j];
+                    // 取select的name
+                    var select_elements_j_name = select_element_obj_j.select.getAttribute("name");
+                    // 取select的option
+                    var select_elements_j_opt = select_element_obj_j.select.getElementsByTagName('option');
+                    // 判断取出的select的option是否为空
+                    if (select_elements_j_opt && select_elements_j_opt.length > 0) {
+                        // 把select转为checkbox并添加样式
+                        var elements_checkbox = '<div class="RadioStyle"><div class="Block PaddingL"><table>';
+                        for (var i = 0; i < select_elements_j_opt.length; i++) {
+                            if (i === 0) {
+                                elements_checkbox += '<tr><th colspan="4"><button id="select_all_btn" type="button" onclick="select_all()" class="button">Select All</button></th></tr><tr>';
+                            } else if ((i + 1) % 4 === 1) {
+                                elements_checkbox += '</tr><tr>';
+                            }
+                            var checkBox_id = ('love' + j + i);
+                            var checkBox_html = "";
+                            var label_html = "";
+                            var select_engines = new Object();
+                            select_engines["HBASE"] = "HBASE";
+                            select_engines["HDFS"] = "HDFS";
+                            select_engines["HIVE"] = "HIVE";
+                            select_engines["YARN"] = "YARN";
+                            select_engines["ZEPPELIN"] = "ZEPPELIN";
+                            select_engines["GSTORE"] = "GSTORE";
+                            select_engines["EVENTDB"] = "EVENTDB";
+                            select_engines["ASTROSERV"] = "ASTROSERV";
+                            select_engines["ZOOKEEPER"] = "ZOOKEEPER";
+                            select_engines["HUE"] = "HUE";
+                            if (select_elements_j_opt[i].text && select_engines[select_elements_j_opt[i].text.toUpperCase()]) {
+                                checkBox_html = '<input type="checkbox" name="' + select_elements_j_name + '" id="' + checkBox_id + '" value="' + select_elements_j_opt[i].value + '" checked />';
+                                label_html = '<label for="" style="filter: grayscale(100%);">' + select_elements_j_opt[i].text + '</label>';
+                            } else {
+                                checkBox_html = '<input type="checkbox" name="' + select_elements_j_name + '" id="' + checkBox_id + '" value="' + select_elements_j_opt[i].value + '" />';
+                                label_html = '<label for="' + checkBox_id + '">' + select_elements_j_opt[i].text + '</label>';
+                            }
+                            elements_checkbox += ('<td>' + checkBox_html + label_html + '</td>');
+                            if (i === select_elements_j_opt.length - 1) {
+                                elements_checkbox += '</tr>'
+                            }
+                        }
+                        elements_checkbox += '</table></div></div>';
+                        // 判断是否转换成功,若成功则进行替换
+                        if (elements_checkbox) {
+                            select_element_obj_j.parent.innerHTML = elements_checkbox + update_select_obj.parent_last_child.outerHTML
+                        }
+                    }
                 }
             }
         }
