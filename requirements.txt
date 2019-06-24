@@ -6,7 +6,7 @@ django-filter==2.0.0
 django-jet==1.0.8
 djangorestframework==3.9.0
 djangorestframework-simplejwt==3.3
-paramiko==2.4.1
+paramiko==2.4.2
 psycopg2-binary==2.7.6.1
 python-cinderclient==4.1.0
 python-novaclient==11.1.0
