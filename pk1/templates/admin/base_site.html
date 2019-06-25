@@ -798,8 +798,8 @@
             if (window_location_search_param_array_hive && window_location_search_param_array_hive.length > 1 && "" === window_location_search_param_array_hive[0]) {
                 var window_location_search_param_array_hive_param = window_location_search_param_array_hive[1].split("&");
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 1) {
-                    //iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
-                    iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
+                    iframe_src='http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
+                    //iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                     var function_param_str = window_location_search_param_array_hive_param[1].split(".")[0];
                     var param_database_fun = function (function_param) {
@@ -852,15 +852,15 @@
             } else if (window_location_search_param_array_hdfs && window_location_search_param_array_hdfs.length > 1 && "" === window_location_search_param_array_hdfs[0]) {
                 var window_location_search_param_array_hdfs_param = window_location_search_param_array_hdfs[1].split("&");
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 1) {
-                    //iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
-                    iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
+                    iframe_src='http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
+                    //iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
                 var window_location_search_param_array_hbase_param = window_location_search_param_array_hbase[1].split("&");
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
-                    //iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
-                    iframe_src = 'http://10.0.88.141:8888/hbase/';
+                    iframe_src='http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
+                    //iframe_src = 'http://10.0.88.141:8888/hbase/';
                     bake_instances_button = '<input type="button" value="BACK INSTANCES" onclick="goBakeFunMain();" />&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
@@ -1018,7 +1018,7 @@
                 var hide_result_list_table_array = [];
                 if (result_list_table_td_array && result_list_table_td_array.length > 0) {
                     var type_array_obj = new Object();
-                    type_array_obj["ralational"] = "hive";
+                    type_array_obj["relational"] = "hive";
                     type_array_obj["raw"] = "hdfs";
                     type_array_obj["semistructed"] = "hbase";
                     type_array_obj["event"] = "eventDB";
