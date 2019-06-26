@@ -28,7 +28,7 @@ def create_stack(sender,instance,**kwargs):
         return
     if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script.endswith('###setup stack end###'):
         instance.target.stack_set.first().import_engine()
-    
+
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):
