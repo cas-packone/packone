@@ -29,7 +29,7 @@ def update_data_instance_status(sender,instance,**kwargs):
     for di in models.DataInstance.objects.filter(pk=loading_instance_operations[instance.pk]).select_for_update():
         del loading_instance_operations[instance.pk]
         di.built_time=datetime.datetime.now()
-        di.status=models.COMPONENT_STATUS.active.value
+        di.status=models.INSTANCE_STATUS.running.value
         di.save()
 
 @receiver(materialized, sender=models.DataInstance)
