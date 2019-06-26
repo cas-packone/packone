@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.functional import cached_property
-from engines.models import Engine, COMPONENT_STATUS, COMPONENT_OPERATION
+from engines.models import Engine, COMPONENT_OPERATION
 from clouds.base.models import StaticModel, OperationModel, OperatableMixin
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS
 from engines.models import Cluster#TODO use worldwide namespace when upload to pip
@@ -42,7 +42,12 @@ class DataEngine(StaticModel):
     engine=models.ForeignKey(Engine,on_delete=models.PROTECT)
     uri_prefix=models.CharField(max_length=2000, default='', blank=True)
     description=models.TextField(max_length=5120)
-    
+
+class INSTANCE_STATUS(Enum):
+    loading=0 #unknown
+    running=1
+    stop=2
+
 class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     name=models.CharField(max_length=50)
@@ -53,7 +58,7 @@ class DataInstance(models.Model,OperatableMixin):
     created_time=models.DateTimeField(auto_now_add=True)
     built_time=models.DateTimeField(blank=True,null=True,editable=False)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False)
-    status= models.PositiveIntegerField(choices=[(status.value,status.name) for status in COMPONENT_STATUS],default=COMPONENT_STATUS.null.value,editable=False)
+    status= models.PositiveIntegerField(choices=[(status.value,status.name) for status in INSTANCE_STATUS],default=INSTANCE_STATUS.loading.value,editable=False)
     remark = models.CharField(blank=True,null=True,max_length=100)
     deleting = models.BooleanField(default=False,editable=False)
     class Meta:
@@ -72,7 +77,7 @@ class DataInstance(models.Model,OperatableMixin):
         return self.engine.uri_prefix.format(instance=self.entry_host)+self.uri_suffix
     @property
     def startable(self):
-        if self.status == COMPONENT_STATUS.null.value: return True#TODO stop
+        if self.status == INSTANCE_STATUS.loading.value: return True#TODO stop
         return False
     @staticmethod
     def get_operation_model():
