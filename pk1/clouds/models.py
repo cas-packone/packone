@@ -211,6 +211,9 @@ class Instance(models.Model,OperatableMixin):
     def building(self):
         return self.built_time and not self.ready
     @cached_property
+    def vnc_url(self):
+        return self.cloud.driver.vm_vnc_url(self.cloud.platform_credential,str(self.uuid))
+    @cached_property
     def hosts_record(self):
         if not self.ready: raise Exception('instance not ready')
         hostname_parts=self.hostname.split('.')
