@@ -716,7 +716,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + ' <span class="sidebar-link-label">Open Datasets</span>'
+                    + ' <span class="sidebar-link-label"><img src="/static/dataset.svg" style="width: 16px;vertical-align: middle;">&nbsp;Open Datasets</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -724,7 +724,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Instances</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/instances.svg" style="width: 16px;vertical-align: middle;">&nbsp;Instances</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -732,7 +732,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Data Pipeline</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/pipeline.svg" style="width: 16px;vertical-align: middle;">&nbsp;Data Pipeline</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -740,7 +740,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Notebook</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/noteboot.svg" style="width: 16px;vertical-align: middle;">&nbsp;Notebook</span>'
                     + '</a>'
                     + '</div>'
                     + '</div>';
@@ -754,7 +754,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">SciSpace Operations</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" style="width: 16px;vertical-align: middle;">&nbsp;SciSpace Operations</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -763,7 +763,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Instances Operations</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" style="width: 16px;vertical-align: middle;">&nbsp;Instances Operations</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -771,7 +771,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label">Cluster Manage</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/manage.svg" style="width: 16px;vertical-align: middle;">&nbsp;Cluster Manage</span>'
                     + '</a>'
                     + '</div>'
                     + '</div>';
@@ -1072,6 +1072,21 @@
                     }
                 }
             }
+            var field_type_element = document.getElementsByClassName("field-type");
+            if (field_type_element && field_type_element.length > 0) {
+                var dataset_type = new Object();
+                dataset_type["RELATIONAL"] = '<img src="/static/hive.svg" style="width: 18px;">&nbsp;relational';
+                dataset_type["RAW"] = '<img src="/static/hdfs.svg" style="width: 18px;">&nbsp;raw';
+                dataset_type["SEMISTUCTED"] = '<img src="/static/hive.svg" style="width: 18px;">&nbsp;semistructed';
+                dataset_type["EVENT"] = '<img src="/static/event.svg" style="width: 18px;">&nbsp;event';
+                dataset_type["GRAPH"] = '<img src="/static/gstore.svg" style="width: 18px;">&nbsp;graph';
+                dataset_type["STAR"] = '<img src="/static/star.svg" style="width: 18px;">&nbsp;star';
+                for (var i = 0; i < field_type_element.length; i++) {
+                    if (field_type_element[i].textContent && dataset_type[field_type_element[i].textContent.toUpperCase()]) {
+                        field_type_element[i].innerHTML = dataset_type[field_type_element[i].textContent.toUpperCase()];
+                    }
+                }
+            }
         }
         if (space_home_url + "/data/datainstance/" === window_location_pathname) {
             var result_list_table = document.getElementById('result_list');
@@ -1281,17 +1296,17 @@
                             var checkBox_html = "";
                             var label_html = "";
                             var select_engines = new Object();
-                            //select_engines["HBASE"] = "HBASE";
                             select_engines["HDFS"] = "HDFS";
                             select_engines["HIVE"] = "HIVE";
                             select_engines["YARN"] = "YARN";
                             select_engines["ZEPPELIN"] = "ZEPPELIN";
                             select_engines["MAPREDUCE2"] = "MAPREDUCE2";
+                            select_engines["HUE"] = "HUE";
                             //select_engines["GSTORE"] = "GSTORE";
                             //select_engines["EVENTDB"] = "EVENTDB";
                             //select_engines["ASTROSERV"] = "ASTROSERV";
                             //select_engines["ZOOKEEPER"] = "ZOOKEEPER";
-                            select_engines["HUE"] = "HUE";
+                            //select_engines["HBASE"] = "HBASE";
                             if (select_elements_j_opt[i].text && select_engines[select_elements_j_opt[i].text.toUpperCase()]) {
                                 checkBox_html = '<input type="checkbox" name="' + select_elements_j_name + '" id="' + checkBox_id + '" value="' + select_elements_j_opt[i].value + '" checked />';
                                 label_html = '<label for="" style="filter: grayscale(100%);">' + select_elements_j_opt[i].text + '</label>';
