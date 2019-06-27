@@ -470,6 +470,15 @@
             }
         }
     };
+    function changePublicCheckBox(flag) {
+        if (flag) {
+            document.getElementById("public_no_id").checked = false;
+            document.getElementById("id_public").checked = true;
+        } else {
+            document.getElementById("public_yes_id").checked = false;
+            document.getElementById("id_public").checked = false;
+        }
+    }
     var pre_execution = function () {
     };
     var actionSubmitFun = function () {
@@ -931,7 +940,7 @@
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                             + 'Pipeline');
                     }
-                    loadPipeline('http://10.0.86.131:6001/piflow-web/');
+                    loadPipeline('http://10.0.86.131:6001/piflow-web/web/flowList?first');
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
                         breadcrumbs_initialized_html_element.innerHTML = ('<a href="/">Home</a>'
@@ -1272,15 +1281,16 @@
                             var checkBox_html = "";
                             var label_html = "";
                             var select_engines = new Object();
-                            select_engines["HBASE"] = "HBASE";
+                            //select_engines["HBASE"] = "HBASE";
                             select_engines["HDFS"] = "HDFS";
                             select_engines["HIVE"] = "HIVE";
                             select_engines["YARN"] = "YARN";
                             select_engines["ZEPPELIN"] = "ZEPPELIN";
-                            select_engines["GSTORE"] = "GSTORE";
-                            select_engines["EVENTDB"] = "EVENTDB";
-                            select_engines["ASTROSERV"] = "ASTROSERV";
-                            select_engines["ZOOKEEPER"] = "ZOOKEEPER";
+                            select_engines["MAPREDUCE2"] = "MAPREDUCE2";
+                            //select_engines["GSTORE"] = "GSTORE";
+                            //select_engines["EVENTDB"] = "EVENTDB";
+                            //select_engines["ASTROSERV"] = "ASTROSERV";
+                            //select_engines["ZOOKEEPER"] = "ZOOKEEPER";
                             select_engines["HUE"] = "HUE";
                             if (select_elements_j_opt[i].text && select_engines[select_elements_j_opt[i].text.toUpperCase()]) {
                                 checkBox_html = '<input type="checkbox" name="' + select_elements_j_name + '" id="' + checkBox_id + '" value="' + select_elements_j_opt[i].value + '" checked />';
@@ -1302,6 +1312,13 @@
                     }
                 }
             }
+            var id_public = document.getElementById("id_public");
+            var id_public_parent = id_public.parentElement;
+            id_public_parent.style.display = "none";
+            id_public_parent.outerHTML = id_public_parent.outerHTML + '<div><label>Public:</label>'
+                + '<input type="radio" id="public_yes_id" onchange="changePublicCheckBox(true)"><label class="vCheckboxLabel">YES</label>'
+                + '<input type="radio" checked="checked" id="public_no_id" onchange="changePublicCheckBox(false)"><label class="vCheckboxLabel">NO</label>'
+                + '</div>';
         }
         // modify load datasets page
         if (space_home_url + "/data/datainstance/add/" === window_location_pathname) {
