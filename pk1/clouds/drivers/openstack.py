@@ -24,6 +24,9 @@ def vm_op(credential, vm_id, op):
     else:
         raise Exception('Invalid VM Operation: {}'.format(op))
 
+def vm_vnc_url(credential, vm_id):
+    return 'http://# TODO'
+
 def vm_list(credential, include_remarks=[]):
     nova = get_nova(credential)
     return nova.servers.list()

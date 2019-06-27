@@ -116,6 +116,11 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         'status',
     )
     extra=('action',)
+    def VNC(modeladmin, request, queryset):
+        for ins in queryset:
+            return redirect(ins.vnc_url)
+    VNC.short_description = "VNC"
+    actions = [VNC]
     def get_readonly_fields(self,request,obj=None):
         fs=super().get_readonly_fields(request,obj)
         if obj: return ('image', 'template',) + fs

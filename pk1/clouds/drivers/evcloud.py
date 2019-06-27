@@ -35,6 +35,13 @@ def vm_status(credential, vm_id):
         else:
             raise e
 
+def vm_vnc_url(credential, vm_id):
+    action = ["vms","vnc","create"]
+    params = {
+        "vm_id":vm_id
+    }
+    return do_action(credential,action,params)['url']
+
 def vm_list(credential, include_remarks=[]):
     include_remarks.append(settings.PACKONE_LABEL)
     action = ["vms", "list"]
