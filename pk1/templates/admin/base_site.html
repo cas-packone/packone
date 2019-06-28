@@ -235,7 +235,7 @@
 {% block branding %}
 {{ block.super }}
 <h1 id="site-name">
-    <a href="/">
+    <a href="/clouds/instance/">
         <img src="{% static '/logo-large.png' %}">
     </a>
     <div style="display:none;" id="current-space">{{ request.space }}</div>
@@ -354,10 +354,10 @@
         //html_head_title.text = html_head_title.text.replace("PackOne Console", space_name);
         html_head_title.text = space_name;
     }
-    var site_name_a = document.getElementById("site-name").firstElementChild;
-    if (site_name_a) {
-        site_name_a.setAttribute("href", space_home_url + "/");
-    }
+    // var site_name_a = document.getElementById("site-name").firstElementChild;
+    // if (site_name_a) {
+    //     site_name_a.setAttribute("href", space_home_url + "/");
+    // }
     if ('/login/' === window_location_pathname && '?next=/engines/cluster' !== window.location.search) {
         window.location.href = window.location.origin + window_location_pathname + '?next=/engines/cluster';
     }
@@ -488,7 +488,19 @@
     var changelist_footer_div = "";
     var result_list_select_array = "";
     window.onload = function () {
-        if (space_home_url + "/" === window_location_pathname) {
+        var document_all_a = document.getElementsByTagName('a');
+        if (document_all_a && document_all_a.length > 0) {
+            for (var i = 0; i < document_all_a.length; i++) {
+                var document_all_a_i_href = document_all_a[i].getAttribute("href");
+                if (document_all_a_i_href && document_all_a_i_href[0] === "/") {
+                    if ("/" === document_all_a_i_href) {
+                        document_all_a_i_href = "/clouds/instance/"
+                    }
+                    document_all_a[i].setAttribute("href", space_home_url + document_all_a_i_href);
+                }
+            }
+        }
+        if (space_home_url + "/clouds/instance/" === window_location_pathname) {
             if (!hasClassCustom(document.getElementsByTagName("body")[0], "menu-pinned")) {
                 document.getElementById('branding-pin').click();
             }
@@ -702,7 +714,7 @@
                     space_name_tmp = 'HOME'
                 }
                 var addMenuSciSpace = '<div class="sidebar-section">'
-                    + '<a href="/space/259/" class="sidebar-link icon">'
+                    + '<a href="'+space_home_url+'/clouds/instance/" class="sidebar-link icon">'
                     + '<span class="sidebar-link-label">'
                     + '<span class="sidebar-link-icon icon-data"></span>' + space_name_tmp + '</span>'
                     + '</a>'
@@ -777,16 +789,16 @@
                     + '</div>';
                 sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addMenuSciSpace + addNewMenuData + addNewMenuAdmin);
             }
-            //替换Home的href
-            var sidebar_section_array_first_array = sidebar_section_array[0].getElementsByTagName("a");
-            if (sidebar_section_array_first_array && sidebar_section_array_first_array.length > 0) {
-                for (var i = 0; i < sidebar_section_array_first_array.length; i++) {
-                    if ("/" === sidebar_section_array_first_array[i].getAttribute("href")) {
-                        sidebar_section_array_first_array[i].setAttribute("href", space_home_url + "/");
-                        break;
-                    }
-                }
-            }
+            // //替换Home的href
+            // var sidebar_section_array_first_array = sidebar_section_array[0].getElementsByTagName("a");
+            // if (sidebar_section_array_first_array && sidebar_section_array_first_array.length > 0) {
+            //     for (var i = 0; i < sidebar_section_array_first_array.length; i++) {
+            //         if ("/" === sidebar_section_array_first_array[i].getAttribute("href")) {
+            //             sidebar_section_array_first_array[i].setAttribute("href", space_home_url + "/");
+            //             break;
+            //         }
+            //     }
+            // }
         }
         if (space_home_url + "/" === window_location_pathname) {
             var rightContent = document.getElementById("content");
@@ -806,7 +818,7 @@
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 1) {
                     iframe_src = 'http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
                     //iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
-                    breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                         + '<a href="/data/">Data</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -866,7 +878,7 @@
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 1) {
                     iframe_src = 'http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     //iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
-                    breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                         + '<a href="/data/">Data</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -879,7 +891,7 @@
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
                     iframe_src = 'http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
                     //iframe_src = 'http://10.0.88.141:8888/hbase/';
-                    breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                         + '<a href="/data/">Data</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -893,7 +905,7 @@
                     var window_location_search_param_array_eventDB_param_array = window_location_search_param_array_eventDB_param[1].split("+");
                     if (window_location_search_param_array_eventDB_param_array && window_location_search_param_array_eventDB_param_array.length > 1) {
                         iframe_src = window_location_search_param_array_eventDB_param_array[0].replace(RegExp('%20', "g"), "");
-                        breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                             + '<a href="/data/">Data</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -910,7 +922,7 @@
                         iframe_src = window_location_search_param_array_gstore_param_array[0].replace(RegExp('%20', "g"), "") + '/admin_root.html';
                         iframe_src = 'http://10.0.88.81:8006/gStorems/admin_root.html';
                         iframe_src = iframe_src.replace(RegExp('%20', "g"), "");
-                        breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                             + '<a href="/data/">Data</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -925,7 +937,7 @@
                 if (window_location_search_param_array_astroServ_param && window_location_search_param_array_astroServ_param.length > 1) {
                     var param = window_location_search_param_array_astroServ_param[1].split("+")[0];
                     iframe_src = param.replace(RegExp('%20', "g"), "");
-                    breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                         + '<a href="/data/">Data</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
@@ -936,14 +948,14 @@
             } else {
                 if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
-                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/">Home</a>'
+                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                             + 'Pipeline');
                     }
                     loadPipeline('http://10.0.86.131:6001/piflow-web/web/flowList?first');
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
-                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/">Home</a>'
+                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>'
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                             + 'Notebook');
                     }
@@ -972,7 +984,7 @@
                             }
                         }
                     }
-                    breadcrumbs_initialized_html = '<a href="/">Home</a>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
                         + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
                         + 'Admin';
                 } else {
@@ -1017,18 +1029,18 @@
                 }
             }
         }
-        var breadcrumbs_initialized = document.getElementsByClassName('breadcrumbs initialized');
-        if (breadcrumbs_initialized && breadcrumbs_initialized.length > 0) {
-            var breadcrumbs_initialized_a_array = breadcrumbs_initialized[0].getElementsByTagName('a');
-            if (breadcrumbs_initialized_a_array && breadcrumbs_initialized_a_array.length > 0) {
-                for (var i = 0; i < breadcrumbs_initialized_a_array.length; i++) {
-                    var breadcrumbs_initialized_a_array_i_href = breadcrumbs_initialized_a_array[i].getAttribute("href");
-                    if (breadcrumbs_initialized_a_array_i_href) {
-                        breadcrumbs_initialized_a_array[i].setAttribute("href", space_home_url + breadcrumbs_initialized_a_array_i_href);
-                    }
-                }
-            }
-        }
+        // var breadcrumbs_initialized = document.getElementsByClassName('breadcrumbs initialized');
+        // if (breadcrumbs_initialized && breadcrumbs_initialized.length > 0) {
+        //     var breadcrumbs_initialized_a_array = breadcrumbs_initialized[0].getElementsByTagName('a');
+        //     if (breadcrumbs_initialized_a_array && breadcrumbs_initialized_a_array.length > 0) {
+        //         for (var i = 0; i < breadcrumbs_initialized_a_array.length; i++) {
+        //             var breadcrumbs_initialized_a_array_i_href = breadcrumbs_initialized_a_array[i].getAttribute("href");
+        //             if (breadcrumbs_initialized_a_array_i_href) {
+        //                 breadcrumbs_initialized_a_array[i].setAttribute("href", space_home_url + breadcrumbs_initialized_a_array_i_href);
+        //             }
+        //         }
+        //     }
+        // }
         if (space_home_url + "/data/" === window_location_pathname) {
             var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
             if (cf_children && cf_children.length > 0) {
@@ -1052,18 +1064,32 @@
             }
         }
         if (space_home_url + "/data/dataset/" === window_location_pathname) {
-            var result_list_table = document.getElementById('result_list');
-            var result_list_table_array = result_list_table.getElementsByClassName("button");
-            if (result_list_table_array && result_list_table_array.length > 0) {
-                for (var i = 0; i < result_list_table_array.length; i++) {
-                    if ("Load" === result_list_table_array[i].text) {
-                        var result_list_table_array_i_href = result_list_table_array[i].getAttribute("href");
-                        if (result_list_table_array_i_href) {
-                            result_list_table_array[i].setAttribute("href", space_home_url + result_list_table_array_i_href);
-                        }
-                    }
-                }
-            }
+
+
+
+
+
+
+
+            // var result_list_table = document.getElementById('result_list');
+            // var result_list_table_array = result_list_table.getElementsByClassName("button");
+            // if (result_list_table_array && result_list_table_array.length > 0) {
+            //     for (var i = 0; i < result_list_table_array.length; i++) {
+            //         if ("Load" === result_list_table_array[i].text) {
+            //             var result_list_table_array_i_href = result_list_table_array[i].getAttribute("href");
+            //             if (result_list_table_array_i_href) {
+            //                 result_list_table_array[i].setAttribute("href", space_home_url + result_list_table_array_i_href);
+            //             }
+            //         }
+            //     }
+            // }
+
+
+
+
+
+
+
             var addlink_element_array = document.getElementsByClassName("addlink");
             if (addlink_element_array && addlink_element_array.length > 0) {
                 for (var i = 0; i < addlink_element_array.length; i++) {
@@ -1212,7 +1238,7 @@
                                 + '</tr>'
                                 + '<td colspan="2">'
                                 // + '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' 
-                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/" target="_blank">USE THIS SPACE</a></td>'
+                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/clouds/instance/" target="_blank">OPEN IT</a></td>'
                                 + '</tr>');
                         }
                         contentElementNew += ('</tbody>'
@@ -1345,6 +1371,11 @@
                     submit_row_inputs[i].style.display = "none";
                 }
             }
+        }
+        if (space_home_url + "/clouds/instance/" === window_location_pathname) {
+            // modify and hide button
+            document.getElementsByClassName('breadcrumbs initialized')[0].style.display = "none";
+            document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML = (document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML + '<div class="breadcrumbs initialized"></div>');
         }
         pre_execution();
     }
