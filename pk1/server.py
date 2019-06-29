@@ -21,6 +21,7 @@ def setup(args):
             )
     with open(BASE_DIR+"/conf/settings.py", "w") as f:
         f.write(newText)
+    #TODO add sql migration
     
 def start(args):
     address=args.listening[0] if args.listening else '127.0.0.1:11001'
