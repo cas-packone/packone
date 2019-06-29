@@ -124,8 +124,8 @@ def close_cluster_operation(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=GroupOperation)
 def purge_cluster_operation(sender, instance, **kwargs):
-    c_op=models.ClusterOperation.objects.filter(uuid=instance.batch_uuid).first()
-    if not c_op.get_sub_operations().exists():
+    c_op=models.ClusterOperation.objects.filter(batch_uuid=instance.batch_uuid).first()
+    if c_op and not c_op.get_sub_operations().exists():
         c_op.delete()
 
 # @receiver(post_save, sender=models.EngineOperation)
