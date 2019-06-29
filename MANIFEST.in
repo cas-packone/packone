@@ -1,4 +1,2 @@
 include README.rst
-include pk1/static/*
-include pk1/templates/admin/*
-include pk1/conf/*.ini
+recursive-include pk1 *
