@@ -12,6 +12,8 @@ Install
 ===================
 pip install pk1
 
+pk1 setup [--database pk1_db_user:pk1_db_passwd:pk1_db_host:pk1_db_port:pk1_db_name:]
+
 ===================
 Run
 ===================
@@ -21,6 +23,11 @@ pk1 start [--listening 127.0.0.1:11001]
 Stop
 ===================
 pk1 stop
+
+===================
+Uninstall 
+===================
+pk1 uninstall
 
 ===================
 Acknowledge
