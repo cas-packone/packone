@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "pk1",
-    version = "0.0.2",
+    version = "0.0.6",
     keywords = ("pip", "packone"),
     description = "PackOne: Pack clouds, engines and data services into one light stack.",
     long_description = open('README.rst').read(),
@@ -16,10 +16,10 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    install_requires = ['pk1-remedy','django-admin-auto','djangorestframework','djangorestframework-simplejwt', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers', 'python-novaclient', 'python-cinderclient', 'django-autocomplete-light'],
+    install_requires = ['uwsgi','pk1-remedy','django-admin-auto','djangorestframework','djangorestframework-simplejwt', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers', 'python-novaclient', 'python-cinderclient', 'django-autocomplete-light'],
     entry_points = {
         'console_scripts': [
-            'pk1 = ambari.cmd:run',
+            'pk1 = pk1.server:main',
         ]
     }
 )
