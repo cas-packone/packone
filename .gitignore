@@ -7,5 +7,4 @@ db.sqlite3
 venv/
 nohup.out
 dist/
-pk1/static/*/*
 pk1.egg-info/
