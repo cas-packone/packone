@@ -31,6 +31,7 @@ def stop(args):
     os.system('uwsgi --stop /var/tmp/packone.pid')
 
 def uninstall(args):
+    os.system('uwsgi --stop /var/tmp/packone.pid')
     shutil.rmtree(BASE_DIR+'/static')
     os.system('pip uninstall pk1')
 
