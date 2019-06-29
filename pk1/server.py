@@ -4,7 +4,6 @@ import argparse
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def setup(args):
-    os.system('python {BASE_DIR}/manage.py collectstatic --noinput'.format(BASE_DIR=BASE_DIR))
     database=args.database[0] if args.database else 'packone:packone:localhost:5432:packone'
     (db_user, db_passwd, db_host, db_port, db_name)=database.split(':')
     with open(BASE_DIR+"/conf/settings.py") as f:
@@ -18,9 +17,14 @@ def setup(args):
                 '5432', db_port
             ).replace(
                 'packone_new', db_name
+            ).replace(
+                '# STATIC_ROOT', 'STATIC_ROOT'
+            ).replace(
+                'os.path.join(BASE_DIR, "static")', '# os.path.join(BASE_DIR, "static")'
             )
     with open(BASE_DIR+"/conf/settings.py", "w") as f:
         f.write(newText)
+    
     #TODO add sql migration
     
 def start(args):
