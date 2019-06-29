@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 from user.models import Balance
-from user.utils import get_current_user
+from user.utils import get_current_user, get_space
 from .utils import get_url, get_formated_url
 from .base.admin import AutoModelAdmin, StaticModelAdmin, OwnershipModelAdmin, OperatableAdminMixin, OperationAdmin, M2MOperationAdmin, powerful_form_field_queryset_Q
 from . import models
@@ -126,7 +126,7 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         if obj: return ('image', 'template',) + fs
         return fs
     def get_queryset_Q(self, request):
-        return super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))
+        return (super().get_queryset_Q(request) | Q(cloud__in=models.Cloud.objects.filter(owner=request.user))) & Q(group__cluster=get_space())
     # def has_delete_permission(self, request, obj=None):
     #     return not obj or obj.owner==request.user and (obj.ready or obj.deleting) or obj.cloud.owner == request.user
     
