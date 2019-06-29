@@ -13,8 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.static import serve
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 admin.site.site_header = 'PackOne Console' # default: "Django Administration"
@@ -28,6 +30,7 @@ urlpatterns = [
     path('api/clouds/', include('clouds.urls')),
     path('api/engines/', include('engines.urls')),
     path('api/data/', include('data.urls')),
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_ROOT}),
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
 ]
