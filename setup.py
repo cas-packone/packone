@@ -10,7 +10,7 @@ setup(
     url = "https://github.com/cas-bigdatalab/packone",
     author = "Excel Wang",
     author_email = "wanghj@cnic.com",
-    packages = find_packages(),
+    packages = find_packages(exclude=['*.migrations']),
     include_package_data = True,
     classifiers=[
         "Programming Language :: Python :: 3",
