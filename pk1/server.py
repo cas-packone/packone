@@ -2,11 +2,12 @@ import os, shutil
 import argparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+os.chdir(BASE_DIR)
 
 def setup(args):
     database=args.database[0] if args.database else 'packone:packone:localhost:5432:packone'
     (db_user, db_passwd, db_host, db_port, db_name)=database.split(':')
-    with open(BASE_DIR+"/conf/settings.py") as f:
+    with open("conf/settings.py") as f:
         newText=f.read().replace(
             "'USER': 'rabbit'", "'USER': '"+db_user+"'"
             ).replace(
@@ -22,10 +23,18 @@ def setup(args):
             ).replace(
                 'os.path.join(BASE_DIR, "static")', '# os.path.join(BASE_DIR, "static")'
             )
-    with open(BASE_DIR+"/conf/settings.py", "w") as f:
+    with open("conf/settings.py", "w") as f:
         f.write(newText)
-    
+
+    os.system('python manage.py collectstatic --noinput')
     #TODO add sql migration
+    os.system('python manage.py migrate')
+    os.system('python manage.py makemigrations user clouds engines data')
+    os.system('python manage.py migrate')
+
+    print('config packone superuser')
+    print('username: admin')
+    os.system('python manage.py createsuperuser --username admin')
     
 def start(args):
     address=args.listening[0] if args.listening else '127.0.0.1:11001'
@@ -36,8 +45,10 @@ def stop(args):
 
 def uninstall(args):
     os.system('uwsgi --stop /var/tmp/packone.pid')
-    shutil.rmtree(BASE_DIR+'/static')
     os.system('pip uninstall pk1')
+    if os.path.isfile('db.sqlite3'):
+        shutil.move('db.sqlite3','/var/tmp/packone.sqlite3.old')
+    shutil.rmtree(BASE_DIR)
 
 parser = argparse.ArgumentParser(description='packone cmd line.')
 subparsers = parser.add_subparsers()

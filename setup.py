@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "pk1",
-    version = "0.0.6",
+    version = "0.0.7",
     keywords = ("pip", "packone"),
     description = "PackOne: Pack clouds, engines and data services into one light stack.",
     long_description = open('README.rst').read(),
