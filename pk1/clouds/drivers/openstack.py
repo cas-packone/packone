@@ -10,7 +10,7 @@ def get_nova(credential):#TODO opt perf.
     return client.Client(credential['api_version'], username=credential['username'], password=credential['password'], project_name=credential['project_name'], auth_url=credential['auth_url'])
 
 def get_cinder(credential):#TODO opt perf.
-    return cinder_client.Client(credential['api_version'],credential['username'],credential['password'],credential['project_name'],auth_url="http://controller:35357/v2.0/")
+    return cinder_client.Client(credential['api_version'],credential['username'],credential['password'],credential['project_name'],auth_url=credential['auth_url'])
 
 def vm_op(credential, vm_id, op):
     nova=get_nova(credential)
