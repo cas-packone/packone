@@ -1,5 +1,6 @@
 import os, shutil
 import argparse
+from time import sleep
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
@@ -39,6 +40,8 @@ def setup(args):
 def start(args):
     address=args.listening[0] if args.listening else '127.0.0.1:11001'
     os.system('uwsgi --http {address} --chdir {BASE_DIR} --ini {BASE_DIR}/conf/uwsgi.ini'.format(address=address,BASE_DIR=BASE_DIR))
+    sleep(3)
+    os.system('python -mwebbrowser http://'+address)
 
 def stop(args):
     os.system('uwsgi --stop /var/tmp/packone.pid')
