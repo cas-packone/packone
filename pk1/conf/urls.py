@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/clouds/', include('clouds.urls')),
     path('api/engines/', include('engines.urls')),
     path('api/data/', include('data.urls')),
+    re_path(r'^space/[0-9]+/api/data/', include('data.urls')),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_ROOT}),
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
