@@ -113,7 +113,7 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
     vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     mem=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
     class Meta:
-        verbose_name = "template"
+        verbose_name = "flavor"
         unique_together = ('cloud', 'name')
     def __str__(self):
         return "{}/vcpu:{},mem:{}".format(self.name,self.vcpu,self.mem)
