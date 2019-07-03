@@ -1222,7 +1222,7 @@
                             + '<table>'
                             + '<tbody>');
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
-                        if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length > 6) {
+                        if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length > 7) {
                             var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
                             contentElementNew += ('<tr>'
                                 + '<td style="width: 31%;">Scale</td>'
@@ -1237,14 +1237,18 @@
                                 + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>'
                                 + '</tr>'
                                 + '<tr>'
-                                + '<td style="width: 31%;">Created Time</td>'
+                                + '<td style="width: 31%;">Owner</td>'
                                 + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>'
                                 + '</tr>'
-                                + '<td style="width: 31%;">Built Time</td>'
+                                + '<tr>'
+                                + '<td style="width: 31%;">Created Time</td>'
                                 + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>'
                                 + '</tr>'
-                                + '<td style="width: 31%;">Status</td>'
+                                + '<td style="width: 31%;">Built Time</td>'
                                 + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>'
+                                + '</tr>'
+                                + '<td style="width: 31%;">Status</td>'
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[7].innerHTML + '</td>'
                                 + '</tr>'
                                 + '</tr>'
                                 + '<td colspan="2">'
