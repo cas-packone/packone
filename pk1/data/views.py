@@ -31,8 +31,8 @@ def space_state(request):
     state['cluster']['mem']={'total':38000,'used': 16000}
     state['cluster']['disk']={'total':15000,'used': 20000}
     # state['dataset']['total_type']=set([d.type_name for d in models.Dataset.objects.all()])
-    state['dataset']['type_cnt']=list(models.Dataset.objects.values('type').annotate(cnt=Count('id')))
-    state['dataset']['type_size']=list(models.Dataset.objects.all().values('type').aggregate(size=Sum('size')))
+    state['dataset']['type_cnt']=[{'type': models.DATASET_TYPE(pair['type']).name, 'cnt': pair['cnt']} for pair in list(models.Dataset.objects.values('type').annotate(cnt=Count('id')))]
+    state['dataset']['type_size']=[{'type': models.DATASET_TYPE(pair['type']).name, 'size': pair['size']} for pair in list(models.Dataset.objects.all().values('type').annotate(size=Sum('size')))]
     # state['dataset']['total_size']=models.Dataset.objects.all().aggregate(total_size=Sum('size'))['total_size']
     state['dataset']['public_size']=list(models.Dataset.objects.values('public').annotate(size=Sum('size')))
     state['dataset']['owner_size']=list(models.Dataset.objects.values('owner__username').annotate(size=Sum('size')).order_by('-size')[0:10])
@@ -41,6 +41,7 @@ def space_state(request):
     state['instance']['dataset_cnt']=list(models.DataInstance.objects.filter(cluster=space).values('dataset__name').annotate(cnt=Count('id')).order_by('-cnt')[0:10])
     # state['instance']['owner_cnt']=list(models.DataInstance.objects.values('owner__username').annotate(cnt=Count('id')).order_by('-cnt')[0:10])
     # state['instance']['total_cnt']=models.DataInstance.objects.all().count()
+    
     return Response(state)
 
 class DataInstanceEngineAutocompleteView(autocomplete.Select2QuerySetView):
