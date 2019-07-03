@@ -48,7 +48,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     extra=('access','action','instances')
     def get_list_display_exclude(self, request, obj=None):
         if request.user.is_superuser: return ('instances',)
-        return ('owner','deleting','instances')
+        return ('deleting','instances')
     def start(modeladmin, request, queryset):
         for cluster in queryset:
             models.ClusterOperation(
