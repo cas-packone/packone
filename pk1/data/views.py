@@ -28,7 +28,7 @@ def space_state(request):
     }
     space=get_space()
     state['cluster']['mem']={'total':38000,'used': 16000}
-    state['cluster']['disk']={'total':15000,'used': 20000}
+    state['cluster']['disk']={'total':15000,'used': 20}
     # state['dataset']['total_type']=set([d.type_name for d in models.Dataset.objects.all()])
     state['dataset']['type_cnt']=[{'type': models.DATASET_TYPE(pair['type']).name, 'cnt': pair['cnt']} for pair in list(models.Dataset.objects.values('type').annotate(cnt=Count('id')))]
     state['dataset']['type_size']=[{'type': models.DATASET_TYPE(pair['type']).name, 'size': pair['size']} for pair in list(models.Dataset.objects.all().values('type').annotate(size=Sum('size')))]
