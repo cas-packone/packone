@@ -218,6 +218,13 @@
     .dashboard-item {
         background: #73b6e2;
     }
+    img.dateset-list-iocn {
+        width: 10px;
+    }
+    img.menu-list-iocn {
+        width: 16px;
+        vertical-align: middle;
+    }
 </style>
 {% endblock %}
 {% block extrahead %}
@@ -714,7 +721,7 @@
                     space_name_tmp = 'HOME'
                 }
                 var addMenuSciSpace = '<div class="sidebar-section">'
-                    + '<a href="'+space_home_url+'/clouds/instance/" class="sidebar-link icon">'
+                    + '<a href="' + space_home_url + '/clouds/instance/" class="sidebar-link icon">'
                     + '<span class="sidebar-link-label">'
                     + '<span class="sidebar-link-icon icon-data"></span>' + space_name_tmp + '</span>'
                     + '</a>'
@@ -728,7 +735,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + ' <span class="sidebar-link-label"><img src="/static/dataset.svg" style="width: 16px;vertical-align: middle;">&nbsp;Open Datasets</span>'
+                    + ' <span class="sidebar-link-label"><img src="/static/dataset.svg" class="menu-list-iocn">&nbsp;Datasets</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -736,7 +743,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/instances.svg" style="width: 16px;vertical-align: middle;">&nbsp;Instances</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/instances.svg" class="menu-list-iocn">&nbsp;Instances</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -744,7 +751,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/pipeline.svg" style="width: 16px;vertical-align: middle;">&nbsp;Data Pipeline</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/pipeline.svg" class="menu-list-iocn">&nbsp;Data Pipeline</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -752,7 +759,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/noteboot.svg" style="width: 16px;vertical-align: middle;">&nbsp;Notebook</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/noteboot.svg" class="menu-list-iocn">&nbsp;Notebook</span>'
                     + '</a>'
                     + '</div>'
                     + '</div>';
@@ -766,7 +773,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" style="width: 16px;vertical-align: middle;">&nbsp;SciSpace Operations</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;SciSpace Operations</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -775,7 +782,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" style="width: 16px;vertical-align: middle;">&nbsp;Instances Operations</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;Instances Operations</span>'
                     + '</a>'
                     + '</div>'
                     + '<div>'
@@ -783,7 +790,7 @@
                     + '<span class="sidebar-right">'
                     + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
                     + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/manage.svg" style="width: 16px;vertical-align: middle;">&nbsp;Cluster Manage</span>'
+                    + '<span class="sidebar-link-label"><img src="/static/manage.svg" class="menu-list-iocn">&nbsp;Cluster Manage</span>'
                     + '</a>'
                     + '</div>'
                     + '</div>';
@@ -1005,7 +1012,7 @@
                                     cf_children_i_ul.style.display = "none";
                                     var cf_children_i_ul_new = "<ul>"
                                         + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">Data</a></li>'
-                                        + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
+                                        + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>'
                                         + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
                                         + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
                                         + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
@@ -1051,7 +1058,7 @@
                         var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                         cf_children_i_ul.style.display = "none";
                         var cf_children_i_ul_new = "<ul>"
-                            + '<li><a href="' + space_home_url + '/data/dataset/">Open Datasets</a></li>'
+                            + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>'
                             + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
                             + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
                             + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
@@ -1101,15 +1108,19 @@
             var field_type_element = document.getElementsByClassName("field-type");
             if (field_type_element && field_type_element.length > 0) {
                 var dataset_type = new Object();
-                dataset_type["RELATIONAL"] = '<img src="/static/hive.svg" style="width: 18px;">&nbsp;relational';
-                dataset_type["RAW"] = '<img src="/static/hdfs.svg" style="width: 18px;">&nbsp;raw';
-                dataset_type["SEMISTUCTED"] = '<img src="/static/hive.svg" style="width: 18px;">&nbsp;semistructed';
-                dataset_type["EVENT"] = '<img src="/static/event.svg" style="width: 18px;">&nbsp;event';
-                dataset_type["GRAPH"] = '<img src="/static/gstore.svg" style="width: 18px;">&nbsp;graph';
-                dataset_type["STAR"] = '<img src="/static/star.svg" style="width: 18px;">&nbsp;star';
+                dataset_type["RELATIONAL"] = '<img src="/static/hive.svg" class="dateset-list-iocn">&nbsp;';
+                dataset_type["RAW"] = '<img src="/static/hdfs.svg" class="dateset-list-iocn">&nbsp;';
+                dataset_type["SEMISTUCTED"] = '<img src="/static/hive.svg" class="dateset-list-iocn">&nbsp;';
+                dataset_type["EVENT"] = '<img src="/static/event.svg" class="dateset-list-iocn">&nbsp;';
+                dataset_type["GRAPH"] = '<img src="/static/gstore.svg" class="dateset-list-iocn">&nbsp;';
+                dataset_type["STAR"] = '<img src="/static/star.svg" class="dateset-list-iocn">&nbsp;';
                 for (var i = 0; i < field_type_element.length; i++) {
                     if (field_type_element[i].textContent && dataset_type[field_type_element[i].textContent.toUpperCase()]) {
-                        field_type_element[i].innerHTML = dataset_type[field_type_element[i].textContent.toUpperCase()];
+                        //field_type_element[i].innerHTML = (dataset_type[field_type_element[i].textContent.toUpperCase()] + field_type_element[i].innerHTML);
+                        var field_name_element = field_type_element[i].parentElement.getElementsByClassName("field-name");
+                        if (field_name_element) {
+                            field_name_element[0].innerHTML = (dataset_type[field_type_element[i].textContent.toUpperCase()] + field_name_element[0].innerHTML);
+                        }
                     }
                 }
             }
