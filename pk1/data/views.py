@@ -27,7 +27,6 @@ def space_state(request):
         # 'space':{}
     }
     space=get_space()
-    # print(space)
     state['cluster']['mem']={'total':38000,'used': 16000}
     state['cluster']['disk']={'total':15000,'used': 20000}
     # state['dataset']['total_type']=set([d.type_name for d in models.Dataset.objects.all()])
