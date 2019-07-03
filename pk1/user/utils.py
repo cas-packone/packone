@@ -1,4 +1,5 @@
 from threading import local
+from engines.models import Cluster
 
 _user = local()
 
@@ -8,10 +9,10 @@ class CurrentUserMiddleware(object):
     def __call__(self, request):
         _user.value = request.user
         _user.space=None
-        if not request.user.is_anonymous:
-            parts=request.get_full_path().split('/')
-            if len(parts)>2 and parts[1]=='space':
-                _user.space=request.user.clusters().get(pk=parts[2])
+        # if not request.user.is_anonymous:# TODO a workaround to allow drf anonymous user to access current space
+        parts=request.get_full_path().split('/')
+        if len(parts)>2 and parts[1]=='space':
+            _user.space=Cluster.objects.get(pk=parts[2])
         request.space=_user.space
         return self.get_response(request)
 

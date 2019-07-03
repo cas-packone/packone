@@ -27,7 +27,6 @@ def space_state(request):
         # 'space':{}
     }
     space=get_space()
-    # print(space)
     state['cluster']['mem']={'total':38000,'used': 16000}
     state['cluster']['disk']={'total':15000,'used': 20000}
     # state['dataset']['total_type']=set([d.type_name for d in models.Dataset.objects.all()])
@@ -37,7 +36,7 @@ def space_state(request):
     state['dataset']['public_size']=list(models.Dataset.objects.values('public').annotate(size=Sum('size')))
     state['dataset']['owner_size']=list(models.Dataset.objects.values('owner__username').annotate(size=Sum('size')).order_by('-size')[0:10])
     state['dataset']['month_size']=list(models.Dataset.objects.filter(modified_time__range=(begin_day, today)).values('modified_time__year', 'modified_time__month').annotate(size=Sum('size')).order_by('modified_time__year', 'modified_time__month'))
-    state['instance']['status_cnt']=list(models.DataInstance.objects.filter(cluster=space).values('status').annotate(cnt=Count('id')))
+    state['instance']['status_cnt']=[{'status': models.INSTANCE_STATUS(pair['status']).name, 'cnt': pair['cnt']} for pair in list(models.DataInstance.objects.filter(cluster=space).values('status').annotate(cnt=Count('id')))]
     state['instance']['dataset_cnt']=list(models.DataInstance.objects.filter(cluster=space).values('dataset__name').annotate(cnt=Count('id')).order_by('-cnt')[0:10])
     # state['instance']['owner_cnt']=list(models.DataInstance.objects.values('owner__username').annotate(cnt=Count('id')).order_by('-cnt')[0:10])
     # state['instance']['total_cnt']=models.DataInstance.objects.all().count()
