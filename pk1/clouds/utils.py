@@ -76,6 +76,23 @@ def remedy_script_mount_add(mount):
 def remedy_script_mount_remove(mount):
     return "sed -i '/{}/d' /etc/fstab".format('{mount.dev} {mount.point}'.format(mount=mount).replace('/', '\/'))
 
+def remedy_image_ambari_agent():
+    return 'wget -q https://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.3.0/ambari.repo -O /etc/yum.repos.d/ambari.repo\n\nyum -qy install ambari-agent >/dev/null 2>&1'
+
+def remedy_image_ambari_server():
+    return 'yum -qy install ambari-server >/dev/null 2>&1\n\n' \
+        'ambari-server setup -s >/dev/null\n\n' \
+        'ambari-server start'
+        
+def remedy_scale_ambari_bootstrap():
+    return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
+        "ambari-agent start >/dev/null 2>&1\n\n" \
+        'if [ `hostname` == "master1.packone" ]; then' \
+        'sleep 10\n' \
+        'pip install ambari\n' \
+        'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
+        "fi"
+
 class SSH:
     def __init__(self,host,credential):
         self.client = paramiko.SSHClient()

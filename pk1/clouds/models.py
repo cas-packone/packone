@@ -50,7 +50,8 @@ class Cloud(StaticModel):
                 owner=self.owner,
                 remark='auto imported',
                 enabled=self.enabled,
-                public=self.public
+                public=self.public,
+                created_time=img.created_at
             ).save()
     def import_template(self):
         for tpl in self.driver.flavors.list():
@@ -67,22 +68,82 @@ class Cloud(StaticModel):
                 enabled=self.enabled,
                 public=self.public
             ).save()
-    def create_blueprint(self):
-        self.driver.images.get
-        for tpl in self.driver.flavors.list():
-            id=tpl.id
-            if InstanceTemplate.objects.filter(cloud=self, access_id=id).exists(): continue
-            InstanceTemplate(
-                access_id=id,
-                name=tpl.name,
-                mem=tpl.ram,
-                vcpu=tpl.vcpus,
-                cloud=self,
-                owner=self.owner,
-                remark='auto imported',
-                enabled=self.enabled,
-                public=self.public
-            ).save()
+    def bootstrap(self):#TODO diss rely on centos7
+        img=self.image_set.filter(name__iregex=r'CentOS.*?7.*?GenericCloud').order_by('-created_time').first()
+        if not img: raise Exception('image CentOS.*?7.*?GenericCloud is required!')
+        flavor=self.instancetemplate_set.filter(mem__gte=8192,vcpu__gte=2).order_by('mem', 'vcpu').first()
+        if not flavor: raise Exception('a flavor(mem>=8192, vcpus>=2) is required!')
+        from .utils import remedy_image_ambari_agent, remedy_image_ambari_server
+        image_ambari_agent, created=Image.objects.get_or_create(
+            name='packone-bootstrap-ambari-agent',
+            parent=img,
+            access_id=img.access_id,
+            cloud=self,
+            owner=self.owner,
+            remark='auto created',
+            _remedy_script=remedy_image_ambari_agent()
+        )
+        image_ambari_server, created=Image.objects.get_or_create(
+            name='packone-bootstrap-ambari-server',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            cloud=self,
+            owner=self.owner,
+            remark='auto created',
+            _remedy_script=remedy_image_ambari_server()
+        )
+        image_master1, created=Image.objects.get_or_create(
+            name='packone-bootstrap-master1',
+            parent=image_ambari_server,
+            access_id=img.access_id,
+            hostname='master1.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        image_master2, created=Image.objects.get_or_create(
+            name='packone-bootstrap-master2',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            hostname='master2.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        image_slave, created=Image.objects.get_or_create(
+            name='packone-bootstrap-slave',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            hostname='slave.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        blueprint_master1, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-master1',
+            cloud=self,
+            template=flavor,
+            image=image_master1,
+            remark='auto created',
+            owner=self.owner
+        )
+        blueprint_master2, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-master2',
+            cloud=self,
+            template=flavor,
+            image=image_master2,
+            remark='auto created',
+            owner=self.owner
+        )
+        blueprint_slave, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-slave',
+            cloud=self,
+            template=flavor,
+            image=image_slave,
+            remark='auto created',
+            owner=self.owner
+        )
+        return (blueprint_master1, blueprint_master2, blueprint_slave)
             
 def clouds_of_user(self):
     return Cloud.objects.filter(

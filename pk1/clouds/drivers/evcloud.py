@@ -66,6 +66,8 @@ class Image(object):
     def __init__(self, info):
         self.id=info['id']
         self.name=info['name']
+        from django.utils.timezone import now
+        self.created_at=now()
         if self.name.startswith('0000_packone'):#TODO auto build packone images
             self.name=self.name.replace('0000_','')
 
