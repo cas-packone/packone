@@ -38,6 +38,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def instances(self,object):
         return format_html('<br/>'.join([get_url(ins) for ins in object.get_instances()]))  
     def action(self, obj):
+        print(obj.metric())
         if obj.deleting:
             if not get_current_user().is_superuser:
                 return 'deleting'

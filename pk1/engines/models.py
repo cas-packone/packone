@@ -167,6 +167,9 @@ class Cluster(models.Model,M2MOperatableMixin):
     @property
     def operatables(self):
         return self.steps.all()
+    def metric(self):
+        from .drivers import ambari
+        return ambari.get_metrics(self.portal)
     @property
     def ready(self):
         return self.built_time
