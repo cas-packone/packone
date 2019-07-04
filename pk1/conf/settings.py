@@ -89,7 +89,14 @@ DATABASES = {
         'PASSWORD': 'rabbit',
         'HOST': 'rabbit-db-host',
         'PORT': '5432'
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     'OPTIONS': {
+    #         'timeout': 3600000,  # in seconds
+    #     }
+    # }
 }
 
 # Password validation
@@ -116,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-USE_TZ = False
+USE_TZ = True
 
 USE_I18N = True
 

@@ -28,7 +28,7 @@ class Cloud(StaticModel):
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
     @cached_property
     def driver(self):
-        return importlib.import_module(self._driver)
+        return importlib.import_module(self._driver).Driver(self.platform_credential)
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
@@ -36,16 +36,16 @@ class Cloud(StaticModel):
     def instance_credential(self):
         return json.loads(self._instance_credential)
     def import_image(self):
-        for img in self.driver.image_list(self.platform_credential):
-            name=img['name']
-            id=img['id']
+        for img in self.driver.images.list():
+            name=img.name
+            id=img.id
             if Image.objects.filter(cloud=self, access_id=id).exists(): continue
             if Image.objects.filter(cloud=self, name=name).exists():
-                name='{}-{}'.format(name,img['id'])
+                name='{}-{}'.format(name,id)
             Image(
                 name=name,
                 cloud=self,
-                access_id = img['id'],
+                access_id = id,
                 hostname='packone',
                 owner=self.owner,
                 remark='auto imported',
@@ -53,14 +53,30 @@ class Cloud(StaticModel):
                 public=self.public
             ).save()
     def import_template(self):
-        for tpl in self.driver.template_list(self.platform_credential):
-            id=tpl['id']
+        for tpl in self.driver.flavors.list():
+            id=tpl.id
             if InstanceTemplate.objects.filter(cloud=self, access_id=id).exists(): continue
             InstanceTemplate(
                 access_id=id,
-                name=tpl['name'],
-                mem=tpl['mem'],
-                vcpu=tpl['vcpu'],
+                name=tpl.name,
+                mem=tpl.ram,
+                vcpu=tpl.vcpus,
+                cloud=self,
+                owner=self.owner,
+                remark='auto imported',
+                enabled=self.enabled,
+                public=self.public
+            ).save()
+    def create_blueprint(self):
+        self.driver.images.get
+        for tpl in self.driver.flavors.list():
+            id=tpl.id
+            if InstanceTemplate.objects.filter(cloud=self, access_id=id).exists(): continue
+            InstanceTemplate(
+                access_id=id,
+                name=tpl.name,
+                mem=tpl.ram,
+                vcpu=tpl.vcpus,
                 cloud=self,
                 owner=self.owner,
                 remark='auto imported',
@@ -212,7 +228,7 @@ class Instance(models.Model,OperatableMixin):
         return self.built_time and not self.ready
     @cached_property
     def vnc_url(self):
-        return self.cloud.driver.vm_vnc_url(self.cloud.platform_credential,str(self.uuid))
+        return self.cloud.driver.instances.get(str(self.uuid)).get_console_url('novnc')['console']['url']
     @cached_property
     def hosts_record(self):
         if not self.ready: raise Exception('instance not ready')
@@ -233,7 +249,7 @@ class Instance(models.Model,OperatableMixin):
         return self.mountable
     def monitor(self,notify=True):
         if not self.ready: raise Exception('instance not ready')
-        status = self.cloud.driver.vm_status(self.cloud.platform_credential,str(self.uuid))
+        status = self.cloud.driver.instances.get_status(str(self.uuid))
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
@@ -319,11 +335,13 @@ class InstanceOperation(OperationModel):
             from . import utils
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
-                    output=self.target.cloud.driver.vm_op(
-                        self.target.cloud.platform_credential,
-                        str(self.target.uuid),
-                        self.operation
-                    )
+                    ins=self.target.cloud.driver.instances.get(self.target.uuid)
+                    if self.operation==INSTANCE_OPERATION.start.value:
+                        output=ins.start()
+                    elif self.operation==INSTANCE_OPERATION.reboot.value:
+                        output=ins.reboot()
+                    elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.stop.value]:
+                        output=ins.stop()
                     if self.is_boot:
                         utils.SSH(self.target.ipv4,
                             self.target.cloud.instance_credential

@@ -11,6 +11,8 @@ from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Gr
 from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
 
+#TODO use singleton
+
 from django.dispatch import Signal
 materialized = Signal(providing_args=["instance","name"])
 destroyed = Signal(providing_args=["instance","name"])
@@ -68,19 +70,14 @@ def materialize_instance(sender, instance, **kwargs):
         instance=sender.objects.select_for_update().get(pk=instance.pk)
         remark = settings.PACKONE_LABEL+'.'+instance.cloud.name+';'
         if instance.remark: remark+=instance.remark
-        info=instance.cloud.driver.vm_create(
-            instance.cloud.platform_credential,
+        ins=instance.cloud.driver.instances.create(
             instance.image.access_id,
-            instance.template.vcpu,
-            instance.template.mem,
             instance.template.access_id,
             remark
         )
-        instance.uuid=UUID(info["uuid"].replace('-', ''), version=4)
-        instance.vcpu=info["vcpu"]
-        instance.mem=info["mem"]
-        instance.built_time=info["create_time"]
-        instance.ipv4=info["ipv4"]
+        instance.uuid=UUID(ins.id.replace('-', ''), version=4)
+        instance.built_time=ins.created
+        instance.ipv4=ins.addresses['provider'][0]['addr']
         instance.save()
         hosts='###instance###\n'+instance.hosts_record
         if instance.cloud.hosts: hosts=hosts+'\n###cloud###\n'+instance.cloud.hosts
@@ -111,10 +108,7 @@ def destroy_instance(sender,instance,**kwargs):
                 print('WARNNING: delete instance under building')
             else:
                 try:
-                    instance.cloud.driver.vm_force_delete(
-                        instance.cloud.platform_credential,
-                        str(instance.uuid)
-                    )
+                    instance.cloud.driver.instances.force_delete(str(instance.uuid))
                 except Exception as e:#TODO may spam the log
                     instance.pk=None
                     instance.save()
@@ -133,13 +127,12 @@ def materialize_volume(sender, instance, **kwargs):
         volume=sender.objects.select_for_update().get(pk=volume.pk)
         remark = settings.PACKONE_LABEL+'.'+volume.cloud.name+';'
         if volume.remark: remark+=volume.remark
-        info=volume.cloud.driver.volume_create(
-            volume.cloud.platform_credential,
+        info=volume.cloud.driver.volumes.create(
             volume.capacity,
             remark=remark
         )
-        volume.uuid=UUID(info["uuid"].replace('-', ''), version=4)
-        volume.built_time=info["create_time"]
+        volume.uuid=UUID(info.id.replace('-', ''), version=4)
+        volume.built_time=now()
         volume.status=VOLUME_STATUS.available.value
         volume.save()
         materialized.send(sender=sender, instance=volume, name='materialized')
@@ -154,8 +147,7 @@ def destroy_volume(sender,instance,**kwargs):
                 print('WARNNING: delete volume under building')
             else:
                 try:
-                    volume.cloud.driver.volume_delete(
-                        volume.cloud.platform_credential,
+                    volume.cloud.driver.volumes.delete(
                         str(volume.uuid)
                     )
                 except Exception as e:#TODO may spam the log
@@ -181,13 +173,12 @@ def mount(sender, instance, **kwargs):
     @transaction.atomic
     def materialize(mount):
         mount=Mount.objects.select_related('volume').select_for_update().get(pk=mount.pk)
-        info=mount.volume.cloud.driver.volume_mount(
-            mount.volume.cloud.platform_credential,
+        vol=mount.volume.cloud.driver.volumes.mount(
             str(mount.volume.uuid),
             str(mount.instance.uuid)
         )
-        mount.dev=info['dev']
-        mount.completed_time=info["attach_time"]
+        mount.dev=vol.attachments[0]['device']#TODO allow multiple mounts for the same volume
+        mount.completed_time=now()
         mount.save()
         mount.instance.update_remedy_script(
             utils.remedy_script_mount_add(mount),
@@ -213,8 +204,7 @@ def umount(sender,instance,**kwargs):
                 print('WARNNING: delete mount under building')
             else:
                 try:
-                    mount.volume.cloud.driver.volume_unmount(
-                        mount.volume.cloud.platform_credential,
+                    mount.volume.cloud.driver.volumes.unmount(
                         str(mount.volume.uuid),
                         str(mount.instance.uuid)
                     )
