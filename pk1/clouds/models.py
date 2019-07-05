@@ -495,8 +495,8 @@ class Group(models.Model,M2MOperatableMixin):
                 ).save()
                 time.sleep(0.1)
         else:
-            super().delete(*args, **kwargs)
             destroyed.send(sender=Group, instance=self, name='destroyed')
+            super().delete(*args, **kwargs)
 
 class GroupOperation(M2MOperationModel):
     target=models.ForeignKey(Group,on_delete=models.CASCADE)
