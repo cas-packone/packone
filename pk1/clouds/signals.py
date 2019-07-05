@@ -35,16 +35,16 @@ def bootstrap(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
-    blueprints=instance.bootstrap()
-    from engines.models import Scale, Cluster
-    from .utils import remedy_scale_ambari_bootstrap
-    s, created=Scale.objects.get_or_create(
-        name='packone.bootstrap.{}'.format(instance.name),
-        _remedy_script=remedy_scale_ambari_bootstrap(),
-        owner=instance.owner
-    )
-    if created: s.init_blueprints.add(*blueprints)
-    Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
+        blueprints=instance.bootstrap()
+        from engines.models import Scale, Cluster
+        from .utils import remedy_scale_ambari_bootstrap
+        s, created=Scale.objects.get_or_create(
+            name='packone.bootstrap.{}'.format(instance.name),
+            _remedy_script=remedy_scale_ambari_bootstrap(),
+            owner=instance.owner
+        )
+        if created: s.init_blueprints.add(*blueprints)
+        Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
         
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):
