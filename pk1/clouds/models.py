@@ -433,6 +433,8 @@ class InstanceOperation(OperationModel):
             executed.send(sender=InstanceOperation, instance=self, name='executed')
         Thread(target=perform).start()
 
+destroyed = Signal(providing_args=["instance","name"])
+
 class Group(models.Model,M2MOperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
     instances=models.ManyToManyField(Instance,blank=True,editable=False)
@@ -494,6 +496,7 @@ class Group(models.Model,M2MOperatableMixin):
                 time.sleep(0.1)
         else:
             super().delete(*args, **kwargs)
+            destroyed.send(sender=Group, instance=self, name='destroyed')
 
 class GroupOperation(M2MOperationModel):
     target=models.ForeignKey(Group,on_delete=models.CASCADE)

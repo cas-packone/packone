@@ -213,6 +213,7 @@ class Cluster(models.Model,M2MOperatableMixin):
                 operatable.delete()
         else:
             super().delete(*args, **kwargs)
+
     # def start(self):
     #     return utils.ambari_service_start_all('admin','admin',self.portal)#TODO use credential args
     # def stop(self):

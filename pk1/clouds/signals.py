@@ -15,10 +15,9 @@ from . import utils
 
 from django.dispatch import Signal
 materialized = Signal(providing_args=["instance","name"])
-destroyed = Signal(providing_args=["instance","name"])
 tidied = Signal(providing_args=["instance","name"])
 selected = Signal(providing_args=["instance","name"])
-from .models import bootstraped, monitored, executed
+from .models import bootstraped, monitored, executed, destroyed
 
 @receiver(materialized)
 @receiver(destroyed)
