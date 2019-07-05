@@ -32,7 +32,7 @@ def bootstrap(sender,instance,**kwargs):
             _remedy_script=remedy_scale_ambari_bootstrap(),
             owner=instance.owner
         )
-        if created: s.init_blueprints.set(*blueprints)
+        if created: s.init_blueprints.set(blueprints)
         models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
     if sender==GroupOperation and instance.status==models.OPERATION_STATUS.success.value and instance.script==remedy_scale_ambari_bootstrap():
         for ins in instance.target.instances.all():
@@ -77,8 +77,8 @@ def bootstrap(sender,instance,**kwargs):
             owner=instance.owner
         )
         if created:
-            s.init_blueprints.set(*(blueprint_master1, blueprint_master2, blueprint_slave))
-            s.step_blueprints.set(*(blueprint_slave,))
+            s.init_blueprints.set((blueprint_master1, blueprint_master2, blueprint_slave))
+            s.step_blueprints.set((blueprint_slave,))
 
 @receiver(post_save, sender=models.Stack)
 @receiver(executed, sender=InstanceOperation)
