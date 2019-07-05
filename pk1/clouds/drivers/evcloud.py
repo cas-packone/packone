@@ -122,7 +122,7 @@ class InstanceManager(object):
                 raise e
     def force_delete(self, instance_id):
         try:
-            self._operate_instance(instance_id, 'poweroff')
+            self.get(instance_id).stop()
         except Exception as e:
             print(e)
         return self.delete(instance_id)
