@@ -396,7 +396,7 @@ class InstanceOperation(OperationModel):
             from . import utils
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
-                    ins=self.target.cloud.driver.instances.get(self.target.uuid)
+                    ins=self.target.cloud.driver.instances.get(str(self.target.uuid))
                     if self.operation==INSTANCE_OPERATION.start.value:
                         output=ins.start()
                     elif self.operation==INSTANCE_OPERATION.reboot.value:

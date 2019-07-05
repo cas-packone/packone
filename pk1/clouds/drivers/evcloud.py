@@ -66,6 +66,7 @@ class Image(object):
     def __init__(self, info):
         self.id=info['id']
         self.name=info['name']
+        if self.name=='centos7': self.name='CentOS-7.5.1804-x86_64-GenericCloud-1809'
         from django.utils.timezone import now
         self.created_at=now()
         if self.name.startswith('0000_packone'):#TODO auto build packone images
@@ -141,7 +142,6 @@ class InstanceManager(object):
 
 class Instance(object):
     def __init__(self, manager, info):
-        print(info)
         self.manager=manager
         self.id=info['uuid']
         # self.flavor=self.manager.driver.templates._locate(info['vcpus'], info['mem'])
@@ -149,9 +149,6 @@ class Instance(object):
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
         self.created=info['create_time']
-        self.start=lambda self: self._operate('start')
-        self.reboot=lambda self: self._operate('reboot')
-        self.stop=lambda self: self._operate(self.uuid, 'poweroff')
     def get_console_url(self):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
@@ -167,6 +164,12 @@ class Instance(object):
                 return True
             else:
                 raise e
+    def start(self):
+        return self._operate('start')
+    def reboot(self):
+        return self._operate('reboot')
+    def stop(self):
+        return self._operate('poweroff')
 
 class VolumeManager(object):
     def __init__(self, driver):

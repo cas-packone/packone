@@ -83,11 +83,11 @@ def remedy_image_ambari_server():
     return 'yum -qy install ambari-server >/dev/null 2>&1\n\n' \
         'ambari-server setup -s >/dev/null\n\n' \
         'ambari-server start'
-        
+
 def remedy_scale_ambari_bootstrap():
     return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
         "ambari-agent start >/dev/null 2>&1\n\n" \
-        'if [ `hostname` == "master1.packone" ]; then' \
+        'if [ `hostname` == "master1.packone" ]; then\n' \
         'sleep 10\n' \
         'pip install ambari\n' \
         'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
