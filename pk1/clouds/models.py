@@ -19,6 +19,8 @@ for importer, modname, ispkg in pkgutil.iter_modules((settings.BASE_DIR+'/clouds
     driver='clouds.drivers.{}'.format(modname)
     drivers.append((driver,driver))
 
+bootstraped = Signal(providing_args=["instance","name"])
+
 import importlib, json
 class Cloud(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
@@ -143,7 +145,7 @@ class Cloud(StaticModel):
             remark='auto created',
             owner=self.owner
         )
-        return (blueprint_master1, blueprint_master2, blueprint_slave)
+        bootstraped.send(sender=self.__class__, instance=self, name='bootstraped')
             
 def clouds_of_user(self):
     return Cloud.objects.filter(

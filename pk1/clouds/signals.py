@@ -18,8 +18,7 @@ materialized = Signal(providing_args=["instance","name"])
 destroyed = Signal(providing_args=["instance","name"])
 tidied = Signal(providing_args=["instance","name"])
 selected = Signal(providing_args=["instance","name"])
-from .models import monitored
-from .models import executed
+from .models import bootstraped, monitored, executed
 
 @receiver(materialized)
 @receiver(destroyed)
@@ -27,6 +26,7 @@ from .models import executed
 @receiver(tidied)
 @receiver(selected)
 @receiver(executed)
+@receiver(bootstraped)
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
@@ -35,16 +35,6 @@ def bootstrap(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
-        blueprints=instance.bootstrap()
-        from engines.models import Scale, Cluster
-        from .utils import remedy_scale_ambari_bootstrap
-        s, created=Scale.objects.get_or_create(
-            name='packone.bootstrap.{}'.format(instance.name),
-            _remedy_script=remedy_scale_ambari_bootstrap(),
-            owner=instance.owner
-        )
-        if created: s.init_blueprints.add(*blueprints)
-        Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
         
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):

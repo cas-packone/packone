@@ -27,7 +27,11 @@ class CloudAdmin(StaticModelAdmin):
         for cloud in queryset:
             cloud.import_template()
     import_template.short_description = "refresh templates from selected clouds"
-    actions = [import_image,import_template]
+    def bootstrap(modeladmin, request, queryset):
+        for cloud in queryset:
+            cloud.bootstrap()
+    bootstrap.short_description = "bootstrap a big data cluster scale for selected clouds"
+    actions = [import_image,import_template, bootstrap]
 
 class CloudStaticModelAdmin(StaticModelAdmin):
     search_fields = ('cloud__name',)+StaticModelAdmin.search_fields
