@@ -21,18 +21,19 @@ def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
 from clouds.models import Cloud, bootstraped
+from .utils import remedy_scale_ambari_bootstrap, remedy_scale_ambari_fast_init, remedy_scale_ambari_fast_scale_out, remedy_scale_ambari_fast_scale_in
+
 @receiver(bootstraped, sender=Cloud)
 @receiver(executed, sender=GroupOperation)
 def bootstrap(sender,instance,**kwargs):
     if sender==Cloud:
         blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
-        from .utils import remedy_scale_ambari_bootstrap
         s, created=models.Scale.objects.get_or_create(
             name='packone.bootstrap.{}'.format(instance.name),
             _remedy_script=remedy_scale_ambari_bootstrap(),
             owner=instance.owner
         )
-        if created: s.init_blueprints.set(blueprints)
+        if created: s.init_blueprints.add(*blueprints)
         models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
     if sender==GroupOperation and instance.status==models.OPERATION_STATUS.success.value and instance.script==remedy_scale_ambari_bootstrap():
         for ins in instance.target.instances.all():
@@ -68,7 +69,6 @@ def bootstrap(sender,instance,**kwargs):
             remark='auto created',
             owner=ins.owner
         )
-        from .utils import remedy_scale_ambari_fast_init, remedy_scale_ambari_fast_scale_out, remedy_scale_ambari_fast_scale_in
         s, created=models.Scale.objects.get_or_create(
             name='packone.{}'.format(ins.cloud.name),
             _remedy_script=remedy_scale_ambari_fast_init(),
@@ -77,8 +77,8 @@ def bootstrap(sender,instance,**kwargs):
             owner=instance.owner
         )
         if created:
-            s.init_blueprints.set((blueprint_master1, blueprint_master2, blueprint_slave))
-            s.step_blueprints.set((blueprint_slave,))
+            s.init_blueprints.add(*(blueprint_master1, blueprint_master2, blueprint_slave))
+            s.step_blueprints.add(*(blueprint_slave,))
 
 @receiver(post_save, sender=models.Stack)
 @receiver(executed, sender=InstanceOperation)
