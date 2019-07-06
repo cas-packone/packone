@@ -129,7 +129,12 @@ class SSH:
 
     def exec_batch(self, cmd):
         try:
-            stdin, stdout, stderr = self.client.exec_command(cmd)
+            ftp = self.client.open_sftp()
+            file=ftp.file('/tmp/packone.bash', "w", -1)
+            file.write(cmd)
+            file.flush()
+            ftp.close()
+            stdin, stdout, stderr = self.client.exec_command('sudo -uroot bash /tmp/packone.bash')
         except paramiko.SSHException as e:
             err='EXCEPTION MESSAGE:\n'+str(e)
             out=''

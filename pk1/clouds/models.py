@@ -26,7 +26,7 @@ class Cloud(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
     _platform_credential=models.TextField(max_length=5120,blank=True,null=True)
     _instance_credential=models.TextField(max_length=2048,blank=True,null=True)    
-    hosts=models.TextField(max_length=5120,blank=True,null=True)
+    hosts=models.TextField(max_length=5120,default='127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1 localhost localhost.localdomain localhost6 localhost6.localdomain6',blank=True,null=True)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
     @cached_property
     def driver(self):
