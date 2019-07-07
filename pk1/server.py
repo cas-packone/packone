@@ -39,7 +39,7 @@ def setup(args):
     os.system('python3 manage.py createsuperuser --username admin')
     
 def start(args):
-    address=args.listening[0] if args.listening else '127.0.0.1:11001'
+    address=args.listening[0] if args.listening else '0:0:0:0:11001'
     os.system('uwsgi --http {address} --chdir {BASE_DIR} --ini {BASE_DIR}/conf/uwsgi.ini'.format(address=address,BASE_DIR=BASE_DIR))
     sleep(3)
     os.system('python3 -mwebbrowser http://'+address)
