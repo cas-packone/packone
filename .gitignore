@@ -8,3 +8,4 @@ venv/
 nohup.out
 dist/
 pk1.egg-info/
+pk1_jet.egg-info/
