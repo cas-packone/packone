@@ -6,6 +6,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
 
 def setup(args):
+    os.system('ln -sf  /usr/bin/python3.[6,7,8] /usr/bin/python3')
     database=args.database[0] if args.database else 'packone:packone:localhost:5432:packone'
     (db_user, db_passwd, db_host, db_port, db_name)=database.split(':')
     with open("conf/settings.py") as f:
@@ -27,21 +28,21 @@ def setup(args):
     with open("conf/settings.py", "w") as f:
         f.write(newText)
 
-    os.system('python manage.py collectstatic --noinput')
+    os.system('python3 manage.py collectstatic --noinput')
     #TODO add sql migration
-    os.system('python manage.py migrate')
-    os.system('python manage.py makemigrations user clouds engines data')
-    os.system('python manage.py migrate')
+    os.system('python3 manage.py migrate')
+    os.system('python3 manage.py makemigrations user clouds engines data')
+    os.system('python3 manage.py migrate')
 
     print('config packone superuser')
     print('username: admin')
-    os.system('python manage.py createsuperuser --username admin')
+    os.system('python3 manage.py createsuperuser --username admin')
     
 def start(args):
     address=args.listening[0] if args.listening else '127.0.0.1:11001'
     os.system('uwsgi --http {address} --chdir {BASE_DIR} --ini {BASE_DIR}/conf/uwsgi.ini'.format(address=address,BASE_DIR=BASE_DIR))
     sleep(3)
-    os.system('python -mwebbrowser http://'+address)
+    os.system('python3 -mwebbrowser http://'+address)
 
 def stop(args):
     os.system('uwsgi --stop /var/tmp/packone.pid')
