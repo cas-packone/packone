@@ -15,7 +15,7 @@ Choose a linux host which network can reach the target openstack group resource,
 
 pip install pk1
 
-pk1 setup [--database pk1_db_user:pk1_db_passwd:pk1_db_host:pk1_db_port:pk1_db_name:]
+pk1 setup --database pk1_db_user:pk1_db_passwd:pk1_db_host:pk1_db_port:pk1_db_name
 
 ===================
 Run
