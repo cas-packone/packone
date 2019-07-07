@@ -10,6 +10,9 @@ PackOne, inspired by the "serverless" trend in cloud computing and big data proc
 ===================
 Install
 ===================
+
+Choose a linux host which network can reach the target openstack group resource, and run:
+
 pip install pk1
 
 pk1 setup [--database pk1_db_user:pk1_db_passwd:pk1_db_host:pk1_db_port:pk1_db_name:]

@@ -17,7 +17,7 @@ class DataSource(StaticModel):
     
 class DATASET_TYPE(Enum):
     relational=0
-    raw=1 #无结构
+    raw=1
     freetext=2
     semistructed=3
     event=4

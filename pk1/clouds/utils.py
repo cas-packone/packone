@@ -76,6 +76,14 @@ def remedy_script_mount_add(mount):
 def remedy_script_mount_remove(mount):
     return "sed -i '/{}/d' /etc/fstab".format('{mount.dev} {mount.point}'.format(mount=mount).replace('/', '\/'))
 
+def remedy_image_ambari_agent():
+    return 'curl -Ssl https://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.3.0/ambari.repo -o /etc/yum.repos.d/ambari.repo\n\nyum -q -y install ambari-agent'
+
+def remedy_image_ambari_server():
+    return 'yum -q -y install ambari-server\n\n' \
+        'ambari-server setup -s \n\n' \
+        'ambari-server start'
+
 class SSH:
     def __init__(self,host,credential):
         self.client = paramiko.SSHClient()
@@ -91,10 +99,10 @@ class SSH:
             private_key_file.close()
         else:
             credential['pkey']=None
-        mustend = time.time() + 90
+        mustend = time.time() + 600
         e=Exception()
         while time.time() < mustend:
-            time.sleep(1)
+            time.sleep(5)
             try:
                 self.client.connect(
                     host,
@@ -104,6 +112,7 @@ class SSH:
                     port=credential['port'],
                     timeout=None
                 )
+                # print("EOFError")
             except Exception as ex:
                 e=ex
             else:
@@ -112,7 +121,12 @@ class SSH:
 
     def exec_batch(self, cmd):
         try:
-            stdin, stdout, stderr = self.client.exec_command(cmd)
+            ftp = self.client.open_sftp()
+            file=ftp.file('/tmp/packone.bash', "w", -1)
+            file.write(cmd)
+            file.flush()
+            ftp.close()
+            stdin, stdout, stderr = self.client.exec_command('sudo -uroot bash /tmp/packone.bash')
         except paramiko.SSHException as e:
             err='EXCEPTION MESSAGE:\n'+str(e)
             out=''
@@ -120,6 +134,9 @@ class SSH:
             err='\n'.join(stderr.readlines())
             if err: err='STDERR:\n'+err
             out='STDOUT:\n'+'\n'.join(stdout.readlines())
+            if out.find('ERROR: Exiting with exit code 1')!=-1:
+                err+=out
+                out=''
         finally:
             return out, err
 
