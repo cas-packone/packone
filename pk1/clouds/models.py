@@ -155,7 +155,7 @@ def clouds_of_user(self):
 User.clouds=clouds_of_user
 
 class Image(StaticModel):
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
@@ -186,7 +186,7 @@ class Image(StaticModel):
         return ins
 
 class InstanceTemplate(StaticModel):#TODO support root volume resize
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
@@ -198,7 +198,7 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
         return "{}/vcpu:{},mem:{}".format(self.name,self.vcpu,self.mem)
 
 class InstanceBlueprint(StaticModel):
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
     template=models.ForeignKey(InstanceTemplate,on_delete=models.PROTECT)
     image=models.ForeignKey(Image,on_delete=models.PROTECT,related_name="instance_blueprints")
