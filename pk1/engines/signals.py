@@ -111,11 +111,6 @@ def scale_out(sender,instance,**kwargs):
                 instance.remedy(cluster.scale.remedy_script_scale_out,manual=False)
         elif cluster.scale.remedy_script:
             instance.remedy(cluster.scale.remedy_script,manual=False)
-        GroupOperation(
-            operation=INSTANCE_OPERATION.start.value,
-            target=instance,
-            status=OPERATION_STATUS.running.value,
-        ).save()
         scaled_out.send(sender=models.Cluster, instance=cluster, name='scaled_out')
 
 @receiver(destroyed, sender=Group)

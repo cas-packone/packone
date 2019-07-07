@@ -104,7 +104,9 @@ class InstanceManager(object):
             "remarks":remark,
         }
         vm_id=self.driver._do_action(action, params)
-        return self.get(vm_id)
+        ins=self.get(vm_id)
+        ins.start()
+        return ins
     def create_image(self, image_name):
         raise Exception('create image from instance is unsupported')
     def delete(self, instance_id):

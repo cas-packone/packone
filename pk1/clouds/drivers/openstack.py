@@ -29,19 +29,41 @@ class InstanceManager(object):
             flavor=template_id,
             security_groups=[self.driver._credential['security_group']],
             nics=[{'net-id':self.driver._credential['net-id']}],
-            key_name=self.driver._credential['key_name']
+            key_name=self.driver._credential['key_name'],
+            # userdata="#cloud-config\n" \
+            #         "ssh_pwauth: true\n" \
+            #         "chpasswd:\n" \
+            #         "  list: |\n" \
+            #         "     root:bigdata\n" \
+            #         # "     cloud-user:packone\n" \
+            #         "     centos:bigdata\n" \
+            #         "  expire: False\n",
+            # files={
+            #     '/etc/ssh/sshd_config':  "HostKey /etc/ssh/ssh_host_rsa_key\n" \
+            #                             "HostKey /etc/ssh/ssh_host_ecdsa_key\n" \
+            #                             "SyslogFacility AUTHPRIV\n" \
+            #                             "PermitRootLogin yes\n" \
+            #                             "AuthorizedKeysFile	.ssh/authorized_keys\n" \
+            #                             "PasswordAuthentication yes\n" \
+            #                             "ChallengeResponseAuthentication no\n" \
+            #                             "GSSAPIAuthentication yes\n" \
+            #                             "GSSAPICleanupCredentials yes\n" \
+            #                             "UsePAM yes\n" \
+            #                             "X11Forwarding yes\n" \
+            #                             "UsePrivilegeSeparation sandbox		# Default for new installations.\n" \
+            #                             "AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES\n" \
+            #                             "AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT\n" \
+            #                             "AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE\n" \
+            #                             "AcceptEnv XMODIFIERS\n" \
+            #                             "Subsystem	sftp	/usr/libexec/openssh/sftp-server"
+                
+            # }
         )
         mustend = time.time() + 600
         while time.time() < mustend:
             ins=self.get(ins.id)
             if 'provider' in ins.addresses:
-                ins.stop()
                 break
-            time.sleep(5)
-        mustend = time.time() + 120
-        while time.time() < mustend:
-            ins=self.get(ins.id)
-            if ins.status in ['STOPPED','SHUTOFF']: break
             time.sleep(5)
         return ins
     def delete(self, instance_id):

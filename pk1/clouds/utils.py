@@ -84,17 +84,6 @@ def remedy_image_ambari_server():
         'ambari-server setup -s >/dev/null\n\n' \
         'ambari-server start'
 
-def remedy_scale_ambari_bootstrap():
-    return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
-        "ambari-agent start >/dev/null 2>&1\n\n" \
-        'if [ `hostname` == "master1.packone" ]; then\n' \
-        'sleep 10\n' \
-        'yum -q -y install epel-release\n' \
-        'yum -q -y install python-pip\n' \
-        'pip install ambari\n' \
-        'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
-        "fi"
-
 class SSH:
     def __init__(self,host,credential):
         self.client = paramiko.SSHClient()
@@ -110,10 +99,10 @@ class SSH:
             private_key_file.close()
         else:
             credential['pkey']=None
-        mustend = time.time() + 90
+        mustend = time.time() + 600
         e=Exception()
         while time.time() < mustend:
-            time.sleep(1)
+            time.sleep(5)
             try:
                 self.client.connect(
                     host,
