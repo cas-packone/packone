@@ -5,7 +5,7 @@
 ===================
 Introduction
 ===================
-PackOne, inspired by the "serverless" trend in cloud computing and big data processing, has the ambitions to bridge the IaaS to Apache Ambari seamlessly and coordinate Ambari Services into a high-level workspace. 
+PackOne, inspired by the "serverless" trend in cloud computing and big data processing, has the ambitions to bridge the IaaS to Apache Ambari seamlessly and coordinate Ambari Services into an elastic high-level workspace. 
 
 ===================
 Install

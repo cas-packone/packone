@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = "pk1-jet",
-    version = "0.1.0-beta.1",
+    name = "pk1",
+    version = "0.1.2",
     keywords = ("pip", "packone"),
     description = "PackOne: Pack clouds, engines and data services into one light stack.",
     long_description = open('README.rst').read(),
