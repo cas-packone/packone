@@ -22,6 +22,7 @@ class InstanceManager(object):
         self._manager=driver._nova_client.servers
         self.get=self._manager.get
         self.list=self._manager.list
+        self.mountable_status=[INSTANCE_STATUS.active.value,INSTANCE_STATUS.shutdown.value]
     def create(self, image_id, template_id, remark=''):
         ins=self._manager.create(
             name=remark,

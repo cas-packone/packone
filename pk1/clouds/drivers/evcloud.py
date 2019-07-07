@@ -1,5 +1,6 @@
 import coreapi
 from django.conf import settings
+from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
 class Driver(object):
@@ -76,6 +77,7 @@ class InstanceManager(object):
     def __init__(self, driver):
         self.driver=driver
         #monkey patch Instance
+        self.mountable_status=[INSTANCE_STATUS.shutdown.value, INSTANCE_STATUS.poweroff.value]
     def get(self, instance_id):
         action = ["vms","read"]
         params = {
@@ -105,7 +107,6 @@ class InstanceManager(object):
         }
         vm_id=self.driver._do_action(action, params)
         ins=self.get(vm_id)
-        ins.start()
         return ins
     def create_image(self, image_name):
         raise Exception('create image from instance is unsupported')

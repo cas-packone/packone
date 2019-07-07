@@ -300,11 +300,7 @@ class Instance(models.Model,OperatableMixin):
         return self.ipv4+' '+hostnames
     @property
     def mountable(self):
-        #TODO get mount condition from driver
-        if self.status in [
-            INSTANCE_STATUS.poweroff.value,
-            INSTANCE_STATUS.shutdown.value
-        ]: return True
+        if self.status in self.cloud.driver.instances.mountable_status: return True
         if self.status==INSTANCE_STATUS.building.value and self.ready: return True
         return False
     @property
