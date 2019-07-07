@@ -11,13 +11,13 @@ PackOne, inspired by the "serverless" trend in cloud computing and big data proc
 Install
 ===================
 
-Choose a linux host which network can reach the target openstack group resource, and run:
+Choose a linux (Centos 7.5 is verified) host which network can reach the target openstack group resource, and create a postgresql db with its information (db_user, db_passwd, db_host, db_port, db_name) collected. Then run:
 
 pip install pk1
 
 pip install -U pip setuptools
 
-pk1 setup --database pk1_db_user:pk1_db_passwd:pk1_db_host:pk1_db_port:pk1_db_name
+pk1 setup --database db_user:db_passwd:db_host:b_port:db_name
 
 ===================
 Run
