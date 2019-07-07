@@ -57,6 +57,57 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 status=models.OPERATION_STATUS.running.value
             ).save()
     start.short_description = "Start selected clusters"
+    def materialize(modeladmin, request, queryset):
+        for cluster in queryset:
+            if not cluster.name.startswith('bootstrap.'): continue
+            for ins in cluster.get_instances():
+                try:
+                    ins.cloud.driver.instances.get(str(ins.uuid)).create_image(ins.image.name.replace('-bootstrap',''))
+                except Exception as e:
+                    print(e)
+            ins.cloud.import_image()
+            image_master1=ins.cloud.image_set.get(name='packone-master1')
+            image_master2=ins.cloud.image_set.get(name='packone-master2')
+            image_slave=ins.cloud.image_set.get(name='packone-slave')
+            blueprint_master1, created=ins.cloud.instanceblueprint_set.get_or_create(
+                name='packone-master1',
+                cloud=ins.cloud,
+                template=ins.template,
+                image=image_master1,
+                volume_capacity=500,
+                remark='auto created',
+                owner=ins.owner
+            )
+            blueprint_master2, created=ins.cloud.instanceblueprint_set.get_or_create(
+                name='packone-master2',
+                cloud=ins.cloud,
+                template=ins.template,
+                image=image_master2,
+                volume_capacity=500,
+                remark='auto created',
+                owner=ins.owner
+            )
+            blueprint_slave, created=ins.cloud.instanceblueprint_set.get_or_create(
+                name='packone-slave',
+                cloud=ins.cloud,
+                template=ins.template,
+                image=image_slave,
+                volume_capacity=500,
+                remark='auto created',
+                owner=ins.owner
+            )
+            from .utils import remedy_scale_ambari_fast_init, remedy_scale_ambari_fast_scale_out, remedy_scale_ambari_fast_scale_in
+            s, created=models.Scale.objects.get_or_create(
+                name='packone.{}'.format(ins.cloud.name),
+                _remedy_script=remedy_scale_ambari_fast_init(),
+                _remedy_script_scale_out=remedy_scale_ambari_fast_scale_out(),
+                _remedy_script_scale_in=remedy_scale_ambari_fast_scale_in(),
+                owner=ins.owner
+            )
+            if created:
+                s.init_blueprints.add(*(blueprint_master1, blueprint_master2, blueprint_slave))
+                s.step_blueprints.add(*(blueprint_slave,))
+    materialize.short_description = "Materialize the cluster as a scale"
     def scale_out(modeladmin, request, queryset):
         for cluster in queryset:
             cluster.scale_one_step()
@@ -69,7 +120,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[start,scale_out,scale_in,destroy]
+    actions=[start,materialize,scale_out,scale_in,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):
@@ -77,7 +128,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         return None
     def get_queryset_Q(self, request):
         return Q(pk__in=request.user.clusters())
-
+    
 @admin.register(models.ClusterOperation)
 class ClusterOperationAdmin(M2MOperationAdmin):
     def has_module_permission(self, request):

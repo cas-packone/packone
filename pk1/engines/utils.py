@@ -5,7 +5,7 @@ def remedy_scale_ambari_bootstrap():
         'sleep 10\n' \
         'yum -q -y install epel-release\n' \
         'yum -q -y install python-pip\n' \
-        'pip install ambari\n' \
+        'pip --disable-pip-version-check install ambari\n' \
         'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
         "fi"
 

@@ -103,6 +103,8 @@ class OperationAdmin(AutoModelAdmin):
             op.status=OPERATION_STATUS.running.value
             op.started_time=now()
             op.completed_time=None
+            if hasattr(op,'log'):
+                op.log=''
             op.save()
             op.execute()
     rerun.short_description = "Re-run selected operations"

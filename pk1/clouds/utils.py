@@ -81,7 +81,7 @@ def remedy_image_ambari_agent():
 
 def remedy_image_ambari_server():
     return 'yum -q -y install ambari-server\n\n' \
-        'ambari-server setup -s >/dev/null\n\n' \
+        'ambari-server setup -s \n\n' \
         'ambari-server start'
 
 class SSH:
@@ -112,6 +112,7 @@ class SSH:
                     port=credential['port'],
                     timeout=None
                 )
+                # print("EOFError")
             except Exception as ex:
                 e=ex
             else:
@@ -133,6 +134,9 @@ class SSH:
             err='\n'.join(stderr.readlines())
             if err: err='STDERR:\n'+err
             out='STDOUT:\n'+'\n'.join(stdout.readlines())
+            if out.find('ERROR: Exiting with exit code 1')!=-1:
+                err+=out
+                out=''
         finally:
             return out, err
 
