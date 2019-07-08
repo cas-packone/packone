@@ -15,5 +15,5 @@ def get_metrics(portal):
     c=Client(portal)
     m=[]
     for h in c.cluster.hosts:
-        m.append({h.name: h.metrics})
+        m.append(h.metrics)
     return m
