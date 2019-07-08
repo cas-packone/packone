@@ -1,33 +1,33 @@
-{% extends "admin/base.html" %}
-{% load static i18n %}
-{% block title %}{{ title }} | {{ site_title }}{% endblock %}
-{% block extrastyle %}
+{% extends "admin/base.html" %} 
+{% load static i18n %} 
+{% block title %}{{ title }} | {{ site_title }}{% endblock %} 
+{% block extrastyle %} 
 {{ block.super }}
 <style>
     .select2-container--default+.select2-container--jet {
         display: None;
     }
-
+    
     #changelist-form #result_list input.vTextField {
         max-width: 10em;
     }
-
+    
     #changelist-form #result_list .select2-container--jet {
         min-width: 6em;
     }
-
+    
     #changelist-form #result_list a.button {
         min-width: 5em;
     }
-
+    
     #content-main .field-blueprint .select2 {
         min-width: 18.7em;
     }
-
+    
     #branding {
         background-color: rgba(255, 255, 255, 0.95);
     }
-
+    
     #branding img {
         max-height: 50px;
     }
@@ -37,23 +37,23 @@
     div.breadcrumbs a:visited {
         color: #ffffff;
     }
-
+    
     div.breadcrumbs a:hover {
         color: #000000;
     }
-
+    
     #user-tools,
     #user-tools a:link,
     #user-tools a:visited {
         color: #c1c8f4;
     }
-
+    
     div.breadcrumbs,
     #header {
         background-color: #1970b2;
         color: #a6f3c1;
     }
-
+    
     #branding img {
         max-height: 35px;
     }
@@ -62,11 +62,11 @@
     .clear {
         clear: both
     }
-
+    
     .RadioStyle input {
         display: none
     }
-
+    
     .RadioStyle label {
         /* border: 1px solid #00a4ff; */
         padding: 2px 10px 2px 5px;
@@ -77,13 +77,13 @@
         /* margin: 2px; */
         border-radius: 4px
     }
-
+    
     .RadioStyle input:checked+label {
         background: url(images/ico_checkon.svg) no-repeat right bottom;
         background-size: 21px 21px;
         color: #00a4ff
     }
-
+    
     .stateBtnStyle {
         color: #fff;
         /* background-color: #9eb85c; */
@@ -94,57 +94,57 @@
         border: 1px solid transparent;
         border-radius: 4px;
     }
-
+    
     .sidebar {
         background-color: #ffffff;
     }
-
+    
     .sidebar-link,
     .sidebar-link:visited {
         color: #000000;
     }
-
+    
     .sidebar-link:hover {
         color: #ffffff;
         background: #329ad0;
     }
-
+    
     .sidebar-section {
         border-bottom: 0.07143rem solid #ececec;
     }
-
+    
     .sidebar-link,
     .sidebar-link:visited,
     .sidebar-link:hover {
         color: #020202;
     }
-
+    
     .sidebar-right-arrow:hover {
         color: #020202;
     }
-
+    
     body {
         background: #f7f7f7;
         color: #777a7b;
         /* color: #0b6912; */
     }
-
+    
     .dashboard-item {
         background: #c6deea;
     }
-
+    
     .dashboard-item-content ul:not(.inline) li.contrast {
         /* background: #94c382; */
         background: #85c2e2;
     }
-
+    
     a,
     a:visited,
     a:hover,
     a:focus {
         color: #656565;
     }
-
+    
     .button,
     .button:visited,
     .button:hover,
@@ -157,34 +157,34 @@
         background-color: #d3efff;
         color: #5d95ab;
     }
-
+    
     .aHrefHover:hover {
         background-color: #47bac1;
         color: #fff;
     }
-
+    
     .user-tools ul.opened {
         border: 0.07143rem solid #86c1df;
     }
-
+    
     #user-tools,
     #user-tools a:link,
     #user-tools a:visited {
         color: #ddefdd;
     }
-
+    
     #toolbar form input[type="submit"],
     #toolbar form input[type="submit"]:visited {
         background-color: #99c58a;
         color: #ffffff;
     }
-
+    
     #changelist .actions .button,
     #changelist .actions .button:visited {
         background-color: #99c58a;
         color: #fff;
     }
-
+    
     #changelist .actions .button:hover,
     #toolbar form input[type="submit"]:hover,
     .object-tools a:hover,
@@ -194,52 +194,54 @@
         background-color: #76bae4;
         color: #fff;
     }
-
+    
     table thead th {
         background: #74b6e2;
     }
-
+    
     .sidebar-container-toggle {
         background-color: #338BB8;
         color: #c0d4e8;
         min-height: 32px;
     }
-
+    
     input[type="submit"].default {
         background-color: #d0dbe6;
         color: #657a90;
     }
-
+    
     input[type="submit"]:hover {
         background-color: #47bac1;
         color: #fff;
     }
-
+    
     .dashboard-item {
         background: #73b6e2;
     }
+    
     img.dateset-list-iocn {
         width: 10px;
     }
+    
     img.menu-list-iocn {
         width: 16px;
         vertical-align: middle;
     }
 </style>
-{% endblock %}
+{% endblock %} 
 {% block extrahead %}
 <link rel="apple-touch-icon" sizes="180x180" href="{% static '/apple-touch-icon.png' %}">
 <link rel="icon" type="image/png" sizes="32x32" href="{% static '/favicon-16x16.png' %}">
-<link rel="stylesheet" href="{% static '/css/all.min.css' %}">
-{% endblock %}
+<link rel="stylesheet" href="{% static '/css/all.min.css' %}"> 
+{% endblock %} 
 {% block messages %}
 <ul class="messagelist">
     <li id='ajax-success' class="success" style="display:none"></li>
     <li id='ajax-error' class="error" style="display:none"></li>
 </ul>
-{{ block.super }}
-{% endblock %}
-{% block branding %}
+{{ block.super }} 
+{% endblock %} 
+{% block branding %} 
 {{ block.super }}
 <h1 id="site-name">
     <a href="/clouds/instance/">
@@ -249,22 +251,23 @@
     <div style="display:none;" id="current-space-id">{{ request.space.pk }}</div>
     <div style="display:none;" id="current-space-portal">{{ request.space.portal }}</div>
 </h1>
-{% endblock %}
+{% endblock %} 
 
 {% block nav-global %}
 <a href="https://github.com/cas-bigdatalab/packone" class="sidebar-link icon" style="display:none;">
     <span class="sidebar-link-label">
         <span class="sidebar-link-icon">
             <i class="fab fa-github"></i>
-        </span>
+        </span> 
         {% trans 'Repo' %}
     </span>
 </a>
-<input id="iframe_value_input" style="display:none;" />
-{% endblock %}
+<input id="iframe_value_input" style="display:none;" /> 
+{% endblock %} 
 
-{% block footer %}
+{% block footer %} 
 {{ block.super }}
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
 <script type="text/javascript">
     // jQuery(function($) {
     //     $('#changelist-form #result_list').find('input').each(function() {
@@ -300,14 +303,14 @@
                 target: $(this).data("id")
             }
             $.ajax({
-                type: "POST",
-                headers: {
-                    "X-CSRFToken": csrftoken
-                },
-                url: href,
-                data: postData,
-                timeout: 150000
-            })
+                    type: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    url: href,
+                    data: postData,
+                    timeout: 150000
+                })
                 .done(function (data) {
                     window.location.replace(href.split('api')[1].slice(0, -2) + "/" + data.id + '/change');
                 })
@@ -325,13 +328,13 @@
             e.preventDefault();
             href = $(this).attr('href')
             $.ajax({
-                type: "DELETE",
-                headers: {
-                    "X-CSRFToken": csrftoken
-                },
-                url: href,
-                timeout: 15000
-            })
+                    type: "DELETE",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    url: href,
+                    timeout: 15000
+                })
                 .done(function (data) {
                     location.reload();
                 })
@@ -409,8 +412,8 @@
                         if (result_body && result_body.length > 0) {
                             var p_element = '<p style="text-align: center;font-size: 26px;">Notebook List</p>';
                             var table_element = '<table id="table_id" style="width: 100%; display: none;"><thead><tr><th>Name</th></tr></thead>';
-                            var select_element = '<div style="display: inline-block;"><span style="width: 10%;font-size: 20px;">Please choose:&nbsp;&nbsp;</span></div>'
-                                + '<div style="display: inline-block;">'
+                            var select_element = '<div style="display: inline-block;"><span style="width: 10%;font-size: 20px;">Please choose:&nbsp;&nbsp;</span></div>' 
+                            + '<div style="display: inline-block;">' 
                                 + '<select tabindex="-1" aria-hidden="true" style="width: 100%;" onchange="changeIframeSrc(\'iframe_id\',this.value);">';
                             var table_tr = "";
                             var select_options = "";
@@ -439,10 +442,11 @@
             });
         });
     }
+
     function loadPipeline(iframe_src) {
         var rightContent_ = document.getElementById("content");
-        rightContent_.innerHTML = ('<iframe id="iframe_id" style="width: 100%; height: 1500px;border-width: 0px;" '
-            + 'frameborder="no" border="0" marginwidth="0" marginheight="0" allowtransparency="yes" src="'
+        rightContent_.innerHTML = ('<iframe id="iframe_id" style="width: 100%; height: 1500px;border-width: 0px;" ' 
+        + 'frameborder="no" border="0" marginwidth="0" marginheight="0" allowtransparency="yes" src="' 
             + iframe_src + '"></iframe>');
     }
 
@@ -477,6 +481,7 @@
             }
         }
     };
+
     function changePublicCheckBox(flag) {
         if (flag) {
             document.getElementById("public_no_id").checked = false;
@@ -486,12 +491,9 @@
             document.getElementById("id_public").checked = false;
         }
     }
-    var pre_execution = function () {
-    };
-    var actionSubmitFun = function () {
-    };
-    var actionSubmitByIdFun = function () {
-    };
+    var pre_execution = function() {};
+    var actionSubmitFun = function() {};
+    var actionSubmitByIdFun = function() {};
     var changelist_footer_div = "";
     var result_list_select_array = "";
     window.onload = function () {
@@ -527,7 +529,7 @@
                 for (var j = 0; j < select_elements_array.length; j++) {
                     if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
                         var update_select_obj = {}
-                        // 需要修改的select
+                            // 需要修改的select
                         update_select_obj.select = select_elements_array[j];
                         // 需要修改select的父元素
                         update_select_obj.parent = select_elements_array[j].parentElement;
@@ -581,50 +583,50 @@
             // 判断查询到的select
             if (result_list_select_array && result_list_select_array.length > 0) {
                 actionSubmitFun = function actionSubmit(btnElement) {
-                    console.log('执行操作');
-                    if (btnElement) {
-                        // 找到所点击btn的所在行
-                        var current_tr = btnElement.parentNode.parentNode;
-                        // 判空
-                        if (current_tr) {
-                            // 找到tr所在table
-                            var current_table = current_tr.parentNode;
-                            // 获取table的所有input
-                            var current_table_input = current_table.getElementsByTagName('input');
-                            // 循环处理（把所有的checkbox取消选中）
-                            if (current_table_input && current_table_input.length > 0) {
-                                for (var i = 0; i < current_table_input.length; i++) {
-                                    if (current_table_input[i].type == "checkbox") {
-                                        current_table_input[i].checked = false;
+                        console.log('执行操作');
+                        if (btnElement) {
+                            // 找到所点击btn的所在行
+                            var current_tr = btnElement.parentNode.parentNode;
+                            // 判空
+                            if (current_tr) {
+                                // 找到tr所在table
+                                var current_table = current_tr.parentNode;
+                                // 获取table的所有input
+                                var current_table_input = current_table.getElementsByTagName('input');
+                                // 循环处理（把所有的checkbox取消选中）
+                                if (current_table_input && current_table_input.length > 0) {
+                                    for (var i = 0; i < current_table_input.length; i++) {
+                                        if (current_table_input[i].type == "checkbox") {
+                                            current_table_input[i].checked = false;
+                                        }
                                     }
-                                }
-                                // 获取当前行的第一个td
-                                var current_tr_first_td = current_tr.firstElementChild;
-                                // 获取当前td的input并置为选中状态
-                                var current_tr_first_td_input = current_tr_first_td.getElementsByTagName('input')[0];
-                                current_tr_first_td_input.checked = true;
-                                // 循环获取from并提交
-                                var current_from = current_table;
-                                while (true) {
-                                    if (current_from.tagName === 'FORM' || current_from.tagName === 'form') {
-                                        result_list_select_array[0].value
-                                        current_from.getElementsByTagName("select")[0].value = btnElement.getAttribute('selectValue');
-                                        current_from.submit();
-                                        break;
-                                    } else {
-                                        current_from = current_from.parentNode;
-                                        if (current_from.tagName === 'BODY' || current_from.tagName === 'body' ||
-                                            current_from.tagName === 'HTML' || current_from.tagName === 'html') {
-                                            console.log('not find');
+                                    // 获取当前行的第一个td
+                                    var current_tr_first_td = current_tr.firstElementChild;
+                                    // 获取当前td的input并置为选中状态
+                                    var current_tr_first_td_input = current_tr_first_td.getElementsByTagName('input')[0];
+                                    current_tr_first_td_input.checked = true;
+                                    // 循环获取from并提交
+                                    var current_from = current_table;
+                                    while (true) {
+                                        if (current_from.tagName === 'FORM' || current_from.tagName === 'form') {
+                                            result_list_select_array[0].value
+                                            current_from.getElementsByTagName("select")[0].value = btnElement.getAttribute('selectValue');
+                                            current_from.submit();
                                             break;
+                                        } else {
+                                            current_from = current_from.parentNode;
+                                            if (current_from.tagName === 'BODY' || current_from.tagName === 'body' ||
+                                                current_from.tagName === 'HTML' || current_from.tagName === 'html') {
+                                                console.log('not find');
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                // 获取查询到的select的option
+                    // 获取查询到的select的option
                 var result_list_select_option = result_list_select_array[0].getElementsByTagName('option');
                 // 判断option是否为空
                 if (result_list_select_option && result_list_select_option.length > 1) {
@@ -721,78 +723,78 @@
                     space_name_tmp = 'HOME'
                 }
                 var addMenuSciSpace = '<div class="sidebar-section">'
-                    + '<a href="' + space_home_url + '/clouds/instance/" class="sidebar-link icon">'
-                    + '<span class="sidebar-link-label">'
-                    + '<span class="sidebar-link-icon icon-data"></span>' + space_name_tmp + '</span>'
-                    + '</a>'
+                    + '<a href="' + space_home_url + '/clouds/instance/" class="sidebar-link icon">' 
+                    + '<span class="sidebar-link-label">' 
+                    + '<span class="sidebar-link-icon icon-data"></span>' + space_name_tmp + '</span>' 
+                    + '</a>' 
                     + '</div>';
                 var addNewMenuData = '<div class="sidebar-section">'
                     + '<div class="sidebar-title">'
                     + '<a href="' + space_home_url + '/data/" class="sidebar-title-link">Data</a>'
                     + '</div>'
                     + '<div>'
-                    + '<a href="' + space_home_url + '/data/dataset/" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + ' <span class="sidebar-link-label"><img src="/static/dataset.svg" class="menu-list-iocn">&nbsp;Datasets</span>'
-                    + '</a>'
+                    + '<a href="' + space_home_url + '/data/dataset/" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + ' <span class="sidebar-link-label"><img src="/static/dataset.svg" class="menu-list-iocn">&nbsp;Datasets</span>' 
+                    + '</a>' 
                     + '</div>'
-                    + '<div>'
-                    + '<a href="' + space_home_url + '/data/datainstance/" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/instances.svg" class="menu-list-iocn">&nbsp;Instances</span>'
-                    + '</a>'
-                    + '</div>'
-                    + '<div>'
-                    + '<a href="' + space_home_url + '/?Analysis" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/pipeline.svg" class="menu-list-iocn">&nbsp;Data Pipeline</span>'
-                    + '</a>'
-                    + '</div>'
-                    + '<div>'
-                    + '<a href="' + space_home_url + '/?ZeppelinNotebook" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/noteboot.svg" class="menu-list-iocn">&nbsp;Notebook</span>'
-                    + '</a>'
-                    + '</div>'
+                    + '<div>' 
+                    + '<a href="' + space_home_url + '/data/datainstance/" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/instances.svg" class="menu-list-iocn">&nbsp;Instances</span>' 
+                    + '</a>' 
+                    + '</div>' 
+                    + '<div>' 
+                    + '<a href="' + space_home_url + '/?Analysis" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/pipeline.svg" class="menu-list-iocn">&nbsp;Data Pipeline</span>' 
+                    + '</a>' 
+                    + '</div>' 
+                    + '<div>' 
+                    + '<a href="' + space_home_url + '/?ZeppelinNotebook" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/noteboot.svg" class="menu-list-iocn">&nbsp;Notebook</span>' 
+                    + '</a>' 
+                    + '</div>' 
                     + '</div>';
                 // 添加Admin菜单组
-                var addNewMenuAdmin = '<div class="sidebar-section">'
-                    + '<div class="sidebar-title">'
-                    + '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>'
+                var addNewMenuAdmin = '<div class="sidebar-section">' 
+                    + '<div class="sidebar-title">' 
+                    + '<a href="' + space_home_url + '/?logHome" class="sidebar-title-link">Admin</a>' 
                     + '</div>'
-                    + '<div>'
-                    + '<a href="' + space_home_url + '/engines/stepoperation/" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;SciSpace Operations</span>'
-                    + '</a>'
-                    + '</div>'
+                    + '<div>' 
+                    + '<a href="' + space_home_url + '/engines/stepoperation/" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;SciSpace Operations</span>' 
+                    + '</a>' 
+                    + '</div>' 
                     + '<div>'
                     //+ '<a href="' + space_home_url + '/data/datainstanceoperation/" class="sidebar-link">'
-                    + '<a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;Instances Operations</span>'
-                    + '</a>'
-                    + '</div>'
-                    + '<div>'
-                    + '<a href="' + current_space_portal + '" target="_blank" class="sidebar-link">'
-                    + '<span class="sidebar-right">'
-                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>'
-                    + '</span>'
-                    + '<span class="sidebar-link-label"><img src="/static/manage.svg" class="menu-list-iocn">&nbsp;Cluster Manage</span>'
-                    + '</a>'
-                    + '</div>'
+                    + '<a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/operaction.svg" class="menu-list-iocn">&nbsp;Instances Operations</span>' 
+                    + '</a>' 
+                    + '</div>' 
+                    + '<div>' 
+                    + '<a href="' + current_space_portal + '" target="_blank" class="sidebar-link">' 
+                    + '<span class="sidebar-right">' 
+                    + '<span class="sidebar-right-arrow icon-arrow-right"></span>' 
+                    + '</span>' 
+                    + '<span class="sidebar-link-label"><img src="/static/manage.svg" class="menu-list-iocn">&nbsp;Cluster Manage</span>' 
+                    + '</a>' 
+                    + '</div>' 
                     + '</div>';
                 sidebar_section_array_i.outerHTML = (sidebar_section_array_i.outerHTML + addMenuSciSpace + addNewMenuData + addNewMenuAdmin);
             }
@@ -825,12 +827,12 @@
                 if (window_location_search_param_array_hive_param && window_location_search_param_array_hive_param.length > 1) {
                     iframe_src = 'http://' + window_location_search_param_array_hive_param[0] + ':8888/beeswax/#query';
                     //iframe_src = 'http://10.0.88.141:8888/beeswax/#query';
-                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/">Data</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/datainstance/">Data instances</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/">Data</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/datainstance/">Data instances</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                         + window_location_search_param_array_hive_param[1];
                     var function_param_str = window_location_search_param_array_hive_param[1].split(".")[0];
                     var param_database_fun = function (function_param) {
@@ -885,12 +887,12 @@
                 if (window_location_search_param_array_hdfs_param && window_location_search_param_array_hdfs_param.length > 1) {
                     iframe_src = 'http://' + window_location_search_param_array_hdfs_param[0] + ':8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
                     //iframe_src = 'http://10.0.88.141:8888/filebrowser/#' + window_location_search_param_array_hdfs_param[1];
-                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/">Data</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/datainstance/">Data instances</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/">Data</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/datainstance/">Data instances</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                         + window_location_search_param_array_hdfs_param[1];
                 }
             } else if (window_location_search_param_array_hbase && window_location_search_param_array_hbase.length > 1 && "" === window_location_search_param_array_hbase[0]) {
@@ -898,12 +900,12 @@
                 if (window_location_search_param_array_hbase_param && window_location_search_param_array_hbase_param.length > 0) {
                     iframe_src = 'http://' + window_location_search_param_array_hbase_param[0] + ':8888/hbase/';
                     //iframe_src = 'http://10.0.88.141:8888/hbase/';
-                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/">Data</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/datainstance/">Data instances</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/">Data</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/datainstance/">Data instances</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                         + '';
                 }
             } else if (window_location_search_param_array_eventDB && window_location_search_param_array_eventDB.length > 1 && "" === window_location_search_param_array_eventDB[0]) {
@@ -912,12 +914,12 @@
                     var window_location_search_param_array_eventDB_param_array = window_location_search_param_array_eventDB_param[1].split("+");
                     if (window_location_search_param_array_eventDB_param_array && window_location_search_param_array_eventDB_param_array.length > 1) {
                         iframe_src = window_location_search_param_array_eventDB_param_array[0].replace(RegExp('%20', "g"), "");
-                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                            + '<a href="/data/">Data</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                            + '<a href="/data/datainstance/">Data instances</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                            + '<a href="/data/">Data</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                            + '<a href="/data/datainstance/">Data instances</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + window_location_search_param_array_eventDB_param_array[1];
                     }
                 }
@@ -929,41 +931,41 @@
                         iframe_src = window_location_search_param_array_gstore_param_array[0].replace(RegExp('%20', "g"), "") + '/admin_root.html';
                         iframe_src = 'http://10.0.88.81:8006/gStorems/admin_root.html';
                         iframe_src = iframe_src.replace(RegExp('%20', "g"), "");
-                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                            + '<a href="/data/">Data</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                            + '<a href="/data/datainstance/">Data instances</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                        breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                            + '<a href="/data/">Data</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                            + '<a href="/data/datainstance/">Data instances</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + window_location_search_param_array_gstore_param_array[1];
                     }
 
                 }
-            } if (window_location_search_param_array_astroServ && window_location_search_param_array_astroServ.length > 1 && "" === window_location_search_param_array_astroServ[0]) {
+            } else if (window_location_search_param_array_astroServ && window_location_search_param_array_astroServ.length > 1 && "" === window_location_search_param_array_astroServ[0]) {
                 var window_location_search_param_array_astroServ_param = window_location_search_param_array_astroServ[1].split("&");
                 if (window_location_search_param_array_astroServ_param && window_location_search_param_array_astroServ_param.length > 1) {
                     var param = window_location_search_param_array_astroServ_param[1].split("+")[0];
                     iframe_src = param.replace(RegExp('%20', "g"), "");
-                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/">Data</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
-                        + '<a href="/data/datainstance/">Data instances</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/">Data</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
+                        + '<a href="/data/datainstance/">Data instances</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                         + '';
                 }
             } else {
                 if ("?Analysis" === window.location.search || "?Analysis#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
-                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + 'Pipeline');
                     }
                     loadPipeline('http://10.0.86.131:6001/piflow-web/web/flowList?first');
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
-                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>'
-                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                        breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>' 
+                            + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + 'Notebook');
                     }
                     getNoteBookList('http://10.0.88.78:9995');
@@ -977,13 +979,13 @@
                                 cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
                                 var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                                 cf_children_i_ul.style.display = "none";
-                                var cf_children_i_ul_new = "<ul>"
-                                    + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
+                                var cf_children_i_ul_new = "<ul>" 
+                                    + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>' 
                                     + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
                                     //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
                                     + '<li><a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F">Instances Operations</a></li>'
 
-                                    + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
+                                    + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>' 
                                     + "</ul>";
                                 cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
                             } else {
@@ -991,42 +993,274 @@
                             }
                         }
                     }
-                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>'
-                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>'
+                    breadcrumbs_initialized_html = '<a href="/clouds/instance/">Home</a>' 
+                        + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                         + 'Admin';
                 } else {
-                    var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
-                    if (element_first_div) {
-                        var element_first_div_inner_html = element_first_div.innerHTML;
-                        var state_div = '';
-                        element_first_div.innerHTML = state_div + element_first_div_inner_html;
-                    }
-                    var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
-                    if (cf_children && cf_children.length > 0) {
-                        for (var i = 0; i < cf_children.length; i++) {
-                            var titleElemet = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
-                            if (titleElemet) {
-                                if ("Applications" === titleElemet.textContent.trim()) {
-                                    cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
-                                    var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
-                                    cf_children_i_ul.style.display = "none";
-                                    var cf_children_i_ul_new = "<ul>"
-                                        + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">Data</a></li>'
-                                        + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>'
-                                        + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
-                                        + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
-                                        + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
-                                        + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
-                                        + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
-                                        //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
-                                        + '<li><a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F">Instances Operations</a></li>'
-                                        + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
-                                        + "</ul>";
-                                    cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
+                    // var element_first_div = document.getElementsByClassName('dashboard-column first ui-droppable ui-sortable')[0];
+                    // if (element_first_div) {
+                    //     var element_first_div_inner_html = element_first_div.innerHTML;
+                    //     var state_div = '';
+                    //     element_first_div.innerHTML = state_div + element_first_div_inner_html;
+                    // }
+                    // var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
+                    // if (cf_children && cf_children.length > 0) {
+                    //     for (var i = 0; i < cf_children.length; i++) {
+                    //         var titleElemet = cf_children[i].getElementsByClassName("dashboard-item-header-title")[0];
+                    //         if (titleElemet) {
+                    //             if ("Applications" === titleElemet.textContent.trim()) {
+                    //                 cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
+                    //                 var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
+                    //                 cf_children_i_ul.style.display = "none";
+                    //                 var cf_children_i_ul_new = "<ul>"
+                    //                     + '<li class="contrast"><a href="' + space_home_url + '/data/" title="Models in the data application">Data</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
+                    //                     + '<li class="contrast"><a href="' + space_home_url + '/?logHome" title="Models in the log application">Admin</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/engines/stepoperation/">SciSpace Operations</a></li>'
+                    //                     //+ '<li><a href="' + space_home_url + '/data/datainstanceoperation/">Instances Operations</a></li>'
+                    //                     + '<li><a href="' + space_home_url + '/clouds/instanceoperation/?q=mkdir+-p+%2Fdata%2Fpackone%2F">Instances Operations</a></li>'
+                    //                     + '<li><a href="' + current_space_portal + '" target="_blank">Cluster Manage</a></li>'
+                    //                     + "</ul>";
+                    //                 cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+
+
+                    //随时注释
+                    var content_element = document.getElementById("content");
+                    content_element.style.display = 'none';
+                    var content_element_new = '<div id="content_new" class="colM">' 
+                        + '<h1 style="text-align: center;">Space Overview</h1>' 
+                        + '<div style="margin: 16px;">' 
+                        + '<table style="width: 100%;">' 
+                        + '<tr style="display: none;"><td>' 
+                        + '<table id="metics_table_id" style="width: 100%;">' 
+                        + '<tr>' 
+                        + '<th style="width: 33.33%;"><span>Cluster Overview</span></th>' 
+                        + '<th style="width: 33.33%;"></th>' 
+                        + '<th style="width: 33.33%;"></th>' 
+                        + '</tr>' 
+                        + '</table>' 
+                        + '</td></tr>' 
+                        + '<tr style="display: none;"><td>' 
+                        + '<table id="table_id_dataset" style="width: 100%;">' 
+                        + '<tr>' 
+                        + '<th style="width: 50%;"><span>Dataset Overview</span></th>' 
+                        + '<th style="width: 50%;"></th>' 
+                        + '</tr>' 
+                        + '<tr>' 
+                        + '<td>' 
+                        + '<div id="dataset_1" style="height: 300px;"></div>' 
+                        + '</td>' 
+                        + '<td>' 
+                        + '<div id="dataset_2" style="height: 300px;"></div>' 
+                        + '</td>' 
+                        + '</tr>' 
+                        + '</table>' 
+                        + '</td></tr>' 
+                        + '<tr style="display: none;"><td>' 
+                        + '<table id="table_id_instance" style="width: 100%;">' 
+                        + '<tr>' 
+                        + '<th style="width: 100%;"><span>Instance Overview</span></th>' 
+                        + '</tr>' 
+                        + '<tr>' 
+                        + '<td>' 
+                        + '<div id="instance_1" style="height: 300px;"></div>' 
+                        + '</td>' 
+                        + '</tr>' 
+                        + '</table>' 
+                        + '</td></tr>' 
+                        + '<tr style="display: none;"><td>' 
+                        + '<table id="table_id_pipeline_1" style="width: 100%;">' 
+                        + '<tr>' 
+                        + '<th style="width: 100%;"><span>Pipeline Overview</span></th>' 
+                        + '</tr>' 
+                        + '<tr>' 
+                        + '<td>' 
+                        + '<div id="pipeline_1" style="height: 300px;"></div>' 
+                        + '</td>' 
+                        + '</tr>' 
+                        + '</table>' 
+                        + '</td></tr>' 
+                        + '<tr style="display: none;"><td>' 
+                        + '<table id="table_id_notebook_1" style="width: 100%;">' 
+                        + '<tr>' 
+                        + '<th style="width: 100%;"><span>Notebook Overview</span></th>' 
+                        + '</tr>' 
+                        + '</table>' 
+                        + '</td></tr>' 
+                        + '</table>' 
+                        + '</div>' 
+                        + '</div>';
+                    content_element.outerHTML = (content_element_new + content_element.outerHTML);
+                    jQuery(function($) {
+                        $.get(space_home_url + "/api/data/state/", function(data) {
+                        
+                            var metics_array = data.cluster.metics
+                            if (metics_array && metics_array.length > 0) {
+                                var metics_table = document.getElementById("metics_table_id");
+                                metics_table.parentElement.parentElement.style.display="";
+                                var metics_table_tr_all = "";
+                                for (var i = 0; i < metics_array.length; i++) {
+                                    if((i + 1) % 3 === 1){
+                                        metics_table_tr_all += '<tr>' ;
+                                    }
+                                    metics_table_tr_all += ('<td style="width: 33.33%;"><div id="disk' + i + '" style="height: 300px;"></div></td>');
+                                    if((i + 1) % 3 === 1 && i !== 0){
+                                        metics_table_tr_all += '</tr>' ;
+                                    }
+                                }
+                                metics_table.innerHTML = (metics_table.innerHTML + metics_table_tr_all);
+                                for (var i = 0; i < metics_array.length; i++) {
+
+                                    var disk_div_element = document.getElementById('disk' + i);
+                                    var diskChart = echarts.init(disk_div_element);
+
+                                    var metics_array_i = metics_array[i];
+                                    console.info(metics_array_i);
+                                    var option = {
+                                        title: {
+                                            text: metics_array_i.Hosts.host_name + ' 硬盘统计',
+                                            //subtext: '虚构数据',
+                                            left: 'left'
+                                        },
+                                        color: ['#99d2dd', '#1c7099'],
+                                        tooltip: {
+                                            trigger: 'item',
+                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                        },
+                                        series: [{
+                                            name: '磁盘使用率：',
+                                            type: 'pie',
+                                            //radius: '55%',
+                                            center: ['50%', '60%'],
+                                            data: [{
+                                                value: metics_array_i.metrics.disk.disk_free,
+                                                name: '磁盘空闲'
+                                            }, {
+                                                value: (metics_array_i.metrics.disk.disk_total - metics_array_i.metrics.disk.disk_free).toFixed(2),
+                                                name: '磁盘使用'
+                                            }],
+                                            itemStyle: {
+                                                emphasis: {
+                                                    show: true,
+                                                    textStyle: {
+                                                        fontSize: '30',
+                                                        fontWeight: 'bold'
+                                                    }
+                                                },
+                                                normal: {
+                                                    position: 'center',
+                                                    label: {
+                                                        formatter: function(a, b, c, d) {
+                                                            //return a.data.name + '：' + (a.data.value / 7601 * 100).toFixed(2) + '%<br>';
+                                                            return a.data.name + '：' + a.data.value + 'GB ';
+                                                        },
+                                                        textStyle: {
+                                                            baseline: 'top',
+                                                            fontSize: '12',
+                                                            fontWeight: 'bold'
+                                                        }
+                                                    }
+                                                },
+                                            }
+                                        }]
+                                    };
+                                    diskChart.setOption(option);
                                 }
                             }
-                        }
-                    }
+
+                            var data_sets_type_cnt = data.dataset.type_cnt;
+                            var is_none_datesets = false;
+                            if (data_sets_type_cnt && data_sets_type_cnt.length > 0) {
+                                is_none_datesets = true;
+                            }
+
+                            var data_sets_type_size = data.dataset.type_size;
+                            if (data_sets_type_size && data_sets_type_size.length > 0) {
+                                is_none_datesets = true;
+                            }
+
+                            if (is_none_datesets) {
+                                document.getElementById("table_id_dataset").parentElement.parentElement.style.display = "";
+                            }
+
+                            var data_instance_type_cnt = data.instance.type_cnt;
+                            if (data_instance_type_cnt && data_instance_type_cnt.length > 0) {
+                                document.getElementById("table_id_instance").parentElement.parentElement.style.display = "";
+                                var instance_div_element_1 = document.getElementById('instance_1');
+                                var instance_chart_1_option_data_x = [];
+                                var instance_chart_1_option_data_y = [];
+                                for (var i = 0; i < data_instance_type_cnt.length; i++) {
+                                    instance_chart_1_option_data_x.push(data_instance_type_cnt[i].dataset__type);
+                                    instance_chart_1_option_data_y.push(data_instance_type_cnt[i].cnt);
+                                }
+                                var instance_chart_1 = echarts.init(instance_div_element_1);
+                                var instance_chart_1_option = {
+                                    title: {
+                                        text: '',
+                                        subtext: '',
+                                        left: 'center'
+                                    },
+                                    color: ['#3398DB'],
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                                            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                                        }
+                                    },
+                                    grid: {
+                                        left: '3%',
+                                        right: '4%',
+                                        bottom: '3%',
+                                        containLabel: true
+                                    },
+                                    xAxis: [{
+                                        type: 'category',
+                                        //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                        data: instance_chart_1_option_data_x,
+                                        axisTick: {
+                                            alignWithLabel: true
+                                        }
+                                    }],
+                                    yAxis: [{
+                                        type: 'value'
+                                    }],
+                                    series: [{
+                                        name: '数量',
+                                        type: 'bar',
+                                        barWidth: '60%',
+                                        //data: [10, 52, 200, 334, 390, 330, 220]
+                                        data: instance_chart_1_option_data_y
+                                    }]
+                                };
+                                instance_chart_1.setOption(instance_chart_1_option);
+                            }
+                        });
+                        $.get("http://10.0.88.78:9995/api/notebook", function(result) {
+                            if (result) {
+                                if ("OK" === result.status) {
+                                    var result_body = result.body;
+                                    if (result_body && result_body.length > 0) {
+                                        var notebook_1_table = document.getElementById("table_id_notebook_1");
+                                        notebook_1_table.parentElement.parentElement.style.display="";
+                                        var notebook_table_element = '';
+                                        for (var i = 0; i < result_body.length; i++) {
+                                            notebook_table_element += ('<tr><td>' + result_body[i].name + '</td></tr>')
+                                        }
+                                        notebook_1_table.innerHTML = (notebook_1_table.innerHTML + notebook_table_element);
+                                    }
+                                }
+                            }
+                        });
+                    });
+                    //随时注释
                 }
             }
             if (iframe_src) {
@@ -1057,11 +1291,11 @@
                         cf_children[i].getElementsByClassName("dashboard-item-header-buttons")[0].style.display = "none";
                         var cf_children_i_ul = cf_children[i].getElementsByTagName("ul")[0];
                         cf_children_i_ul.style.display = "none";
-                        var cf_children_i_ul_new = "<ul>"
-                            + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>'
-                            + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>'
-                            + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>'
-                            + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>'
+                        var cf_children_i_ul_new = "<ul>" 
+                            + '<li><a href="' + space_home_url + '/data/dataset/">Datasets</a></li>' 
+                            + '<li><a href="' + space_home_url + '/data/datainstance/">Instances</a></li>' 
+                            + '<li><a href="' + space_home_url + '/?Analysis">Data Pipeline</a></li>' 
+                            + '<li><a href="' + space_home_url + '/?ZeppelinNotebook">Notebook</a></li>' 
                             + "</ul>";
                         cf_children_i_ul.outerHTML = (cf_children_i_ul.outerHTML + cf_children_i_ul_new);
                     } else {
@@ -1151,8 +1385,8 @@
                                 query_url = result_list_table_td_array_i_parent.textContent;
                             }
                             if (type_array_obj[result_list_table_td_array_i_f_child_type]) {
-                                var query_a_href = space_home_url
-                                    + '/?query_' + type_array_obj[result_list_table_td_array_i_f_child_type] + '&'
+                                var query_a_href = space_home_url 
+                                    + '/?query_' + type_array_obj[result_list_table_td_array_i_f_child_type] + '&' 
                                     + result_list_table_td_array_i_f_child_href;
                                 if (query_url) {
                                     query_a_href += ('&' + query_url);
@@ -1187,80 +1421,80 @@
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('a'));
             hideElementArray(document.getElementsByClassName('breadcrumbs initialized')[0].getElementsByTagName('span'));
             document.getElementsByClassName('breadcrumbs initialized')[0].style.display = "none";
-            document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML = ('<p style="text-align: center;margin-top: 10px;"><img style="width: 180px;" src="/static/logo-large.png"></p>'
+            document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML = ('<p style="text-align: center;margin-top: 10px;"><img style="width: 180px;" src="/static/logo-large.png"></p>' 
                 + document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML);
             document.getElementById('container').firstElementChild.style.display = "none";
 
             var contentElement = document.getElementById('content');
             var contentElementNew = '<div id="contentNew" class="flex">'
                 //+ '<p style="text-align: center;font-size: 26px;">Scispace List</p>'
-                + '<p style="text-align: right;margin-top: -10px;">'
-                + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">New Space</a>'
-                + '</p>'
+                + '<p style="text-align: right;margin-top: -10px;">' 
+                + '<a href="/engines/cluster/add/" class="addlink button aHrefHover">New Space</a>' 
+                + '</p>' 
                 + '<div class="dashboard-container columns_4 cf">';
             var result_list_cluster = document.getElementById('result_list');
             if (result_list_cluster) {
                 var result_list_cluster_tr = result_list_cluster.getElementsByTagName('tr');
                 if (result_list_cluster_tr && result_list_cluster_tr.length > 1) {
                     for (var i = 1; i < result_list_cluster_tr.length; i++) {
-                        contentElementNew += ('<div class="dashboard-column-wrapper">'
-                            + '<div class="dashboard-column ui-droppable ui-sortable">'
-                            + '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">'
-                            + '<div class="dashboard-item-header ui-sortable-handle">'
-                            + '<span class="dashboard-item-header-title">'
-                            + '<a href="javascript:openStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">'
-                            + '<span class="dashboard-item-header-collapse-button icon-arrow-down"></span>'
-                            + '</a>'
-                            + '<a href="javascript:closedStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">'
-                            + '<span class="dashboard-item-header-collapse-button icon-arrow-up"></span>'
-                            + result_list_cluster_tr[i].getElementsByTagName('th')[0].getElementsByTagName('a')[0].innerText
-                            + '</a>'
-                            + '</span>'
-                            + '<div class="cf"></div>'
-                            + '</div>'
-                            + '<div class="dashboard-item-content">'
-                            + '<table>'
+                        contentElementNew += ('<div class="dashboard-column-wrapper">' 
+                            + '<div class="dashboard-column ui-droppable ui-sortable">' 
+                            + '<div id="addDivElement' + i + '" class="dashboard-item collapsible deletable draggable">' 
+                            + '<div class="dashboard-item-header ui-sortable-handle">' 
+                            + '<span class="dashboard-item-header-title">' 
+                            + '<a href="javascript:openStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' 
+                            + '<span class="dashboard-item-header-collapse-button icon-arrow-down"></span>' 
+                            + '</a>' 
+                            + '<a href="javascript:closedStyle(\'addDivElement' + i + '\');" class="dashboard-item-collapse">' 
+                            + '<span class="dashboard-item-header-collapse-button icon-arrow-up"></span>' 
+                            + result_list_cluster_tr[i].getElementsByTagName('th')[0].getElementsByTagName('a')[0].innerText 
+                            + '</a>' 
+                            + '</span>' 
+                            + '<div class="cf"></div>' 
+                            + '</div>' 
+                            + '<div class="dashboard-item-content">' 
+                            + '<table>' 
                             + '<tbody>');
                         var result_list_cluster_tr_td_all = result_list_cluster_tr[i].getElementsByTagName('td');
                         if (result_list_cluster_tr_td_all && result_list_cluster_tr_td_all.length > 7) {
                             var clusterSpace = result_list_cluster_tr_td_all[0].getElementsByTagName("input")[0].value;
-                            contentElementNew += ('<tr>'
-                                + '<td style="width: 31%;">Scale</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<tr>'
-                                + '<td style="width: 31%;">Remark</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[2].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<tr>'
-                                + '<td style="width: 31%;">Public</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<tr>'
-                                + '<td style="width: 31%;">Owner</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<tr>'
-                                + '<td style="width: 31%;">Created Time</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<td style="width: 31%;">Built Time</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>'
-                                + '</tr>'
-                                + '<td style="width: 31%;">Status</td>'
-                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[7].innerHTML + '</td>'
-                                + '</tr>'
-                                + '</tr>'
+                            contentElementNew += ('<tr>' 
+                                + '<td style="width: 31%;">Scale</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[1].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<tr>' 
+                                + '<td style="width: 31%;">Remark</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[2].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<tr>' 
+                                + '<td style="width: 31%;">Public</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[3].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<tr>' 
+                                + '<td style="width: 31%;">Owner</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[4].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<tr>' 
+                                + '<td style="width: 31%;">Created Time</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[5].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<td style="width: 31%;">Built Time</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[6].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '<td style="width: 31%;">Status</td>' 
+                                + '<td style="width: 69%;">：&nbsp;&nbsp;' + result_list_cluster_tr_td_all[7].innerHTML + '</td>' 
+                                + '</tr>' 
+                                + '</tr>' 
                                 + '<td colspan="2">'
                                 // + '<a class="button aHrefHover" title="Enter Space" name="index" href="#" onclick="actionSubmitByIdFun(\'enterBtnId' + result_list_cluster_tr_td_all[0].firstElementChild.value + '\')" >Enter</a></td>' 
-                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/clouds/instance/" target="_blank">OPEN IT</a></td>'
+                                + '<a class="button aHrefHover" title="Enter Space" name="index" href="/space/' + clusterSpace + '/clouds/instance/" target="_blank">OPEN IT</a></td>' 
                                 + '</tr>');
                         }
-                        contentElementNew += ('</tbody>'
-                            + '</table>'
-                            + '</div>'
-                            + '</div>'
-                            + '</div>'
+                        contentElementNew += ('</tbody>' 
+                            + '</table>' 
+                            + '</div>' 
+                            + '</div>' 
+                            + '</div>' 
                             + '</div>');
                     }
                 }
@@ -1281,9 +1515,9 @@
             var breadcrumbs_initialized_element = document.getElementsByClassName('breadcrumbs initialized')[0];
             if (breadcrumbs_initialized_element) {
                 breadcrumbs_initialized_element.style.display = "none";
-                breadcrumbs_initialized_element.outerHTML = (breadcrumbs_initialized_element.outerHTML + '<div class="breadcrumbs initialized">'
-                    + '<a href="/engines/cluster/">Spaces</a>'
-                    + '<span class="icon-arrow-right breadcrumbs-separator"></span> New Space'
+                breadcrumbs_initialized_element.outerHTML = (breadcrumbs_initialized_element.outerHTML + '<div class="breadcrumbs initialized">' 
+                    + '<a href="/engines/cluster/">Spaces</a>' 
+                    + '<span class="icon-arrow-right breadcrumbs-separator"></span> New Space' 
                     + '</div>');
             }
             // modify and hide button
@@ -1305,7 +1539,7 @@
                 for (var j = 0; j < select_elements_array.length; j++) {
                     if (select_elements_array[j] && "" === select_elements_array[j].getAttribute('multiple')) {
                         var update_select_obj = {}
-                        // 需要修改的select
+                            // 需要修改的select
                         update_select_obj.select = select_elements_array[j];
                         // 需要修改select的父元素
                         update_select_obj.parent = select_elements_array[j].parentElement;
@@ -1371,9 +1605,9 @@
             var id_public = document.getElementById("id_public");
             var id_public_parent = id_public.parentElement;
             id_public_parent.style.display = "none";
-            id_public_parent.outerHTML = id_public_parent.outerHTML + '<div><label>Public:</label>'
-                + '<input type="radio" id="public_yes_id" onchange="changePublicCheckBox(true)"><label class="vCheckboxLabel">YES</label>'
-                + '<input type="radio" checked="checked" id="public_no_id" onchange="changePublicCheckBox(false)"><label class="vCheckboxLabel">NO</label>'
+            id_public_parent.outerHTML = id_public_parent.outerHTML + '<div><label>Public:</label>' 
+                + '<input type="radio" id="public_yes_id" onchange="changePublicCheckBox(true)"><label class="vCheckboxLabel">YES</label>' 
+                + '<input type="radio" checked="checked" id="public_no_id" onchange="changePublicCheckBox(false)"><label class="vCheckboxLabel">NO</label>' 
                 + '</div>';
         }
         // modify load datasets page
