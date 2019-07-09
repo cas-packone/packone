@@ -399,7 +399,7 @@ class InstanceOperation(OperationModel):
                         output=ins.start()
                     elif self.operation==INSTANCE_OPERATION.reboot.value:
                         output=ins.reboot()
-                    elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.stop.value]:
+                    elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.shutdown.value]:
                         output=ins.stop()
                     if self.is_boot:
                         utils.SSH(self.target.ipv4,
