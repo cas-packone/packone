@@ -235,6 +235,12 @@ def materialize_group(sender,instance,**kwargs):
         for ins in group.instances.all():
             ins.remedy(manual=False)
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
+        if group.status in [models.INSTANCE_STATUS.poweroff, models.INSTANCE_STATUS.shutdown]:
+            GroupOperation(
+                operation=INSTANCE_OPERATION.start.value,
+                target=group,
+                status=OPERATION_STATUS.running.value,
+            ).save()
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)
