@@ -4,7 +4,22 @@
 {% block extrastyle %}
     {{ block.super }}
     <style>
-        #header{
+        .select2-container--default + .select2-container--jet {
+            display: None;
+        }
+        #changelist-form #result_list input.vTextField{
+            max-width: 10em;
+        }
+        #changelist-form #result_list .select2-container--jet{
+            min-width: 6em;
+        }
+        #changelist-form #result_list a.button{
+            min-width: 5em;
+        }
+        #content-main .field-blueprint .select2{
+            min-width: 18.7em;
+        }
+        #branding{
             background-color: rgba(255, 255, 255, 0.95);
         }
         #branding img{
@@ -29,6 +44,14 @@
 {% block extrahead %}
     <link rel="apple-touch-icon" sizes="180x180" href="{% static '/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static '/favicon-16x16.png' %}">
+    <link rel="stylesheet" href="{% static '/css/all.min.css' %}">
+{% endblock %}
+{% block messages %}
+    <ul class="messagelist">
+        <li id='ajax-success' class="success" style="display:none"></li>
+        <li id='ajax-error' class="error" style="display:none"></li>
+    </ul>
+    {{ block.super }}
 {% endblock %}
 {% block branding %}
     {{ block.super }}
@@ -37,4 +60,91 @@
             <img src="{% static '/logo-large.png' %}">
         </a>
     </h1>
+{% endblock %}
+
+{% block nav-global %}
+    <a href="https://github.com/cas-bigdatalab/packone" class="sidebar-link icon">
+        <span class="sidebar-link-label">
+            <span class="sidebar-link-icon">
+                <i class="fab fa-github"></i>
+            </span>
+            {% trans 'Repo' %}
+        </span>
+    </a>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript">
+        // jQuery(function($) {
+        //     $('#changelist-form #result_list').find('input').each(function() {
+        //         $(this).replaceWith("<span>" + this.value + "</span>");
+        //     });
+        // });
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        jQuery(function($) {
+            function operate(e){
+                e.preventDefault();
+                $(this).html($(this).text()+'ing')
+                href=$(this).attr('href')
+                $(this).removeAttr('href').unbind('click');
+                postData={
+                    operation: $(this).data("op"),
+                    target: $(this).data("id")
+                }
+                $.ajax({
+                    type: "POST",
+                    headers:{"X-CSRFToken": csrftoken},
+                    url: href,
+                    data: postData,
+                    timeout : 150000
+                })
+                .done(function (data) {
+                    window.location.replace(href.split('api')[1].slice(0,-2)+"/"+data.id+'/change');
+                })
+                .fail(function(xhr, ajaxOptions, thrownError){
+                    //what to do in error
+                    $('#ajax-error')
+                    .html(thrownError)
+                    .fadeIn(800).fadeOut(5000);
+                });
+            }
+            $('form[method=post] a.button[data-op]').click(operate);
+            function umount(e){
+                e.preventDefault();
+                href=$(this).attr('href')
+                $.ajax({
+                    type: "DELETE",
+                    headers:{"X-CSRFToken": csrftoken},
+                    url: href,
+                    timeout : 15000
+                })
+                .done(function (data) {
+                    location.reload();
+                })
+                .fail(function(xhr, ajaxOptions, thrownError){
+                    $('#ajax-error')
+                    .html(thrownError)
+                    .fadeIn(800).fadeOut(5000);
+                })
+            }
+            $('form[method=post] a.button[umount]').click(umount);
+        });
+    </script>
 {% endblock %}
