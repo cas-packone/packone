@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
-from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
+from .models import INSTANCE_STATUS, INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
 
 #TODO use singleton
@@ -235,7 +235,7 @@ def materialize_group(sender,instance,**kwargs):
         for ins in group.instances.all():
             ins.remedy(manual=False)
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
-        if group.status in [models.INSTANCE_STATUS.poweroff, models.INSTANCE_STATUS.shutdown]:
+        if group.status in [INSTANCE_STATUS.poweroff, INSTANCE_STATUS.shutdown]:
             GroupOperation(
                 operation=INSTANCE_OPERATION.start.value,
                 target=group,
