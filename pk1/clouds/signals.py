@@ -235,7 +235,7 @@ def materialize_group(sender,instance,**kwargs):
         for ins in group.instances.all():
             ins.remedy(manual=False)
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
-        if group.status in [INSTANCE_STATUS.poweroff, INSTANCE_STATUS.shutdown]:
+        if group.status in [INSTANCE_STATUS.poweroff.value, INSTANCE_STATUS.shutdown.value]:
             GroupOperation(
                 operation=INSTANCE_OPERATION.start.value,
                 target=group,

@@ -88,7 +88,7 @@ class SSH:
     def __init__(self,host,credential):
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        credential=credential
+        self.credential=credential
         if 'password' not in credential:
             credential['password'] = None
         if 'port' not in credential:
@@ -126,7 +126,9 @@ class SSH:
             file.write(cmd)
             file.flush()
             ftp.close()
-            stdin, stdout, stderr = self.client.exec_command('sudo -uroot bash /tmp/packone.bash')
+            cmd='sudo -uroot ' if self.credential['username']!='root' else ''
+            cmd+='bash /tmp/packone.bash'
+            stdin, stdout, stderr = self.client.exec_command(cmd)
         except paramiko.SSHException as e:
             err='EXCEPTION MESSAGE:\n'+str(e)
             out=''

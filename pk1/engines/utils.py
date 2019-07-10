@@ -21,8 +21,8 @@ def remedy_scale_ambari_fast_init():
         'reboot\n' \
         'if [ `hostname` == "master1.packone" ]; then\n' \
         '    sleep 60\n' \
-        '    pip --disable-pip-version-check install pk1-remedy\n' \
-        '    ambari-service-start master1.packone:8080\n' \
+        '    pip --disable-pip-version-check install ambari\n' \
+        '    ambari master1.packone:8080 service start\n' \
         'fi\n' \
 
 def remedy_scale_ambari_fast_scale_out():
@@ -35,8 +35,8 @@ def remedy_scale_ambari_fast_scale_out():
         "echo 'CLASS_PATH=.:$JAVA_HOME/lib:$JRE_HOME/lib'>>/etc/profile.d/packone-java.sh\n" \
         "echo 'PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH'>>/etc/profile.d/packone-java.sh\n" \
         "reboot\n" \
-        "pip --disable-pip-version-check install pk1-remedy\n" \
-        "ambari-host-clone master1.packone:8080 slave.packone `hostname`\n" \
+        "pip --disable-pip-version-check install ambari\n" \
+        "ambari master1.packone:8080 host clone slave.packone `hostname`\n" \
 
 def remedy_scale_ambari_fast_scale_in():
-    return '#ambari-host-delete master1.packone:8080 `hostname`'
+    return '#ambari master1.packone:8080 host delete `hostname`'
