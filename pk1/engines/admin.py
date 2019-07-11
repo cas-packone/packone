@@ -36,16 +36,10 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         if not obj.ready: return None
         return format_html('<a href="{}" target="_blank" class="button">Manage</a>'.format(obj.portal))
     def instances(self,object):
-        return format_html('<br/>'.join([get_url(ins) for ins in object.get_instances()]))  
-    def action(self, obj):
-        if obj.deleting:
-            if not get_current_user().is_superuser:
-                return 'deleting'
-        op_url=reverse('clusteroperation-list')
-        return self.action_button(obj,op_url)
+        return format_html('<br/>'.join([get_url(ins) for ins in object.get_instances()]))
     search_fields = ('name','scale__name')+OwnershipModelAdmin.search_fields
     list_filter = (('scale', admin.RelatedOnlyFieldListFilter),)+OwnershipModelAdmin.list_filter
-    extra=('access','action','instances')
+    extra=('access','instances')
     def get_list_display_exclude(self, request, obj=None):
         if request.user.is_superuser: return ('instances',)
         return ('owner','deleting','instances')
@@ -57,6 +51,14 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 status=models.OPERATION_STATUS.running.value
             ).save()
     start.short_description = "Start selected clusters"
+    def stop(modeladmin, request, queryset):
+        for cluster in queryset:
+            models.ClusterOperation(
+                target=cluster,
+                operation=models.INSTANCE_OPERATION.poweroff.value,
+                status=models.OPERATION_STATUS.running.value
+            ).save()
+    stop.short_description = "Stop selected clusters"
     def materialize(modeladmin, request, queryset):
         for cluster in queryset:
             if not cluster.name.startswith('bootstrap.'): continue
@@ -120,7 +122,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[start,materialize,scale_out,scale_in,destroy]
+    actions=[start,stop,materialize,scale_out,scale_in,destroy]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):
