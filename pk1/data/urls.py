@@ -16,5 +16,4 @@ urlpatterns = [
         views.DataInstanceEngineAutocompleteView.as_view(),
         name='datainstanceengine-autocomplete',
     ),
-    re_path(r'state/', views.space_state),
 ]

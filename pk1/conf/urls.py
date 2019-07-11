@@ -19,6 +19,8 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from data import views
+
 admin.site.site_header = 'PackOne Console' # default: "Django Administration"
 admin.site.index_title = 'Dashboard' # default: "Site administration"
 admin.site.site_title = 'PackOne Console' # default: "Django site admin"
@@ -33,7 +35,8 @@ urlpatterns = [
     path('api/clouds/', include('clouds.urls')),
     path('api/engines/', include('engines.urls')),
     path('api/data/', include('data.urls')),
-    re_path(r'^space/[0-9]+/api/data/', include('data.urls')),
+
+    re_path(r'^space/[0-9]+/api/data/state/', views.space_state),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_ROOT}),
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
