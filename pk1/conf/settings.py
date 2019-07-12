@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'simpleui',
+    # 'simpleui',
     'dal',
     'dal_select2',
     'clouds.apps.CloudsConfig',
