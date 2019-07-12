@@ -355,6 +355,8 @@
     var space_id = document.getElementById("current-space-id").innerHTML;
     var space_name = document.getElementById("current-space").innerHTML;
     var current_space_portal = document.getElementById("current-space-portal").innerHTML;
+    var piflow_id_port = "http://10.0.86.131:6001";
+    var zeppelin_id_port = "http://10.0.88.78:9995";
     var space_home_url = '';
     if (space_id) {
         space_home_url = '/space/' + space_id;
@@ -961,14 +963,14 @@
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + 'Pipeline');
                     }
-                    loadPipeline('http://10.0.86.131:6001/piflow-web/web/flowList?first');
+                    loadPipeline(piflow_id_port + '/piflow-web/web/flowList?first');
                 } else if ("?ZeppelinNotebook" === window.location.search || "?ZeppelinNotebook#" === window.location.search) {
                     if (breadcrumbs_initialized_html_element) {
                         breadcrumbs_initialized_html_element.innerHTML = ('<a href="/clouds/instance/">Home</a>' 
                             + '<span class="icon-arrow-right breadcrumbs-separator"></span>' 
                             + 'Notebook');
                     }
-                    getNoteBookList('http://10.0.88.78:9995');
+                    getNoteBookList(zeppelin_id_port);
                 } else if ("?logHome" === window.location.search || "?logHome#" === window.location.search) {
                     var cf_children = document.getElementsByClassName("dashboard-container cf")[0].children;
                     if (cf_children && cf_children.length > 0) {
@@ -1041,15 +1043,15 @@
                         + '<table style="width: 100%;">' 
                         + '<tr style="display: none;"><td>' 
                         + '<table id="metics_table_id" style="width: 100%;">' 
-                        + '<tr>' 
-                        + '<th style="width: 33.33%;"><span>Cluster Overview</span></th>' 
-                        + '<th style="width: 33.33%;"></th>' 
-                        + '<th style="width: 33.33%;"></th>' 
+                        + '<tr id="metics_table_tr_id">' 
+                        + '<th style="width: 50%;"><span>Cluster Overview</span></th>' 
+                        + '<th style="width: 50%;"></th>' 
+                        //+ '<th style="width: 33.33%;"></th>' 
                         + '</tr>' 
                         + '</table>' 
                         + '</td></tr>' 
                         + '<tr style="display: none;"><td>' 
-                        + '<table id="table_id_dataset" style="width: 100%;">' 
+                        + '<table id="dataset_table_id" style="width: 100%;">' 
                         + '<tr>' 
                         + '<th style="width: 50%;"><span>Dataset Overview</span></th>' 
                         + '<th style="width: 50%;"></th>' 
@@ -1065,7 +1067,7 @@
                         + '</table>' 
                         + '</td></tr>' 
                         + '<tr style="display: none;"><td>' 
-                        + '<table id="table_id_instance" style="width: 100%;">' 
+                        + '<table id="instance_table_id" style="width: 100%;">' 
                         + '<tr>' 
                         + '<th style="width: 100%;"><span>Instance Overview</span></th>' 
                         + '</tr>' 
@@ -1077,20 +1079,15 @@
                         + '</table>' 
                         + '</td></tr>' 
                         + '<tr style="display: none;"><td>' 
-                        + '<table id="table_id_pipeline_1" style="width: 100%;">' 
-                        + '<tr>' 
+                        + '<table id="pipeline_table_id_1" style="width: 100%;">' 
+                        + '<tr id="pipeline_table_tr_id_1">' 
                         + '<th style="width: 100%;"><span>Pipeline Overview</span></th>' 
-                        + '</tr>' 
-                        + '<tr>' 
-                        + '<td>' 
-                        + '<div id="pipeline_1" style="height: 300px;"></div>' 
-                        + '</td>' 
                         + '</tr>' 
                         + '</table>' 
                         + '</td></tr>' 
                         + '<tr style="display: none;"><td>' 
-                        + '<table id="table_id_notebook_1" style="width: 100%;">' 
-                        + '<tr>' 
+                        + '<table id="notebook_table_id_1" style="width: 100%;">' 
+                        + '<tr id="notebook_table_tr_id_1">' 
                         + '<th style="width: 100%;"><span>Notebook Overview</span></th>' 
                         + '</tr>' 
                         + '</table>' 
@@ -1106,94 +1103,226 @@
                             if (metics_array && metics_array.length > 0) {
                                 var metics_table = document.getElementById("metics_table_id");
                                 metics_table.parentElement.parentElement.style.display="";
+                                var metics_table_tr = document.getElementById("metics_table_tr_id");
                                 var metics_table_tr_all = "";
                                 for (var i = 0; i < metics_array.length; i++) {
-                                    if((i + 1) % 3 === 1){
+                                    if((i + 1) % 2 === 1){
                                         metics_table_tr_all += '<tr>' ;
                                     }
-                                    metics_table_tr_all += ('<td style="width: 33.33%;"><div id="disk' + i + '" style="height: 300px;"></div></td>');
-                                    if((i + 1) % 3 === 1 && i !== 0){
+                                    metics_table_tr_all += ('<td style="width: 50%;"><div id="disk' + i + '" style="height: 300px;"></div></td>');
+                                    if((i + 1) % 2 === 1 && i !== 0){
                                         metics_table_tr_all += '</tr>' ;
                                     }
                                 }
-                                metics_table.innerHTML = (metics_table.innerHTML + metics_table_tr_all);
+                                metics_table_tr.outerHTML = (metics_table_tr.outerHTML + metics_table_tr_all);
                                 for (var i = 0; i < metics_array.length; i++) {
 
                                     var disk_div_element = document.getElementById('disk' + i);
                                     var diskChart = echarts.init(disk_div_element);
 
                                     var metics_array_i = metics_array[i];
-                                    console.info(metics_array_i);
                                     var option = {
                                         title: {
-                                            text: metics_array_i.Hosts.host_name + ' 硬盘统计',
+                                            text: metics_array_i.Hosts.host_name + ' 统计',
                                             //subtext: '虚构数据',
-                                            left: 'left'
+                                            left: 'center'
                                         },
                                         color: ['#99d2dd', '#1c7099'],
                                         tooltip: {
                                             trigger: 'item',
-                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                            formatter: "{a} <br/>{b} : {c}"
                                         },
-                                        series: [{
-                                            name: '磁盘使用率：',
-                                            type: 'pie',
-                                            //radius: '55%',
-                                            center: ['50%', '60%'],
-                                            data: [{
-                                                value: metics_array_i.metrics.disk.disk_free,
-                                                name: '磁盘空闲'
-                                            }, {
-                                                value: (metics_array_i.metrics.disk.disk_total - metics_array_i.metrics.disk.disk_free).toFixed(2),
-                                                name: '磁盘使用'
-                                            }],
-                                            itemStyle: {
-                                                emphasis: {
-                                                    show: true,
-                                                    textStyle: {
-                                                        fontSize: '30',
-                                                        fontWeight: 'bold'
-                                                    }
-                                                },
-                                                normal: {
-                                                    position: 'center',
-                                                    label: {
-                                                        formatter: function(a, b, c, d) {
-                                                            //return a.data.name + '：' + (a.data.value / 7601 * 100).toFixed(2) + '%<br>';
-                                                            return a.data.name + '：' + a.data.value + 'GB ';
-                                                        },
+                                        series: [
+                                            {
+                                                name: '磁盘使用率：',
+                                                type: 'pie',
+                                                radius: '75%',
+                                                center: ['30%', '55%'],
+                                                data: [{
+                                                    value: metics_array_i.metrics.disk.disk_free,
+                                                    name: '磁盘空闲'
+                                                }, {
+                                                    value: (metics_array_i.metrics.disk.disk_total - metics_array_i.metrics.disk.disk_free).toFixed(2),
+                                                    name: '磁盘使用'
+                                                }],
+                                                itemStyle: {
+                                                    emphasis: {
+                                                        show: true,
                                                         textStyle: {
-                                                            baseline: 'top',
-                                                            fontSize: '12',
+                                                            fontSize: '30',
                                                             fontWeight: 'bold'
                                                         }
+                                                    },
+                                                    normal: {
+                                                        position: 'center',
+                                                        label: {
+                                                            formatter: function(a, b, c, d) {
+                                                                //return a.data.name + '：' + (a.data.value / 7601 * 100).toFixed(2) + '%<br>';
+                                                                return a.data.name + '：' + a.data.value + 'GB ';
+                                                            },
+                                                            textStyle: {
+                                                                baseline: 'top',
+                                                                fontSize: '12',
+                                                                fontWeight: 'bold'
+                                                            }
+                                                        }
+                                                    },
+                                                }
+                                            },
+                                            {
+                                                name: '内存已使用(GB)',
+                                                type: 'gauge',
+                                                radius: '75%',
+                                                center: ['70%', '60%'],
+                                                min: 0,
+                                                max: (metics_array_i.metrics.memory.mem_total/(1024*1024)).toFixed(1),
+                                                axisLine: {            // 坐标轴线
+                                                    lineStyle: {       // 属性lineStyle控制线条样式
+                                                        width: 10
                                                     }
                                                 },
+                                                axisTick: {            // 坐标轴小标记
+                                                    length: 15,        // 属性length控制线长
+                                                    lineStyle: {       // 属性lineStyle控制线条样式
+                                                        color: 'auto'
+                                                    }
+                                                },
+                                                splitLine: {           // 分隔线
+                                                    length: 20,         // 属性length控制线长
+                                                    lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                                                        color: 'auto'
+                                                    }
+                                                },
+                                                //detail: {formatter:'{value}'},
+                                                data: [{
+                                                    value: ((metics_array_i.metrics.memory.mem_total - metics_array_i.metrics.memory.mem_free)/(1024*1024)).toFixed(2), 
+                                                    name: '内存(GB)'
+                                                    }]
                                             }
-                                        }]
+                                        ]
                                     };
                                     diskChart.setOption(option);
                                 }
                             }
 
                             var data_sets_type_cnt = data.dataset.type_cnt;
-                            var is_none_datesets = false;
                             if (data_sets_type_cnt && data_sets_type_cnt.length > 0) {
-                                is_none_datesets = true;
+                                document.getElementById("dataset_table_id").parentElement.parentElement.style.display = "";
+                                var dataset_div_element_1 = document.getElementById('dataset_1');
+                                var dataset_chart_1_option_data_x = [];
+                                var dataset_chart_1_option_data_y = [];
+                                for (var i = 0; i < data_sets_type_cnt.length; i++) {
+                                    dataset_chart_1_option_data_x.push(data_sets_type_cnt[i].type);
+                                    dataset_chart_1_option_data_y.push(data_sets_type_cnt[i].cnt);
+                                }
+                                var dataset_chart_1 = echarts.init(dataset_div_element_1);
+                                var dataset_chart_1_option = {
+                                    title: {
+                                        text: '各种类型数据数量',
+                                        subtext: '',
+                                        left: 'center'
+                                    },
+                                    color: ['#3398DB'],
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                                            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                                        }
+                                    },
+                                    grid: {
+                                        left: '3%',
+                                        right: '4%',
+                                        bottom: '3%',
+                                        containLabel: true
+                                    },
+                                    xAxis: [{
+                                        type: 'category',
+                                        //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                        data: dataset_chart_1_option_data_x,
+                                        axisTick: {
+                                            alignWithLabel: true
+                                        }
+                                    }],
+                                    yAxis: [{
+                                        type: 'value',
+                                        axisLabel:{formatter:'{value}'}
+                                    }],
+                                    series: [{
+                                        name: '大小',
+                                        type: 'bar',
+                                        barWidth: '60%',
+                                        //data: [10, 51, 100, 334, 390, 330, 110]
+                                        data: dataset_chart_1_option_data_y
+                                    }]
+                                };
+                                dataset_chart_1.setOption(dataset_chart_1_option);
                             }
 
                             var data_sets_type_size = data.dataset.type_size;
                             if (data_sets_type_size && data_sets_type_size.length > 0) {
-                                is_none_datesets = true;
-                            }
-
-                            if (is_none_datesets) {
-                                document.getElementById("table_id_dataset").parentElement.parentElement.style.display = "";
+                                document.getElementById("dataset_table_id").parentElement.parentElement.style.display = "";
+                                var dataset_div_element_2 = document.getElementById('dataset_2');
+                                var dataset_chart_2_option_data_x = [];
+                                var dataset_chart_2_option_data_y = [];
+                                for (var i = 0; i < data_sets_type_size.length; i++) {
+                                    dataset_chart_2_option_data_x.push(data_sets_type_size[i].type);
+                                    dataset_chart_2_option_data_y.push(data_sets_type_size[i].size);
+                                }
+                                var dataset_chart_2 = echarts.init(dataset_div_element_2);
+                                var dataset_chart_2_option = {
+                                    title: {
+                                        text: '各种类型数据占用空间',
+                                        subtext: '',
+                                        left: 'center'
+                                    },
+                                    color: ['#3398DB'],
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                                            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                                        }
+                                    },
+                                    grid: {
+                                        left: '3%',
+                                        right: '4%',
+                                        bottom: '3%',
+                                        containLabel: true
+                                    },
+                                    xAxis: [{
+                                        type: 'category',
+                                        //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                        data: dataset_chart_2_option_data_x,
+                                        axisTick: {
+                                            alignWithLabel: true
+                                        }
+                                    }],
+                                    yAxis: [{
+                                        type: 'value',
+                                        axisLabel:{formatter:'{value} KB'}
+                                    }],
+                                    series: [{
+                                        name: '大小：',
+                                        type: 'bar',
+                                        barWidth: '60%',
+                                        //data: [10, 52, 200, 334, 390, 330, 220]
+                                        data: dataset_chart_2_option_data_y,
+                                        normal: {
+                                            position: 'center',
+                                            label: {
+                                                formatter: function(a, b, c, d) {
+                                                    //return a.data.name + '：' + (a.data.value / 7601 * 100).toFixed(2) + '%<br>';
+                                                    return a.data.name + '：' + a.data.value + 'GB ';
+                                                }
+                                            }
+                                        },
+                                    }]
+                                };
+                                dataset_chart_2.setOption(dataset_chart_2_option);
                             }
 
                             var data_instance_type_cnt = data.instance.type_cnt;
                             if (data_instance_type_cnt && data_instance_type_cnt.length > 0) {
-                                document.getElementById("table_id_instance").parentElement.parentElement.style.display = "";
+                                document.getElementById("instance_table_id").parentElement.parentElement.style.display = "";
                                 var instance_div_element_1 = document.getElementById('instance_1');
                                 var instance_chart_1_option_data_x = [];
                                 var instance_chart_1_option_data_y = [];
@@ -1243,18 +1372,40 @@
                                 instance_chart_1.setOption(instance_chart_1_option);
                             }
                         });
-                        $.get("http://10.0.88.78:9995/api/notebook", function(result) {
+                        $.get(piflow_id_port + "/piflow-web/api/flowList", function(result) {
+                            if (result) {
+                                var rtnMap = JSON.parse(result);
+                                console.log(rtnMap);
+                                if (1 === rtnMap.code) {
+                                    var result_data = rtnMap.data;
+                                    if (result_data && result_data.length > 0) {
+                                        var pipeline_1_table = document.getElementById("pipeline_table_id_1");
+                                        pipeline_1_table.parentElement.parentElement.style.display="";
+                                        var pipeline_1_table_tr = document.getElementById("pipeline_table_tr_id_1");
+                                        
+                                        var pipeline_table_element = '';
+                                        for (var i = 0; i < result_data.length; i++) {
+                                            pipeline_table_element += ('<tr><td>' + result_data[i].name + '</td></tr>')
+                                        }
+                                        pipeline_1_table_tr.outerHTML = (pipeline_1_table_tr.outerHTML + pipeline_table_element);
+                                    }
+                                }
+                            }
+                        });
+                        $.get(zeppelin_id_port + "/api/notebook", function(result) {
                             if (result) {
                                 if ("OK" === result.status) {
                                     var result_body = result.body;
                                     if (result_body && result_body.length > 0) {
-                                        var notebook_1_table = document.getElementById("table_id_notebook_1");
+                                        var notebook_1_table = document.getElementById("notebook_table_id_1");
                                         notebook_1_table.parentElement.parentElement.style.display="";
+                                        var notebook_1_table_tr = document.getElementById("notebook_table_tr_id_1");
+                                        
                                         var notebook_table_element = '';
                                         for (var i = 0; i < result_body.length; i++) {
                                             notebook_table_element += ('<tr><td>' + result_body[i].name + '</td></tr>')
                                         }
-                                        notebook_1_table.innerHTML = (notebook_1_table.innerHTML + notebook_table_element);
+                                        notebook_1_table_tr.outerHTML = (notebook_1_table_tr.outerHTML + notebook_table_element);
                                     }
                                 }
                             }
