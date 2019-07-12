@@ -15,6 +15,7 @@ class Driver(object):
         self.volumes=VolumeManager(self)
         self.images=self._nova_client.glance
         self.flavors=self._nova_client.flavors
+        self.keypairs=self._nova_client.keypairs#'create'
 
 class InstanceManager(object):
     def __init__(self, driver):
@@ -30,7 +31,7 @@ class InstanceManager(object):
             flavor=template_id,
             security_groups=[self.driver._credential['security_group']],
             nics=[{'net-id':self.driver._credential['net-id']}],
-            key_name=self.driver._credential['key_name'],
+            key_name='packone',
             # userdata="#cloud-config\n" \
             #         "ssh_pwauth: true\n" \
             #         "chpasswd:\n" \
