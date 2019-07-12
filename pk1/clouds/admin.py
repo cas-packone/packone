@@ -17,7 +17,7 @@ class CloudAdmin(StaticModelAdmin):
     list_filter = ('_driver',)+StaticModelAdmin.list_filter
     def get_exclude(self, request, obj=None):
         if obj and obj.owner!=request.user:
-            return ('_platform_credential','_instance_credential')
+            return ('_platform_credential','instance_credential_password', 'instance_credential_private_key')
         return ()
     def import_image(modeladmin, request, queryset):
         for cloud in queryset:
@@ -27,7 +27,11 @@ class CloudAdmin(StaticModelAdmin):
         for cloud in queryset:
             cloud.import_template()
     import_template.short_description = "refresh templates from selected clouds"
-    actions = [import_image,import_template]
+    def bootstrap(modeladmin, request, queryset):
+        for cloud in queryset:
+            cloud.bootstrap()
+    bootstrap.short_description = "bootstrap a big data cluster scale for selected clouds"
+    actions = [import_image,import_template, bootstrap]
 
 class CloudStaticModelAdmin(StaticModelAdmin):
     search_fields = ('cloud__name',)+StaticModelAdmin.search_fields
@@ -214,7 +218,7 @@ class InstanceOperationAdmin(OperationAdmin):
         return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
         from user.utils import get_space
-        return (super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))) & Q(target__group__cluster=get_space())
+        return (super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))) & Q(target__group__cluster=get_space()) & ~Q(status=models.OPERATION_STATUS.success.value)
     def has_delete_permission(self, request, obj=None):
         return super().has_delete_permission(request, obj) or obj.target.cloud.owner == request.user
 

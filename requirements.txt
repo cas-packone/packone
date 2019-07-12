@@ -1,10 +1,9 @@
 uwsgi
 coreapi==2.3.3
-Django==2.2.2
+django>=2.2.3
 django-autocomplete-light==3.3.2
 django-cors-headers==2.4.0
 django-filter==2.0.0
-django-jet==1.0.8
 djangorestframework==3.9.4
 djangorestframework-simplejwt==3.3
 paramiko==2.4.2
@@ -13,4 +12,5 @@ python-cinderclient==4.1.0
 python-novaclient==11.1.0
 scp==0.13.0
 django-admin-auto
+django-simpleui
 ambari

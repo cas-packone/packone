@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from .models import Cloud, Image, Instance, Volume, Mount, InstanceOperation, Group, GroupOperation
-from .models import INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
+from .models import INSTANCE_STATUS, INSTANCE_OPERATION, OPERATION_STATUS, VOLUME_STATUS
 from . import utils
 from user.utils import get_space
 
@@ -16,11 +16,9 @@ from user.utils import get_space
 
 from django.dispatch import Signal
 materialized = Signal(providing_args=["instance","name"])
-destroyed = Signal(providing_args=["instance","name"])
 tidied = Signal(providing_args=["instance","name"])
 selected = Signal(providing_args=["instance","name"])
-from .models import monitored
-from .models import executed
+from .models import bootstraped, monitored, executed, destroyed
 
 @receiver(materialized)
 @receiver(destroyed)
@@ -28,14 +26,19 @@ from .models import executed
 @receiver(tidied)
 @receiver(selected)
 @receiver(executed)
+@receiver(bootstraped)
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
-@receiver(post_save, sender=Cloud)
-def import_image(sender,instance,**kwargs):
+@receiver(post_save, sender=Cloud)#TODO remove reverse dependency
+def bootstrap(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
+        (pubkey,prikey)=utils.gen_ssh_key()
+        instance.driver.keypairs.create(name='packone', public_key=pubkey)
+        instance.instance_credential_private_key=prikey
+        instance.save()
         
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):
@@ -83,6 +86,7 @@ def materialize_instance(sender, instance, **kwargs):
         hosts='###instance###\n'+instance.hosts_record
         if instance.cloud.hosts: hosts=hosts+'\n###cloud###\n'+instance.cloud.hosts
         instance.update_remedy_script(utils.remedy_script_hosts_add(hosts, overwrite=True),heading=True)
+        instance.remedy(manual=False)
         materialized.send(sender=sender, instance=instance, name='materialized')
     transaction.on_commit(Thread(target=materialize).start)
 
@@ -236,6 +240,12 @@ def materialize_group(sender,instance,**kwargs):
         for ins in group.instances.all():
             ins.remedy(manual=False)
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
+        if group.status in [INSTANCE_STATUS.poweroff.value, INSTANCE_STATUS.shutdown.value]:
+            GroupOperation(
+                operation=INSTANCE_OPERATION.start.value,
+                target=group,
+                status=OPERATION_STATUS.running.value,
+            ).save()
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)

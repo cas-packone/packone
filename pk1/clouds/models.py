@@ -19,12 +19,16 @@ for importer, modname, ispkg in pkgutil.iter_modules((settings.BASE_DIR+'/clouds
     driver='clouds.drivers.{}'.format(modname)
     drivers.append((driver,driver))
 
+bootstraped = Signal(providing_args=["instance","name"])
+
 import importlib, json
 class Cloud(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
     _platform_credential=models.TextField(max_length=5120,blank=True,null=True)
-    _instance_credential=models.TextField(max_length=2048,blank=True,null=True)    
-    hosts=models.TextField(max_length=5120,blank=True,null=True)
+    instance_credential_username=models.CharField(max_length=50, default='root')
+    instance_credential_password=models.CharField(max_length=50,blank=True,null=True)
+    instance_credential_private_key=models.TextField(max_length=2048,blank=True,null=True,editable=False)
+    hosts=models.TextField(max_length=5120,default='127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1 localhost localhost.localdomain localhost6 localhost6.localdomain6',blank=True,null=True)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
     @cached_property
     def driver(self):
@@ -32,9 +36,6 @@ class Cloud(StaticModel):
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
-    @cached_property
-    def instance_credential(self):
-        return json.loads(self._instance_credential)
     def import_image(self):
         for img in self.driver.images.list():
             name=img.name
@@ -50,7 +51,8 @@ class Cloud(StaticModel):
                 owner=self.owner,
                 remark='auto imported',
                 enabled=self.enabled,
-                public=self.public
+                public=self.public,
+                created_time=img.created_at
             ).save()
     def import_template(self):
         for tpl in self.driver.flavors.list():
@@ -67,22 +69,82 @@ class Cloud(StaticModel):
                 enabled=self.enabled,
                 public=self.public
             ).save()
-    def create_blueprint(self):
-        self.driver.images.get
-        for tpl in self.driver.flavors.list():
-            id=tpl.id
-            if InstanceTemplate.objects.filter(cloud=self, access_id=id).exists(): continue
-            InstanceTemplate(
-                access_id=id,
-                name=tpl.name,
-                mem=tpl.ram,
-                vcpu=tpl.vcpus,
-                cloud=self,
-                owner=self.owner,
-                remark='auto imported',
-                enabled=self.enabled,
-                public=self.public
-            ).save()
+    def bootstrap(self):#TODO diss rely on centos7
+        img=self.image_set.filter(name__iregex=r'CentOS.*?7.*?GenericCloud').order_by('-created_time').first()
+        if not img: raise Exception('image CentOS.*?7.*?GenericCloud is required!')
+        flavor=self.instancetemplate_set.filter(mem__gte=8192,vcpu__gte=2).order_by('mem', 'vcpu').first()
+        if not flavor: raise Exception('a flavor(mem>=8192, vcpus>=2) is required!')
+        from .utils import remedy_image_ambari_agent, remedy_image_ambari_server
+        image_ambari_agent, created=Image.objects.get_or_create(
+            name='packone-bootstrap-ambari-agent',
+            parent=img,
+            access_id=img.access_id,
+            cloud=self,
+            owner=self.owner,
+            remark='auto created',
+            _remedy_script=remedy_image_ambari_agent()
+        )
+        image_ambari_server, created=Image.objects.get_or_create(
+            name='packone-bootstrap-ambari-server',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            cloud=self,
+            owner=self.owner,
+            remark='auto created',
+            _remedy_script=remedy_image_ambari_server()
+        )
+        image_master1, created=Image.objects.get_or_create(
+            name='packone-bootstrap-master1',
+            parent=image_ambari_server,
+            access_id=img.access_id,
+            hostname='master1.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        image_master2, created=Image.objects.get_or_create(
+            name='packone-bootstrap-master2',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            hostname='master2.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        image_slave, created=Image.objects.get_or_create(
+            name='packone-bootstrap-slave',
+            parent=image_ambari_agent,
+            access_id=img.access_id,
+            hostname='slave.packone',
+            owner=self.owner,
+            remark='auto created',
+            cloud=self
+        )
+        blueprint_master1, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-master1',
+            cloud=self,
+            template=flavor,
+            image=image_master1,
+            remark='auto created',
+            owner=self.owner
+        )
+        blueprint_master2, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-master2',
+            cloud=self,
+            template=flavor,
+            image=image_master2,
+            remark='auto created',
+            owner=self.owner
+        )
+        blueprint_slave, created=InstanceBlueprint.objects.get_or_create(
+            name='packone-bootstap-slave',
+            cloud=self,
+            template=flavor,
+            image=image_slave,
+            remark='auto created',
+            owner=self.owner
+        )
+        bootstraped.send(sender=self.__class__, instance=self, name='bootstraped')
             
 def clouds_of_user(self):
     return Cloud.objects.filter(
@@ -92,8 +154,8 @@ def clouds_of_user(self):
 User.clouds=clouds_of_user
 
 class Image(StaticModel):
-    name=models.CharField(max_length=50)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    name=models.CharField(max_length=500)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.PROTECT,blank=True,null=True)
@@ -123,8 +185,8 @@ class Image(StaticModel):
         return ins
 
 class InstanceTemplate(StaticModel):#TODO support root volume resize
-    name=models.CharField(max_length=50)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    name=models.CharField(max_length=500)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     mem=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
@@ -135,8 +197,8 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
         return "{}/vcpu:{},mem:{}".format(self.name,self.vcpu,self.mem)
 
 class InstanceBlueprint(StaticModel):
-    name=models.CharField(max_length=50)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    name=models.CharField(max_length=500)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     template=models.ForeignKey(InstanceTemplate,on_delete=models.PROTECT)
     image=models.ForeignKey(Image,on_delete=models.PROTECT,related_name="instance_blueprints")
     volume_capacity=models.IntegerField(validators=[MinValueValidator(0)],default=0)
@@ -237,11 +299,7 @@ class Instance(models.Model,OperatableMixin):
         return self.ipv4+' '+hostnames
     @property
     def mountable(self):
-        #TODO get mount condition from driver
-        if self.status in [
-            INSTANCE_STATUS.poweroff.value,
-            INSTANCE_STATUS.shutdown.value
-        ]: return True
+        if self.status in self.cloud.driver.instances.mountable_status: return True
         if self.status==INSTANCE_STATUS.building.value and self.ready: return True
         return False
     @property
@@ -333,20 +391,21 @@ class InstanceOperation(OperationModel):
     def execute(self):
         def perform(self=self):
             from . import utils
+            import traceback
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
-                    ins=self.target.cloud.driver.instances.get(self.target.uuid)
+                    ins=self.target.cloud.driver.instances.get(str(self.target.uuid))
                     if self.operation==INSTANCE_OPERATION.start.value:
                         output=ins.start()
                     elif self.operation==INSTANCE_OPERATION.reboot.value:
                         output=ins.reboot()
-                    elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.stop.value]:
+                    elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.shutdown.value]:
                         output=ins.stop()
                     if self.is_boot:
-                        utils.SSH(self.target.ipv4,
-                            self.target.cloud.instance_credential
-                        ).close() #to wait booting finished
+                        cloud=self.target.cloud
+                        utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key).close() #to wait booting finished
                 except Exception as e:
+                    traceback.print_tb(e.__traceback__)
                     self.status=OPERATION_STATUS.failed.value
                     self.log='EXCEPTION MESSAGE:\n'+str(e)
                 else:
@@ -358,17 +417,21 @@ class InstanceOperation(OperationModel):
                     self.status=OPERATION_STATUS.failed.value
                 else:
                     try:
-                        ssh=utils.SSH(self.target.ipv4, self.target.cloud.instance_credential)
+                        cloud=self.target.cloud
+                        ssh=utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key)
                         out, err = ssh.exec_batch(self.script)
                         self.log=out+err
                         self.status=OPERATION_STATUS.failed.value if err else OPERATION_STATUS.success.value
                     except Exception as e:
+                        traceback.print_tb(e.__traceback__)
                         self.log='EXCEPTION MESSAGE:\n'+str(e)
                         self.status=OPERATION_STATUS.failed.value
             self.completed_time=now()
             self.save()
             executed.send(sender=InstanceOperation, instance=self, name='executed')
         Thread(target=perform).start()
+
+destroyed = Signal(providing_args=["instance","name"])
 
 class Group(models.Model,M2MOperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
@@ -430,6 +493,7 @@ class Group(models.Model,M2MOperatableMixin):
                 ).save()
                 time.sleep(0.1)
         else:
+            destroyed.send(sender=Group, instance=self, name='destroyed')
             super().delete(*args, **kwargs)
 
 class GroupOperation(M2MOperationModel):

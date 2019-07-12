@@ -1,5 +1,6 @@
 import coreapi
 from django.conf import settings
+from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
 class Driver(object):
@@ -11,8 +12,13 @@ class Driver(object):
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
         self.flavors=FlavorManager()
+        self.keypairs=KeyManager()
     def _do_action(self, action, params):
         return self._client.action(self._schema, action, params=params)
+
+class KeyManager(object):
+    def create(self):
+        return None
 
 class FlavorManager(object):
     def list(self):
@@ -66,6 +72,9 @@ class Image(object):
     def __init__(self, info):
         self.id=info['id']
         self.name=info['name']
+        if self.name=='centos7': self.name='CentOS-7.5.1804-x86_64-GenericCloud-1809'
+        from django.utils.timezone import now
+        self.created_at=now()
         if self.name.startswith('0000_packone'):#TODO auto build packone images
             self.name=self.name.replace('0000_','')
 
@@ -73,6 +82,7 @@ class InstanceManager(object):
     def __init__(self, driver):
         self.driver=driver
         #monkey patch Instance
+        self.mountable_status=[INSTANCE_STATUS.shutdown.value, INSTANCE_STATUS.poweroff.value]
     def get(self, instance_id):
         action = ["vms","read"]
         params = {
@@ -101,7 +111,8 @@ class InstanceManager(object):
             "remarks":remark,
         }
         vm_id=self.driver._do_action(action, params)
-        return self.get(vm_id)
+        ins=self.get(vm_id)
+        return ins
     def create_image(self, image_name):
         raise Exception('create image from instance is unsupported')
     def delete(self, instance_id):
@@ -119,7 +130,7 @@ class InstanceManager(object):
                 raise e
     def force_delete(self, instance_id):
         try:
-            self._operate_instance(instance_id, 'poweroff')
+            self.get(instance_id).stop()
         except Exception as e:
             print(e)
         return self.delete(instance_id)
@@ -139,7 +150,6 @@ class InstanceManager(object):
 
 class Instance(object):
     def __init__(self, manager, info):
-        print(info)
         self.manager=manager
         self.id=info['uuid']
         # self.flavor=self.manager.driver.templates._locate(info['vcpus'], info['mem'])
@@ -147,9 +157,6 @@ class Instance(object):
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
         self.created=info['create_time']
-        self.start=lambda self: self._operate('start')
-        self.reboot=lambda self: self._operate('reboot')
-        self.stop=lambda self: self._operate(self.uuid, 'poweroff')
     def get_console_url(self):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
@@ -165,6 +172,12 @@ class Instance(object):
                 return True
             else:
                 raise e
+    def start(self):
+        return self._operate('start')
+    def reboot(self):
+        return self._operate('reboot')
+    def stop(self):
+        return self._operate('poweroff')
 
 class VolumeManager(object):
     def __init__(self, driver):

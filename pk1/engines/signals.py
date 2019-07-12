@@ -20,6 +20,22 @@ scaled_out = Signal(providing_args=["instance","name"])
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
 
+from clouds.models import Cloud, bootstraped
+
+from .utils import remedy_scale_ambari_bootstrap
+@receiver(bootstraped, sender=Cloud)
+@receiver(executed, sender=GroupOperation)
+def bootstrap(sender,instance,**kwargs):
+    if sender==Cloud:
+        blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
+        s, created=models.Scale.objects.get_or_create(
+            name='packone.bootstrap.{}'.format(instance.name),
+            _remedy_script=remedy_scale_ambari_bootstrap(),
+            owner=instance.owner
+        )
+        if created: s.init_blueprints.add(*blueprints)
+        models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
+
 @receiver(post_save, sender=models.Stack)
 @receiver(executed, sender=InstanceOperation)
 def create_stack(sender,instance,**kwargs):
@@ -51,11 +67,6 @@ def scale_out(sender,instance,**kwargs):
                 instance.remedy(cluster.scale.remedy_script_scale_out,manual=False)
         elif cluster.scale.remedy_script:
             instance.remedy(cluster.scale.remedy_script,manual=False)
-        GroupOperation(
-            operation=INSTANCE_OPERATION.start.value,
-            target=instance,
-            status=OPERATION_STATUS.running.value,
-        ).save()
         scaled_out.send(sender=models.Cluster, instance=cluster, name='scaled_out')
 
 @receiver(destroyed, sender=Group)
