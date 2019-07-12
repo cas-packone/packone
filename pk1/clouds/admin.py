@@ -17,7 +17,7 @@ class CloudAdmin(StaticModelAdmin):
     list_filter = ('_driver',)+StaticModelAdmin.list_filter
     def get_exclude(self, request, obj=None):
         if obj and obj.owner!=request.user:
-            return ('_platform_credential','_instance_credential')
+            return ('_platform_credential','instance_credential_password', 'instance_credential_private_key')
         return ()
     def import_image(modeladmin, request, queryset):
         for cloud in queryset:

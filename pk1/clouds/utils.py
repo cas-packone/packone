@@ -84,21 +84,26 @@ def remedy_image_ambari_server():
         'ambari-server setup -s \n\n' \
         'ambari-server start'
 
+from paramiko import RSAKey
+def gen_ssh_key():
+    key=RSAKey.generate(2048)
+    private_key_file=StringIO()
+    key.write_private_key(private_key_file)
+    pri=private_key_file.getvalue()
+    private_key_file.close()
+    pub=key.get_base64()
+    pub='ssh-rsa '+pub+' Generated-by-PackOne'
+    return pub, pri
+
 class SSH:
-    def __init__(self,host,credential):
+    def __init__(self,host,username='root',password=None,private_key=None,port=None):
+        self.username=username
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.credential=credential
-        if 'password' not in credential:
-            credential['password'] = None
-        if 'port' not in credential:
-            credential['port'] = 22
-        if 'private_key' in credential:
-            private_key_file=StringIO(credential['private_key'])
-            credential['pkey']=paramiko.RSAKey.from_private_key(private_key_file)
+        if private_key:
+            private_key_file=StringIO(private_key)
+            private_key=paramiko.RSAKey.from_private_key(private_key_file)
             private_key_file.close()
-        else:
-            credential['pkey']=None
         mustend = time.time() + 600
         e=Exception()
         while time.time() < mustend:
@@ -106,41 +111,40 @@ class SSH:
             try:
                 self.client.connect(
                     host,
-                    username=credential['username'],
-                    password=credential['password'],
-                    pkey=credential['pkey'],
-                    port=credential['port'],
+                    username=username,
+                    password=password,
+                    pkey=private_key,
                     timeout=None
                 )
-                # print("EOFError")
+            except paramiko.AuthenticationException as ex:
+                raise ex
+            except paramiko.ssh_exception.NoValidConnectionsError as ex:
+                continue
             except Exception as ex:
+                # import traceback
+                # traceback.print_tb(ex.__traceback__)
                 e=ex
+                continue
             else:
                 return
         raise e
 
     def exec_batch(self, cmd):
-        try:
-            ftp = self.client.open_sftp()
-            file=ftp.file('/tmp/packone.bash', "w", -1)
-            file.write(cmd)
-            file.flush()
-            ftp.close()
-            cmd='sudo -uroot ' if self.credential['username']!='root' else ''
-            cmd+='bash /tmp/packone.bash'
-            stdin, stdout, stderr = self.client.exec_command(cmd)
-        except paramiko.SSHException as e:
-            err='EXCEPTION MESSAGE:\n'+str(e)
+        ftp = self.client.open_sftp()
+        file=ftp.file('/tmp/packone.bash', "w", -1)
+        file.write(cmd)
+        file.flush()
+        ftp.close()
+        cmd='sudo -uroot ' if self.username!='root' else ''
+        cmd+='bash /tmp/packone.bash'
+        stdin, stdout, stderr = self.client.exec_command(cmd)
+        err='\n'.join(stderr.readlines())
+        if err: err='STDERR:\n'+err
+        out='STDOUT:\n'+'\n'.join(stdout.readlines())
+        if out.find('ERROR: Exiting with exit code 1')!=-1:
+            err+=out
             out=''
-        else:
-            err='\n'.join(stderr.readlines())
-            if err: err='STDERR:\n'+err
-            out='STDOUT:\n'+'\n'.join(stdout.readlines())
-            if out.find('ERROR: Exiting with exit code 1')!=-1:
-                err+=out
-                out=''
-        finally:
-            return out, err
+        return out, err
 
     def close(self):
         self.client.close()

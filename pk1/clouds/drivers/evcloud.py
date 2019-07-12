@@ -12,8 +12,13 @@ class Driver(object):
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
         self.flavors=FlavorManager()
+        self.keypairs=KeyManager()
     def _do_action(self, action, params):
         return self._client.action(self._schema, action, params=params)
+
+class KeyManager(object):
+    def create(self):
+        return None
 
 class FlavorManager(object):
     def list(self):

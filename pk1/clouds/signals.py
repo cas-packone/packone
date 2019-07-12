@@ -34,6 +34,10 @@ def bootstrap(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
+        (pubkey,prikey)=utils.gen_ssh_key()
+        instance.driver.keypairs.create(name='packone', public_key=pubkey)
+        instance.instance_credential_private_key=prikey
+        instance.save()
         
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):

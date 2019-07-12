@@ -25,7 +25,9 @@ import importlib, json
 class Cloud(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
     _platform_credential=models.TextField(max_length=5120,blank=True,null=True)
-    _instance_credential=models.TextField(max_length=2048,blank=True,null=True)    
+    instance_credential_username=models.CharField(max_length=50, default='root')
+    instance_credential_password=models.CharField(max_length=50,blank=True,null=True)
+    instance_credential_private_key=models.TextField(max_length=2048,blank=True,null=True,editable=False)
     hosts=models.TextField(max_length=5120,default='127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1 localhost localhost.localdomain localhost6 localhost6.localdomain6',blank=True,null=True)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
     @cached_property
@@ -34,9 +36,6 @@ class Cloud(StaticModel):
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
-    @cached_property
-    def instance_credential(self):
-        return json.loads(self._instance_credential)
     def import_image(self):
         for img in self.driver.images.list():
             name=img.name
@@ -156,7 +155,7 @@ User.clouds=clouds_of_user
 
 class Image(StaticModel):
     name=models.CharField(max_length=500)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.PROTECT,blank=True,null=True)
@@ -187,7 +186,7 @@ class Image(StaticModel):
 
 class InstanceTemplate(StaticModel):#TODO support root volume resize
     name=models.CharField(max_length=500)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     mem=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
@@ -199,7 +198,7 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
 
 class InstanceBlueprint(StaticModel):
     name=models.CharField(max_length=500)
-    cloud=models.ForeignKey(Cloud,on_delete=models.PROTECT)
+    cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     template=models.ForeignKey(InstanceTemplate,on_delete=models.PROTECT)
     image=models.ForeignKey(Image,on_delete=models.PROTECT,related_name="instance_blueprints")
     volume_capacity=models.IntegerField(validators=[MinValueValidator(0)],default=0)
@@ -392,6 +391,7 @@ class InstanceOperation(OperationModel):
     def execute(self):
         def perform(self=self):
             from . import utils
+            import traceback
             if self.operation!=INSTANCE_OPERATION.remedy.value:
                 try:
                     ins=self.target.cloud.driver.instances.get(str(self.target.uuid))
@@ -402,10 +402,10 @@ class InstanceOperation(OperationModel):
                     elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.shutdown.value]:
                         output=ins.stop()
                     if self.is_boot:
-                        utils.SSH(self.target.ipv4,
-                            self.target.cloud.instance_credential
-                        ).close() #to wait booting finished
+                        cloud=self.target.cloud
+                        utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key).close() #to wait booting finished
                 except Exception as e:
+                    traceback.print_tb(e.__traceback__)
                     self.status=OPERATION_STATUS.failed.value
                     self.log='EXCEPTION MESSAGE:\n'+str(e)
                 else:
@@ -417,11 +417,13 @@ class InstanceOperation(OperationModel):
                     self.status=OPERATION_STATUS.failed.value
                 else:
                     try:
-                        ssh=utils.SSH(self.target.ipv4, self.target.cloud.instance_credential)
+                        cloud=self.target.cloud
+                        ssh=utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key)
                         out, err = ssh.exec_batch(self.script)
                         self.log=out+err
                         self.status=OPERATION_STATUS.failed.value if err else OPERATION_STATUS.success.value
                     except Exception as e:
+                        traceback.print_tb(e.__traceback__)
                         self.log='EXCEPTION MESSAGE:\n'+str(e)
                         self.status=OPERATION_STATUS.failed.value
             self.completed_time=now()
