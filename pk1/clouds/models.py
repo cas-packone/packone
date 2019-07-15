@@ -11,6 +11,7 @@ from django.core.validators import MinValueValidator
 from django.utils.functional import cached_property
 from .base.models import StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
 from django.utils.timezone import now
+from django.db.utils import IntegrityError
 
 import pkgutil
 from django.conf import settings
@@ -26,7 +27,6 @@ class Cloud(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
     _platform_credential=models.TextField(max_length=5120,blank=True,null=True)
     instance_credential_username=models.CharField(max_length=50, default='root')
-    instance_credential_password=models.CharField(max_length=50,blank=True,null=True)
     instance_credential_private_key=models.TextField(max_length=2048,blank=True,null=True,editable=False)
     hosts=models.TextField(max_length=5120,default='127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1 localhost localhost.localdomain localhost6 localhost6.localdomain6',blank=True,null=True)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
@@ -396,16 +396,23 @@ class InstanceOperation(OperationModel):
                 try:
                     ins=self.target.cloud.driver.instances.get(str(self.target.uuid))
                     if self.operation==INSTANCE_OPERATION.start.value:
-                        output=ins.start()
+                        if self.target.cloud.driver.instances.get_status(str(self.target.uuid))==INSTANCE_STATUS.active.value:
+                            output='skip start op: already running'
+                        else:
+                            output=ins.start()
                     elif self.operation==INSTANCE_OPERATION.reboot.value:
                         output=ins.reboot()
                     elif self.operation in [INSTANCE_OPERATION.poweroff.value, INSTANCE_OPERATION.shutdown.value]:
-                        output=ins.stop()
+                        if self.target.cloud.driver.instances.get_status(str(self.target.uuid)) in [INSTANCE_STATUS.poweroff.value, INSTANCE_STATUS.shutdown.value]:
+                            output='skip stop op: already stoped'
+                        else:
+                            output=ins.stop()
                     if self.is_boot:
                         cloud=self.target.cloud
-                        utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key).close() #to wait booting finished
+                        utils.SSH(self.target.ipv4,cloud.instance_credential_username,private_key=cloud.instance_credential_private_key).close() #to wait booting finished
                 except Exception as e:
-                    traceback.print_tb(e.__traceback__)
+                    print(e)
+                    # traceback.print_tb(e.__traceback__)
                     self.status=OPERATION_STATUS.failed.value
                     self.log='EXCEPTION MESSAGE:\n'+str(e)
                 else:
@@ -418,7 +425,7 @@ class InstanceOperation(OperationModel):
                 else:
                     try:
                         cloud=self.target.cloud
-                        ssh=utils.SSH(self.target.ipv4,cloud.instance_credential_username,password=cloud.instance_credential_password,private_key=cloud.instance_credential_private_key)
+                        ssh=utils.SSH(self.target.ipv4,cloud.instance_credential_username,private_key=cloud.instance_credential_private_key)
                         out, err = ssh.exec_batch(self.script)
                         self.log=out+err
                         self.status=OPERATION_STATUS.failed.value if err else OPERATION_STATUS.success.value
@@ -427,7 +434,10 @@ class InstanceOperation(OperationModel):
                         self.log='EXCEPTION MESSAGE:\n'+str(e)
                         self.status=OPERATION_STATUS.failed.value
             self.completed_time=now()
-            self.save()
+            try:
+                self.save()
+            except IntegrityError as e:
+                print(e)
             executed.send(sender=InstanceOperation, instance=self, name='executed')
         Thread(target=perform).start()
 

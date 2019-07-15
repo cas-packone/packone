@@ -27,7 +27,7 @@ from .models import bootstraped, monitored, executed, destroyed
 @receiver(executed)
 @receiver(bootstraped)
 def log(sender,instance,name,**kwargs):
-    print('SIGNAL INFO:', sender._meta.app_label, sender._meta.verbose_name, instance, name)
+    print('SIGNAL INFO:{}/{}/{}'.format(sender._meta.app_label, sender._meta.verbose_name, instance), name)
 
 @receiver(post_save, sender=Cloud)#TODO remove reverse dependency
 def bootstrap(sender,instance,**kwargs):
@@ -76,7 +76,9 @@ def materialize_instance(sender, instance, **kwargs):
         ins=instance.cloud.driver.instances.create(
             instance.image.access_id,
             instance.template.access_id,
-            remark
+            remark,
+            instance_private_key=instance.cloud.instance_credential_private_key,
+            instance_username=instance.cloud.instance_credential_username
         )
         instance.uuid=UUID(ins.id.replace('-', ''), version=4)
         instance.built_time=ins.created
@@ -238,13 +240,12 @@ def materialize_group(sender,instance,**kwargs):
         group.save()
         for ins in group.instances.all():
             ins.remedy(manual=False)
+        GroupOperation(
+            operation=INSTANCE_OPERATION.start.value,
+            target=group,
+            status=OPERATION_STATUS.running.value,
+        ).save()
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
-        if group.status in [INSTANCE_STATUS.poweroff.value, INSTANCE_STATUS.shutdown.value]:
-            GroupOperation(
-                operation=INSTANCE_OPERATION.start.value,
-                target=group,
-                status=OPERATION_STATUS.running.value,
-            ).save()
         materialized.send(sender=Group, instance=group, name='materialized')
 
 @receiver(destroyed, sender=Instance)
