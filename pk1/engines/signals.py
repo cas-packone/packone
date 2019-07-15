@@ -24,17 +24,15 @@ from clouds.models import Cloud, bootstraped
 
 from .utils import remedy_scale_ambari_bootstrap
 @receiver(bootstraped, sender=Cloud)
-@receiver(executed, sender=GroupOperation)
 def bootstrap(sender,instance,**kwargs):
-    if sender==Cloud:
-        blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
-        s, created=models.Scale.objects.get_or_create(
-            name='packone.bootstrap.{}'.format(instance.name),
-            _remedy_script=remedy_scale_ambari_bootstrap(),
-            owner=instance.owner
-        )
-        if created: s.init_blueprints.add(*blueprints)
-        models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
+    blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
+    s, created=models.Scale.objects.get_or_create(
+        name='packone.bootstrap.{}'.format(instance.name),
+        _remedy_script=remedy_scale_ambari_bootstrap(),
+        owner=instance.owner
+    )
+    if created: s.init_blueprints.add(*blueprints)
+    models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
 
 @receiver(post_save, sender=models.Stack)
 @receiver(executed, sender=InstanceOperation)

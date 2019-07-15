@@ -17,7 +17,7 @@ class Driver(object):
         return self._client.action(self._schema, action, params=params)
 
 class KeyManager(object):
-    def create(self):
+    def create(self, name, public_key):
         return None
 
 class FlavorManager(object):
@@ -81,7 +81,6 @@ class Image(object):
 class InstanceManager(object):
     def __init__(self, driver):
         self.driver=driver
-        #monkey patch Instance
         self.mountable_status=[INSTANCE_STATUS.shutdown.value, INSTANCE_STATUS.poweroff.value]
     def get(self, instance_id):
         action = ["vms","read"]
@@ -99,7 +98,7 @@ class InstanceManager(object):
         for item in self.driver._do_action(action, params):
             inss.append(Instance(self, item))
         return inss
-    def create(self, image_id, template_id, remark=''):
+    def create(self, image_id, template_id, remark='', **kwargs):
         flavor=self.driver.flavors.get(template_id)
         action = ["vms","create"]
         params = {
@@ -112,6 +111,14 @@ class InstanceManager(object):
         }
         vm_id=self.driver._do_action(action, params)
         ins=self.get(vm_id)
+        ins.start()
+        from ..utils import SSH, get_pub_key
+        ssh=SSH(ins.addresses['provider'][0]['addr'],self.driver._credential['instance_username'],password=self.driver._credential['instance_password'])
+        pub=get_pub_key(kwargs['instance_private_key'])
+        ssh.exec_batch('HM=~{}; cd $HM; mkdir -p .ssh; cd .ssh; echo "{}">>authorized_keys; chmod 400 authorized_keys'.format(kwargs['instance_username'], pub))
+        ssh.close()
+        ins._operate('shutdown') #avoid disk cache lost
+        ins.stop()
         return ins
     def create_image(self, image_name):
         raise Exception('create image from instance is unsupported')

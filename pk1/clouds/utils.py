@@ -95,6 +95,14 @@ def gen_ssh_key():
     pub='ssh-rsa '+pub+' Generated-by-PackOne'
     return pub, pri
 
+def get_pub_key(private_key):
+    private_key_file=StringIO(private_key)
+    key=paramiko.RSAKey.from_private_key(private_key_file)
+    private_key_file.close()
+    pub=key.get_base64()
+    pub='ssh-rsa '+pub+' Generated-by-PackOne'
+    return pub
+
 class SSH:
     def __init__(self,host,username='root',password=None,private_key=None,port=None):
         self.username=username
