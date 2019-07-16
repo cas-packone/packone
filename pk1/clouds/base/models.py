@@ -10,13 +10,13 @@ from django.utils.functional import cached_property
 from django.utils.timezone import now
 
 class StaticModel(models.Model):
-    name=models.CharField(max_length=50,unique=True)
+    name=models.CharField(max_length=100,unique=True)
     _remedy_script=models.TextField(max_length=5120,default="",blank=True)
     public=models.BooleanField(default=False)
     enabled=models.BooleanField(default=True)
     modified_time=models.DateTimeField(auto_now=True)
     created_time=models.DateTimeField(auto_now_add=True)
-    remark = models.CharField(blank=True,null=True,max_length=100)
+    remark = models.CharField(blank=True,null=True,max_length=1000)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False)
     class Meta:
         abstract = True
