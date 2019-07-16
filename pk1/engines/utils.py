@@ -2,10 +2,12 @@ def remedy_scale_ambari_bootstrap():
     return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
         "ambari-agent start >/dev/null 2>&1\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
-        'sleep 10\n' \
-        'yum -q -y install epel-release\n' \
-        'yum -q -y install python-pip\n' \
+        'yum -q -y install epel-release 2>/dev/null\n' \
+        'yum -q -y install python-pip 2>/dev/null\n' \
         'pip --disable-pip-version-check install ambari\n' \
+        "fi\n\n" \
+        'if [ `hostname` == "master1.packone" ]; then\n' \
+        'sleep 15\n' \
         'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
         "fi"
 
