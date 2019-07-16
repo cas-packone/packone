@@ -81,7 +81,7 @@ def remedy_image_ambari_agent():
 
 def remedy_image_ambari_server():
     return 'yum -q -y install ambari-server 2>/dev/null\n\n' \
-        'ambari-server setup -s \n\n' \
+        'ambari-server setup -s >/dev/null\n\n' \
         'ambari-server start'
 
 from paramiko import RSAKey
