@@ -158,7 +158,7 @@ class Image(StaticModel):
     cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
-    parent=models.ForeignKey("self",on_delete=models.PROTECT,blank=True,null=True)
+    parent=models.ForeignKey("self",on_delete=models.CASCADE,blank=True,null=True)
     class Meta:
         unique_together = ('cloud', 'name')
     @cached_property
@@ -199,8 +199,8 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
 class InstanceBlueprint(StaticModel):
     name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
-    template=models.ForeignKey(InstanceTemplate,on_delete=models.PROTECT)
-    image=models.ForeignKey(Image,on_delete=models.PROTECT,related_name="instance_blueprints")
+    template=models.ForeignKey(InstanceTemplate,on_delete=models.CASCADE)
+    image=models.ForeignKey(Image,on_delete=models.CASCADE,related_name="instance_blueprints")
     volume_capacity=models.IntegerField(validators=[MinValueValidator(0)],default=0)
     volume_mount_point=models.CharField(default="/data",max_length=100)
     quantity=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
