@@ -32,7 +32,14 @@ class InstanceManager(object):
             flavor=template_id,
             security_groups=[self.driver._credential['security_group']],
             nics=[{'net-id':self.driver._credential['net-id']}],
-            key_name=self.driver._cloud._key_name
+            key_name=self.driver._cloud._key_name,
+            userdata="#cloud-config\n" \
+            "debug: True\n" \
+            "ssh_pwauth: True\n" \
+            "disable_root: false\n" \
+            "runcmd:\n" \
+            "- sed -i'.orig' -e's/without-password/yes/' /etc/ssh/sshd_config\n" \
+            "- service sshd restart"
         )
         mustend = time.time() + 600
         while time.time() < mustend:
