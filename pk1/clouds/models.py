@@ -31,8 +31,16 @@ class Cloud(StaticModel):
     hosts=models.TextField(max_length=5120,default='127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1 localhost localhost.localdomain localhost6 localhost6.localdomain6',blank=True,null=True)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False,verbose_name='admin')
     @cached_property
+    def _key_name(self):
+        import re
+        return 'PackOne_'+re.sub('\W','-',self.name)
+    @cached_property
+    def _public_key(self):
+        from .utils import get_pub_key
+        return get_pub_key(self.instance_credential_private_key)+' '+self._key_name
+    @cached_property
     def driver(self):
-        return importlib.import_module(self._driver).Driver(self.platform_credential)
+        return importlib.import_module(self._driver).Driver(self,self.platform_credential)
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
@@ -273,7 +281,7 @@ class Instance(models.Model,OperatableMixin):
     remedy_script_todo=models.TextField(max_length=51200,default="",blank=True)
     created_time=models.DateTimeField(auto_now_add=True)
     built_time=models.DateTimeField(blank=True,null=True,editable=False)
-    remark = models.CharField(blank=True,null=True,max_length=100)
+    remark = models.CharField(blank=True,null=True,max_length=1000)
     owner=models.ForeignKey(User,on_delete=models.PROTECT,editable=False)
     status= models.PositiveIntegerField(choices=[(status.value,status.name) for status in INSTANCE_STATUS],default=INSTANCE_STATUS.building.value,editable=False)
     deleting = models.BooleanField(default=False,editable=False)

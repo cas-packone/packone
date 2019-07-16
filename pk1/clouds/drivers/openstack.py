@@ -7,7 +7,8 @@ import time
 from ..models import INSTANCE_STATUS
 
 class Driver(object):
-    def __init__(self, credential):
+    def __init__(self, cloud, credential):
+        self._cloud=cloud
         self._credential=credential
         self._nova_client=nova_client.Client(credential['api_version'], username=credential['username'], password=credential['password'], project_name=credential['project_name'], auth_url=credential['auth_url'])
         self._cinder_client=cinder_client.Client(credential['api_version'],credential['username'],credential['password'],credential['project_name'],auth_url=credential['auth_url'])    
@@ -31,7 +32,7 @@ class InstanceManager(object):
             flavor=template_id,
             security_groups=[self.driver._credential['security_group']],
             nics=[{'net-id':self.driver._credential['net-id']}],
-            key_name='packone'
+            key_name=self.driver._cloud._key_name
         )
         mustend = time.time() + 600
         while time.time() < mustend:

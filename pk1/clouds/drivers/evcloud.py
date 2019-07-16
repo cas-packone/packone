@@ -4,10 +4,11 @@ from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
 class Driver(object):
-    def __init__(self, credential):
+    def __init__(self, cloud, credential):
+        self._cloud=cloud
+        self._credential=credential
         self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(credential['user'], credential['passwd']))
         self._schema = self._client.get(credential['api_endpoint'])
-        self._credential=credential
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
@@ -41,11 +42,6 @@ class FlavorManager(object):
             if tpl.id==id:
                 return tpl
         raise Exception('unfounded flavor (id: {})!'.format(id))
-    # def _locate(self, ram, vcpus):#TODO opt
-    #     for tpl in self.list():
-    #         if tpl.ram==ram and tpl.vcpus==vcpus:
-    #             return tpl
-    #     raise Exception('unfounded template (ram: {}, vcpus: {})!'.format(ram, vcpus))
  
 class Flavor(object):
     def __init__(self, info):
@@ -112,10 +108,10 @@ class InstanceManager(object):
         vm_id=self.driver._do_action(action, params)
         ins=self.get(vm_id)
         ins.start()
-        from ..utils import SSH, get_pub_key
+        from ..utils import SSH
         ssh=SSH(ins.addresses['provider'][0]['addr'],self.driver._credential['instance_username'],password=self.driver._credential['instance_password'])
-        pub=get_pub_key(kwargs['instance_private_key'])
-        ssh.exec_batch('HM=~{}; cd $HM; mkdir -p .ssh; cd .ssh; echo "{}">>authorized_keys; chmod 400 authorized_keys'.format(kwargs['instance_username'], pub))
+        pub=self.driver._cloud._public_key
+        ssh.exec_batch('HM=~{}; cd $HM; mkdir -p .ssh; cd .ssh; echo "{}">>authorized_keys; chmod 400 authorized_keys'.format(self.driver._cloud.instance_credential_username, pub))
         ssh.close()
         ins._operate('shutdown') #avoid disk cache lost
         ins.stop()

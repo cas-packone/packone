@@ -29,16 +29,21 @@ from .models import bootstraped, monitored, executed, destroyed
 def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:{}/{}/{}'.format(sender._meta.app_label, sender._meta.verbose_name, instance), name)
 
-@receiver(post_save, sender=Cloud)#TODO remove reverse dependency
-def bootstrap(sender,instance,**kwargs):
+@receiver(post_save, sender=Cloud)
+def cloud_bootstrap(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
         (pubkey,prikey)=utils.gen_ssh_key()
-        instance.driver.keypairs.create(name='packone', public_key=pubkey)
+        pubkey+=' '+instance._key_name
         instance.instance_credential_private_key=prikey
+        instance.driver.keypairs.create(name=instance._key_name, public_key=pubkey)
         instance.save()
-        
+
+@receiver(pre_delete, sender=Cloud)
+def cloud_cleanup(sender,instance,**kwargs):
+    instance.driver.keypairs.delete(instance._key_name)
+
 @receiver(post_save, sender=Image)
 def clone_image(sender,instance,**kwargs):
     if not instance.parent: return
@@ -76,9 +81,7 @@ def materialize_instance(sender, instance, **kwargs):
         ins=instance.cloud.driver.instances.create(
             instance.image.access_id,
             instance.template.access_id,
-            remark,
-            instance_private_key=instance.cloud.instance_credential_private_key,
-            instance_username=instance.cloud.instance_credential_username
+            remark
         )
         instance.uuid=UUID(ins.id.replace('-', ''), version=4)
         instance.built_time=ins.created

@@ -92,7 +92,7 @@ def gen_ssh_key():
     pri=private_key_file.getvalue()
     private_key_file.close()
     pub=key.get_base64()
-    pub='ssh-rsa '+pub+' Generated-by-PackOne'
+    pub='ssh-rsa '+pub
     return pub, pri
 
 def get_pub_key(private_key):
@@ -100,7 +100,7 @@ def get_pub_key(private_key):
     key=paramiko.RSAKey.from_private_key(private_key_file)
     private_key_file.close()
     pub=key.get_base64()
-    pub='ssh-rsa '+pub+' Generated-by-PackOne'
+    pub='ssh-rsa '+pub
     return pub
 
 class SSH:
