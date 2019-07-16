@@ -1,13 +1,13 @@
 def remedy_scale_ambari_bootstrap():
     return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
-        "ambari-agent start >/dev/null 2>&1\n\n" \
+        "ambari-agent start 2>&1\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
-        'yum -q -y install epel-release 2>/dev/null\n' \
-        'yum -q -y install python-pip 2>/dev/null\n' \
+        'yum -q -y install epel-release 2>&1\n' \
+        'yum -q -y install python-pip 2>&1\n' \
         'pip --disable-pip-version-check install ambari\n' \
         "fi\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
-        'sleep 15\n' \
+        'while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
         'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
         "fi"
 
@@ -22,7 +22,7 @@ def remedy_scale_ambari_fast_init():
         "echo 'PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH'>>/etc/profile.d/packone-java.sh\n" \
         'reboot\n' \
         'if [ `hostname` == "master1.packone" ]; then\n' \
-        '    sleep 60\n' \
+        '    while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
         '    pip --disable-pip-version-check install ambari\n' \
         '    ambari master1.packone:8080 service start\n' \
         'fi\n' \
@@ -38,6 +38,7 @@ def remedy_scale_ambari_fast_scale_out():
         "echo 'PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH'>>/etc/profile.d/packone-java.sh\n" \
         "reboot\n" \
         "pip --disable-pip-version-check install ambari\n" \
+        'while ! echo exit | nc master1.packone 8080; do sleep 3; done 2>&1\n' \
         "ambari master1.packone:8080 host clone slave.packone `hostname`\n" \
 
 def remedy_scale_ambari_fast_scale_in():
