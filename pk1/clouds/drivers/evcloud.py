@@ -20,6 +20,8 @@ class Driver(object):
 class KeyManager(object):
     def create(self, name, public_key):
         return None
+    def delete(self, name, public_key):
+        return None
 
 class FlavorManager(object):
     def list(self):
