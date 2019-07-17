@@ -503,7 +503,7 @@
         if (document_all_a && document_all_a.length > 0) {
             for (var i = 0; i < document_all_a.length; i++) {
                 var document_all_a_i_href = document_all_a[i].getAttribute("href");
-                if (document_all_a_i_href && document_all_a_i_href[0] === "/") {
+                if (document_all_a_i_href && document_all_a_i_href[0] === "/" && document_all_a_i_href.search(space_home_url) == -1 ) {
                     if ("/" === document_all_a_i_href) {
                         document_all_a_i_href = home_url
                     }
@@ -1730,6 +1730,17 @@
             document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML = (document.getElementsByClassName('breadcrumbs initialized')[0].outerHTML + '<div class="breadcrumbs initialized"></div>');
         }
         pre_execution();
+        if (document_all_a && document_all_a.length > 0) {
+            for (var i = 0; i < document_all_a.length; i++) {
+                var document_all_a_i_href = document_all_a[i].getAttribute("href");
+                if (document_all_a_i_href && document_all_a_i_href[0] === "/" && document_all_a_i_href.search(space_home_url) == -1 ) {
+                    if ("/" === document_all_a_i_href) {
+                        document_all_a_i_href = home_url
+                    }
+                    document_all_a[i].setAttribute("href", space_home_url + document_all_a_i_href);
+                }
+            }
+        }
     }
 </script>
 {% endblock %}
