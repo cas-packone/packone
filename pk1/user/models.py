@@ -7,7 +7,7 @@ from clouds.models import Cloud
 class Profile(models.Model):
     owner=models.ForeignKey(User,on_delete=models.CASCADE,editable=False)
     avatar=models.CharField(max_length=100,blank=True,null=True)
-    organization=models.CharField(max_length=50)
+    organization=models.CharField(max_length=50, default='default')
     remark = models.CharField(blank=True,null=True,max_length=100)
     enabled=models.BooleanField(default=False)
     class Meta:
