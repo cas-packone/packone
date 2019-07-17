@@ -21,11 +21,9 @@ def credential_update(sender, instance, **kwargs):
         old = models.Credential.objects.get(pk=instance.pk)
         if old.ssh_passwd!=instance.ssh_passwd:
             for ins in instance.profile.owner.instance_set.all():
-                sleep(3)
                 ins.remedy("echo 'root:{}' | chpasswd".format(instance.ssh_passwd),manual=False)
         if old.ssh_public_key!=instance.ssh_public_key:
             for ins in instance.profile.owner.instance_set.all():
-                sleep(3)
                 ins.remedy("echo '{}'>>/root/.ssh/authorized_keys".format(instance.ssh_public_key),manual=False)
 
 @receiver(pre_delete, sender=models.Credential)
