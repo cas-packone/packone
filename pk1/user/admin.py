@@ -7,8 +7,6 @@ from clouds.models import Cloud
 @admin.register(models.Profile)
 class ProfileAdmin(OwnershipModelAdmin):
     search_fields = ('organization',)
-    def get_list_display(self, request, obj=None):
-        return ("organization",)+super().get_list_display(request, obj)
 
 class EnabledProfileGuardedAdmin(AutoModelAdmin):
     def enabled(self,obj):
