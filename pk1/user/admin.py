@@ -35,6 +35,8 @@ class BalanceAdmin(EnabledProfileGuardedAdmin):#TODO add balanceZeroException in
 @admin.register(models.Credential)
 class CredentialAdmin(EnabledProfileGuardedAdmin):
     search_fields = ('ssh_user',)+EnabledProfileGuardedAdmin.search_fields
-    def has_change_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_add_permission(self, request, obj=None):
         return False
    
