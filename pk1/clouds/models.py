@@ -9,7 +9,7 @@ from django.dispatch import Signal
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.functional import cached_property
-from .base.models import StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
+from .base.models import INSTANCE_OPERATION, INSTANCE_STATUS, OPERATION_STATUS, StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
 from django.utils.timezone import now
 from django.db.utils import IntegrityError
 
@@ -254,20 +254,6 @@ User.blueprints=blueprints_of_user
 
 #TODO class VLan
 
-class INSTANCE_STATUS(Enum):#greater value means worse status
-    null=0 #unknown
-    active=1
-    block=2
-    suspend=3
-    shutdown=4
-    poweroff=5
-    breakdown=6
-    pause=7
-    failure=8 #libvirt reserv code
-    host_lost=9
-    instance_lost=10
-    building=11
-        
 monitored = Signal(providing_args=["instance","name"])
 
 class Instance(models.Model,OperatableMixin):
@@ -378,19 +364,6 @@ class Mount(models.Model):
     def executing(self):
         return self.completed_time and not self.ready
 
-class INSTANCE_OPERATION(Enum):
-    start="start"
-    reboot="reboot"
-    shutdown="shutdown"
-    poweroff="poweroff"
-    remedy="remedy"
-
-class OPERATION_STATUS(Enum):
-    success="success"
-    failed="failed"
-    running="running"
-    waiting="waiting"
-    
 executed = Signal(providing_args=["instance","name"])
 
 class InstanceOperation(OperationModel):
