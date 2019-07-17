@@ -7,6 +7,7 @@ def remedy_scale_ambari_bootstrap():
         'pip --disable-pip-version-check install ambari\n' \
         "fi\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
+        'yum -q -y install nmap-ncat 2>&1\n' \
         'while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
         'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
         "fi"
@@ -25,7 +26,7 @@ def remedy_scale_ambari_fast_init():
         '    while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
         '    pip --disable-pip-version-check install ambari\n' \
         '    ambari master1.packone:8080 service start\n' \
-        'fi\n' \
+        'fi'
 
 def remedy_scale_ambari_fast_scale_out():
     return "rm -rf /hadoop\n" \
@@ -38,8 +39,9 @@ def remedy_scale_ambari_fast_scale_out():
         "echo 'PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH'>>/etc/profile.d/packone-java.sh\n" \
         "reboot\n" \
         "pip --disable-pip-version-check install ambari\n" \
+        'yum -q -y install nmap-ncat 2>&1\n' \
         'while ! echo exit | nc master1.packone 8080; do sleep 3; done 2>&1\n' \
-        "ambari master1.packone:8080 host clone slave.packone `hostname`\n" \
+        "ambari master1.packone:8080 host clone slave.packone `hostname`"
 
 def remedy_scale_ambari_fast_scale_in():
     return '#ambari master1.packone:8080 host delete `hostname`'
