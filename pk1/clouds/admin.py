@@ -106,12 +106,6 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 )
             }
     form = InstanceForm
-    def action(self, obj):
-        if obj.deleting:
-            if not get_current_user().is_superuser and obj.cloud.owner!=get_current_user(): 
-                return 'deleting'
-        op_url=reverse('instanceoperation-list')
-        return self.action_button(obj,op_url)
     search_fields = ('cloud__name','cloud__name','template__name', 'image__name', 'hostname', 'ipv4', 'ipv6', 'remark')
     list_filter = (
         ('cloud', admin.RelatedOnlyFieldListFilter),
@@ -119,12 +113,19 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         ('image', admin.RelatedOnlyFieldListFilter),
         'status',
     )
-    extra=('action',)
+    def toggle_power(modeladmin, request, queryset):
+        for ins in queryset:
+            models.InstanceOperation(
+                target=ins,
+                operation=models.INSTANCE_OPERATION.poweroff.value if ins.status==models.INSTANCE_STATUS.active.value else models.INSTANCE_OPERATION.start.value
+            ).save()
+            
+    toggle_power.short_description = "toggle power"
     def VNC(modeladmin, request, queryset):
         for ins in queryset:
             return redirect(ins.vnc_url)
     VNC.short_description = "VNC"
-    actions = [VNC]
+    actions = [VNC, toggle_power]
     def get_readonly_fields(self,request,obj=None):
         fs=super().get_readonly_fields(request,obj)
         if obj: return ('image', 'template',) + fs

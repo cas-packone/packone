@@ -16,7 +16,7 @@ class Driver(object):
         self.volumes=VolumeManager(self)
         self.images=self._nova_client.glance
         self.flavors=self._nova_client.flavors
-        self.keypairs=self._nova_client.keypairs#'create'
+        self.keypairs=self._nova_client.keypairs#create, delete
 
 class InstanceManager(object):
     def __init__(self, driver):
@@ -70,7 +70,7 @@ class InstanceManager(object):
         elif ins.status=='ERROR':
             return INSTANCE_STATUS.failure.value
         return INSTANCE_STATUS.null.value
-
+#TODO ins.stop() return 202
 class VolumeManager(object):
     def __init__(self, driver):
         self.driver=driver

@@ -9,7 +9,7 @@ from django.dispatch import Signal
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.functional import cached_property
-from .base.models import StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
+from .base.models import INSTANCE_OPERATION, INSTANCE_STATUS, OPERATION_STATUS, StaticModel, OperatableMixin, OperationModel, M2MOperatableMixin, M2MOperationModel
 from django.utils.timezone import now
 from django.db.utils import IntegrityError
 
@@ -254,20 +254,6 @@ User.blueprints=blueprints_of_user
 
 #TODO class VLan
 
-class INSTANCE_STATUS(Enum):#greater value means worse status
-    null=0 #unknown
-    active=1
-    block=2
-    suspend=3
-    shutdown=4
-    poweroff=5
-    breakdown=6
-    pause=7
-    failure=8 #libvirt reserv code
-    host_lost=9
-    instance_lost=10
-    building=11
-        
 monitored = Signal(providing_args=["instance","name"])
 
 class Instance(models.Model,OperatableMixin):
@@ -319,6 +305,21 @@ class Instance(models.Model,OperatableMixin):
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
+    @property
+    def credential(self):
+        return self.owner.profile_set.filter(enabled=True).first().credential
+    @cached_property
+    def password(self):
+        return self.credential.ssh_passwd
+    @cached_property
+    def public_key(self):
+        return self.credential.ssh_public_key
+    def set_public_key(self):
+        if self.public_key:
+            self.remedy("echo '{}'>>/root/.ssh/authorized_keys".format(self.public_key),manual=False)
+    def set_password(self):
+        if self.password:
+            self.remedy("echo 'root:{}' | chpasswd".format(self.password),manual=False)
     
 class VOLUME_STATUS(Enum):#greater value means worse status
     null=0 #unknown
@@ -378,19 +379,6 @@ class Mount(models.Model):
     def executing(self):
         return self.completed_time and not self.ready
 
-class INSTANCE_OPERATION(Enum):
-    start="start"
-    reboot="reboot"
-    shutdown="shutdown"
-    poweroff="poweroff"
-    remedy="remedy"
-
-class OPERATION_STATUS(Enum):
-    success="success"
-    failed="failed"
-    running="running"
-    waiting="waiting"
-    
 executed = Signal(providing_args=["instance","name"])
 
 class InstanceOperation(OperationModel):

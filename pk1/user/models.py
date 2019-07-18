@@ -34,8 +34,8 @@ def balances_of_user(self):
 User.balances=balances_of_user
 
 class Credential(models.Model):
-    profile=models.ForeignKey(Profile,on_delete=models.CASCADE)
-    ssh_user=models.CharField(max_length=50,default='root')
+    profile=models.OneToOneField(Profile,on_delete=models.CASCADE,editable=False)
+    ssh_user=models.CharField(max_length=50,default='root',editable=False)
     ssh_public_key=models.CharField(max_length=5048,blank=True,null=True) #todo add length restrction
     ssh_passwd=models.CharField(max_length=50,blank=True,null=True)
     class Meta:
