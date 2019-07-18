@@ -9,6 +9,7 @@ class ProfileAdmin(OwnershipModelAdmin):
     search_fields = ('organization',)
     def has_delete_permission(self, request, obj=None):
         if not obj: return False
+        if request.user.is_superuser: return True
         if obj.enabled: return False
         return True
 
