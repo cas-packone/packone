@@ -7,6 +7,10 @@ from clouds.models import Cloud
 @admin.register(models.Profile)
 class ProfileAdmin(OwnershipModelAdmin):
     search_fields = ('organization',)
+    def has_delete_permission(self, request, obj=None):
+        if not obj: return False
+        if obj.enabled: return False
+        return True
 
 class EnabledProfileGuardedAdmin(AutoModelAdmin):
     def enabled(self,obj):
@@ -35,6 +39,8 @@ class BalanceAdmin(EnabledProfileGuardedAdmin):#TODO add balanceZeroException in
 @admin.register(models.Credential)
 class CredentialAdmin(EnabledProfileGuardedAdmin):
     search_fields = ('ssh_user',)+EnabledProfileGuardedAdmin.search_fields
-    def has_change_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_add_permission(self, request, obj=None):
         return False
    
