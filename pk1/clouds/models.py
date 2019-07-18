@@ -305,6 +305,21 @@ class Instance(models.Model,OperatableMixin):
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
+    @property
+    def credential(self):
+        return self.owner.profile_set.filter(enabled=True).first().credential
+    @cached_property
+    def password(self):
+        return self.credential.ssh_passwd
+    @cached_property
+    def public_key(self):
+        return self.credential.ssh_public_key
+    def set_public_key(self):
+        if self.public_key:
+            self.remedy("echo '{}'>>/root/.ssh/authorized_keys".format(self.public_key),manual=False)
+    def set_password(self):
+        if self.password:
+            self.remedy("echo 'root:{}' | chpasswd".format(self.password),manual=False)
     
 class VOLUME_STATUS(Enum):#greater value means worse status
     null=0 #unknown

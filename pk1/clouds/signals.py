@@ -90,6 +90,8 @@ def materialize_instance(sender, instance, **kwargs):
         hosts='###instance###\n'+instance.hosts_record
         if instance.cloud.hosts: hosts=hosts+'\n###cloud###\n'+instance.cloud.hosts
         instance.update_remedy_script(utils.remedy_script_hosts_add(hosts, overwrite=True),heading=True)
+        instance.set_password()
+        instance.set_public_key()
         instance.remedy(manual=False)
         materialized.send(sender=sender, instance=instance, name='materialized')
     transaction.on_commit(Thread(target=materialize).start)
