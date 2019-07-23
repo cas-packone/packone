@@ -28,20 +28,19 @@ def bootstrap(sender,instance,**kwargs):
     blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
     s, created=models.Scale.objects.get_or_create(
         name='packone.bootstrap.{}'.format(instance.name),
-        _remedy_script=remedy_scale_ambari_bootstrap(),
-        owner=instance.owner
+        _remedy_script=remedy_scale_ambari_bootstrap()
     )
-    if created: s.init_blueprints.add(*blueprints)
+    s.init_blueprints.add(*blueprints)
     models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
 
-@receiver(post_save, sender=models.Stack)
 @receiver(executed, sender=InstanceOperation)
 def create_stack(sender,instance,**kwargs):
-    if 'created' in kwargs and kwargs['created']:
-        instance.host.remedy(instance.driver.init_script+'\n'+'###setup stack end###')
-        return
-    if instance.operation==INSTANCE_OPERATION.remedy.value and instance.script.endswith('###setup stack end###'):
-        instance.target.stack_set.first().import_engine()
+    if instance.target.image.name=='packone-bootstrap-master1' and 'ambari localhost:8080 cluster create' in instance.script:
+        from .drivers.ambari import get_stack_version
+        version=get_stack_version('http://'+instance.target.ipv4+':8080')
+        stack=models.Stack.objects.get_or_create(name=version)
+        stack.import_engine()
+        instance.target.group_set.first().cluster_set.first().scale.stack=stack
     
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
