@@ -131,6 +131,7 @@ class SSH:
             except Exception as ex:
                 # import traceback
                 # traceback.print_tb(ex.__traceback__)
+                print(ex)
                 e=ex
                 continue
             else:

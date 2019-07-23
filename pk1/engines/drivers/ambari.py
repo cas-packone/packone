@@ -1,5 +1,10 @@
 from ambari.client import Client
 
+def get_stack_version(portal):
+    c=Client(portal)
+    stack=c.cluster.stack
+    return stack.name+'-'+stack.version
+
 def get_engine_host(portal, engine):
     c=Client(portal)
     return c.cluster.hosts[-1].name
