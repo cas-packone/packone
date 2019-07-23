@@ -40,8 +40,9 @@ class COMPONENT_OPERATION(Enum):
 
 class Engine(StaticModel):#TODO make Engine customizable in the ui
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    name=models.CharField(max_length=50, unique=True)
+    name=models.CharField(max_length=100,unique=True)
     description=models.TextField(max_length=5120,blank=True,default='')
+    public=models.BooleanField(default=True, editable=False)
     def get_host(self, cluster):
         return cluster.get_instances().first()
         # hostname=self.stack_set.first().driver.get_engine_host(cluster.portal, self.name)
@@ -49,34 +50,32 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
 
 import importlib
 class Stack(StaticModel):
-    _driver=models.CharField(max_length=50,choices=drivers)
-    version=models.CharField(max_length=50)
+    name=models.CharField(max_length=100,unique=True,verbose_name='version')
+    _driver=models.CharField(max_length=50,default='engines.drivers.ambari',editable=False)
+    # _driver=models.CharField(max_length=50,choices=drivers)
     engines=models.ManyToManyField(Engine)
-    class Meta:
-        unique_together = ('owner', 'name')
+    public=models.BooleanField(default=True, editable=False)
     @cached_property
     def driver(self):
         return importlib.import_module(self._driver)
-    def import_engine(self):
-        es=self.driver.list_engines(self.host.ipv4)
+    def import_engine(self, portal):
+        es=self.driver.list_engines(portal)
         for e in es:
-            name=e['name']
-            if Engine.objects.filter(name=name).exists(): continue
-            eg=Engine(
-                name=name,
-                owner=self.owner,
-                description=e['description'],
-                remark='auto imported',
-                enabled=self.enabled,
-                public=self.public
+            eg=Engine.objects.get_or_create(
+                name=e.name,
+                defaults={
+                    'owner': self.owner,
+                    'description': e.description,
+                    'remark': 'auto imported',
+                    'enabled': self.enabled
+                }
             )
-            eg.save()
             self.engines.add(eg)
 
 class Scale(StaticModel):
     init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales",verbose_name='initial blueprints')
     step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True,verbose_name='scale-out blueprints')
-    stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
+    stack=models.ForeignKey(Stack,on_delete=models.PROTECT,blank=True, null=True)
     _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='initial remedy script')
     _remedy_script_scale_out=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
     _remedy_script_scale_in=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-in remedy script')
