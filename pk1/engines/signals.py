@@ -40,7 +40,9 @@ def create_stack(sender,instance,**kwargs):
         version=get_stack_version('http://'+instance.target.ipv4+':8080')
         stack=models.Stack.objects.get_or_create(name=version)
         stack.import_engine()
-        instance.target.group_set.first().cluster_set.first().scale.stack=stack
+        scale=instance.target.group_set.first().cluster_set.first().scale
+        scale.stack=stack
+        scale.save()
     
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
