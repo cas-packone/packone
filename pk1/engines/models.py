@@ -50,7 +50,7 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
 import importlib
 class Stack(StaticModel):
     _driver=models.CharField(max_length=50,choices=drivers)
-    host=models.ForeignKey(Instance,on_delete=models.PROTECT)
+    version=models.CharField(max_length=50)
     engines=models.ManyToManyField(Engine)
     class Meta:
         unique_together = ('owner', 'name')
@@ -76,6 +76,7 @@ class Stack(StaticModel):
 class Scale(StaticModel):
     init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales",verbose_name='initial blueprints')
     step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True,verbose_name='scale-out blueprints')
+    stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='initial remedy script')
     _remedy_script_scale_out=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
     _remedy_script_scale_in=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-in remedy script')
