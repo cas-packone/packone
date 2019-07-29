@@ -1,5 +1,4 @@
 import coreapi
-from django.conf import settings
 from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
