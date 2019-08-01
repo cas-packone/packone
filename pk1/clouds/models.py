@@ -302,6 +302,13 @@ class Instance(models.Model,OperatableMixin):
     def monitor(self,notify=True):
         if not self.ready: raise Exception('instance not ready')
         status = self.cloud.driver.instances.get_status(str(self.uuid))
+        if status=='ERROR':
+            status = INSTANCE_STATUS.failure.value
+        else:
+            try:
+                status = INSTANCE_STATUS[lower(status)].value
+            except Exception as e:
+                status = INSTANCE_STATUS.null.value
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
