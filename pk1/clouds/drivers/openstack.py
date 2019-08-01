@@ -4,7 +4,6 @@ from cinderclient.exceptions import NotFound as CinderNotFound
 from cinderclient import client as cinder_client
 from uuid import uuid4
 import time
-from ..models import INSTANCE_STATUS
 
 class Driver(object):
     def __init__(self, cloud, credential):
@@ -24,7 +23,7 @@ class InstanceManager(object):
         self._manager=driver._nova_client.servers
         self.get=self._manager.get
         self.list=self._manager.list
-        self.mountable_status=[INSTANCE_STATUS.active.value,INSTANCE_STATUS.shutdown.value]
+        self.mountable_status=['ACTIVE','SHUTDOWN']
     def create(self, image_id, template_id, remark='', **kwargs):
         ins=self._manager.create(
             name=remark,
@@ -48,28 +47,16 @@ class InstanceManager(object):
                 break
             time.sleep(5)
         return ins
-    def delete(self, instance_id):
+    def delete(self, id):
         try:
-            return self._manager.delete(instance_id)
+            return self._manager.delete(id)
         except NovaNotFound as e:
             print(e)
-    def force_delete(self, instance_id):
-        return self.delete(instance_id)
-    def get_status(self, instance_id):
-        ins=self.get(instance_id)
-        if ins.status=='ACTIVE':
-            return INSTANCE_STATUS.active.value
-        elif ins.status=='PAUSED':
-            return INSTANCE_STATUS.pause.value
-        elif ins.status=='BUILDING':
-            return INSTANCE_STATUS.preparing.value
-        elif ins.status=='STOPPED':
-            return INSTANCE_STATUS.shutdown.value
-        elif ins.status=='SHUTOFF':
-            return INSTANCE_STATUS.poweroff.value
-        elif ins.status=='ERROR':
-            return INSTANCE_STATUS.failure.value
-        return INSTANCE_STATUS.null.value
+    def force_delete(self, id):
+        return self.delete(id)
+    def get_status(self, id):
+        ins=self.get(id)
+        return ins.status
 #TODO ins.stop() return 202
 class VolumeManager(object):
     def __init__(self, driver):

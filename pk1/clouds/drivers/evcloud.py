@@ -1,5 +1,4 @@
 import coreapi
-from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
 class Driver(object):
@@ -78,7 +77,7 @@ class Image(object):
 class InstanceManager(object):
     def __init__(self, driver):
         self.driver=driver
-        self.mountable_status=[INSTANCE_STATUS.shutdown.value, INSTANCE_STATUS.poweroff.value]
+        self.mountable_status=['ACTIVE','SHUTDOWN']
     def get(self, instance_id):
         action = ["vms","read"]
         params = {
@@ -117,8 +116,6 @@ class InstanceManager(object):
         ins._operate('shutdown') #avoid disk cache lost
         ins.stop()
         return ins
-    def create_image(self, image_name):
-        raise Exception('create image from instance is unsupported')
     def delete(self, instance_id):
         action = ["vms","delete"]
         params = {
@@ -144,11 +141,22 @@ class InstanceManager(object):
             "vm_id":instance_id
         }
         try:
-            return int(self.driver._do_action(action,params))
+            status = int(self.driver._do_action(action,params))
+            if status==0: return 'NULL'
+            if status==1: return 'ACTIVE'
+            if status==2: return 'BLOCK'
+            if status==3: return 'SUSPEND'
+            if status==4: return 'SHUTDOWN'
+            if status==5: return 'POWEROFF'
+            if status==6: return 'BREAKDOWN'
+            if status==7: return 'PAUSE'
+            if status==8: return 'FAILURE'
+            if status==9: return 'HOST_LOST'
+            if status==10: return 'INSTANCE_LOST'
         except coreapi.exceptions.ErrorMessage as e:
             if '\u865a\u62df\u673aUUID\u9519\u8bef' in e.error._data['detail']:
                 print('VM UUID Mismatch')
-                return 5
+                return 'POWEROFF'
             else:
                 raise e
 
@@ -165,6 +173,8 @@ class Instance(object):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
         }
+    def create_image(self, image_name):
+        raise Exception('create image from instance is unsupported')
     def _operate(self, op):
         action = ["vms","operations","partial_update"]
         params = {"vm_id":self.id,"op":op}
