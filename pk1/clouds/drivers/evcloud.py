@@ -5,8 +5,8 @@ class Driver(object):
     def __init__(self, cloud):
         self._cloud=cloud
         self._credential=cloud.platform_credential
-        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(credential['user'], credential['passwd']))
-        self._schema = self._client.get(credential['api_endpoint'])
+        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(self._credential['user'], self._credential['passwd']))
+        self._schema = self._client.get(self._credential['api_endpoint'])
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)

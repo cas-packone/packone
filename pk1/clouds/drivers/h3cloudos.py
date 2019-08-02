@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+import re
 import logging, os, sys
 
 class Driver(object):
@@ -131,7 +132,7 @@ class InstanceManager(object):
     def create(self, image_id, template_id, remark='packone', **kwargs):
         data={
         	"server": {
-        		"name": remark.replace(';', '.'),
+        		"name": re.sub(r'[\W,_]', '-', remark).strip('-'),
         		"imageRef": image_id,
         		"flavorRef": template_id,
                 "availability_zone": self.driver._credential["nova-availability_zone"],

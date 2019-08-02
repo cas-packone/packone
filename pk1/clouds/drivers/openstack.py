@@ -9,8 +9,8 @@ class Driver(object):
     def __init__(self, cloud):
         self._cloud=cloud
         self._credential=cloud.platform_credential
-        self._nova_client=nova_client.Client(credential['api_version'], username=credential['username'], password=credential['password'], project_name=credential['project_name'], auth_url=credential['auth_url'])
-        self._cinder_client=cinder_client.Client(credential['api_version'],credential['username'],credential['password'],credential['project_name'],auth_url=credential['auth_url'])    
+        self._nova_client=nova_client.Client(self._credential['api_version'], username=self._credential['username'], password=self._credential['password'], project_name=self._credential['project_name'], auth_url=self._credential['auth_url'])
+        self._cinder_client=cinder_client.Client(self._credential['api_version'],self._credential['username'],self._credential['password'],self._credential['project_name'],auth_url=self._credential['auth_url'])    
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=self._nova_client.glance
