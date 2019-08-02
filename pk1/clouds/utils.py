@@ -124,8 +124,8 @@ class SSH:
                     pkey=private_key,
                     timeout=None
                 )
-            except paramiko.AuthenticationException as ex:
-                raise ex
+            # except paramiko.AuthenticationException as ex:
+            #     raise ex
             except paramiko.ssh_exception.NoValidConnectionsError as ex:
                 continue
             except Exception as ex:
