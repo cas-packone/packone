@@ -2,9 +2,9 @@ import coreapi
 #TODO directly use libvirt and ceph
 
 class Driver(object):
-    def __init__(self, cloud, credential):
+    def __init__(self, cloud):
         self._cloud=cloud
-        self._credential=credential
+        self._credential=cloud.platform_credential
         self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(credential['user'], credential['passwd']))
         self._schema = self._client.get(credential['api_endpoint'])
         self.instances=InstanceManager(self)

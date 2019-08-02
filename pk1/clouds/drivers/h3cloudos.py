@@ -1,13 +1,21 @@
 import requests
 import time
 import json
+import logging, os, sys
 
 class Driver(object):
-    def __init__(self, cloud, credential):
+    def __init__(self, cloud):
+        self.log = logging.getLogger(os.path.basename(__file__).split('.')[0].upper())
+        self.log.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        self.log.addHandler(ch)
         self._cloud=cloud
-        self._credential=credential
+        self._credential=cloud.platform_credential
         self._headers={'Content-Type': 'application/json'}
-        self.endpoint=credential['endpoint']
+        self.endpoint=self._credential['endpoint']
         token=requests.post(
             url=self.endpoint+'/v3/auth/tokens',
             headers=self._headers,
@@ -15,17 +23,17 @@ class Driver(object):
                 "auth":{
                     "identity": {
                         "methods": ["password"],
-                        "password": {"user": {"domain": {"id": "default"},"name": credential['username'],"password": credential['password']}}
+                        "password": {"user": {"domain": {"id": "default"},"name": self._credential['username'],"password": self._credential['password']}}
                     },
                     "scope": {
-                        "project": {"domain": {"id": "default"},"name": credential['project_name']}
+                        "project": {"domain": {"id": "default"},"name": self._credential['project_name']}
                     }
                 }
             })
         ).headers['X-Subject-Token']
         self._token=token
         self._headers['X-Auth-Token']=token
-        project_id=requests.get(url=self.endpoint+'/v3/projects?name='+credential['project_name'], headers=self._headers).json()['projects'][0]['id']
+        project_id=requests.get(url=self.endpoint+'/v3/projects?name='+self._credential['project_name'], headers=self._headers).json()['projects'][0]['id']
         self.tenant_endpoint='/v2/'+project_id
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
@@ -34,7 +42,7 @@ class Driver(object):
         self.keypairs=KeyManager()
     def _request(self,url,method=requests.get,data=None):
         res = method(self.endpoint+url,headers=self._headers,data=json.dumps(data))
-        print('H3CLOUDOS REQUEST LOG: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
+        self.log.info('REQUEST: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
         if not res.ok:
             raise Exception(res.status_code, res.text)
         try:
@@ -81,8 +89,8 @@ class Flavor(object):
         self.name=info['name']
         self.ram=info['ram']
         self.vcpus=info['vcpus']
-    def __str__(self):
-        return '{}/{}/{}/{}'.format(self.id, self.name, self.vcpus, self.ram)
+    def __repr__(self):
+        return '{}: {}'.format(type(self).__name__, self.name)
 
 class ImageManager(object):
     def __init__(self, driver):
@@ -105,8 +113,8 @@ class Image(object):
         self.name=info['name']
         from django.utils.timezone import now
         self.created_at=now()
-    def __str__(self):
-        return '{}/{}'.format(self.id, self.name)
+    def __repr__(self):
+        return '{}: {}'.format(type(self).__name__, self.name)
 
 class InstanceManager(object):
     def __init__(self, driver):
@@ -123,7 +131,7 @@ class InstanceManager(object):
     def create(self, image_id, template_id, remark='packone', **kwargs):
         data={
         	"server": {
-        		"name": remark,
+        		"name": remark.replace(';', '.'),
         		"imageRef": image_id,
         		"flavorRef": template_id,
                 "availability_zone": self.driver._credential["nova-availability_zone"],
@@ -170,8 +178,8 @@ class Instance(object):
         self.name=info['name']
         self.status=info['status']
         self.created=info['created']
-    def __str__(self):
-        return '{}/{}/{}'.format(self.id, self.addresses, self.name)
+    def __repr__(self):
+        return '{}: {}-{}'.format(type(self).__name__, self.name, self.addresses['provider'][0]['addr'] if 'provider' in self.addresses else self.addresses)
     def get_console_url(self):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": "novnc"}})
     def create_image(self, image_name):
@@ -242,5 +250,5 @@ class Volume(object):
         self.created_at=info['created_at']
         self.attachments=info['attachments']
         self.status=info['status']
-    def __str__(self):
-        return '{}/{}/{}/{}'.format(self.id, self.size, self.name, self.attachments)
+    def __repr__(self):
+        return '{}: {}-{} GB'.format(type(self).__name__, self.name, self.size)

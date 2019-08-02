@@ -40,7 +40,7 @@ class Cloud(StaticModel):
         return get_pub_key(self.instance_credential_private_key)+' '+self._key_name
     @cached_property
     def driver(self):
-        return importlib.import_module(self._driver).Driver(self,self.platform_credential)
+        return importlib.import_module(self._driver).Driver(self)
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)

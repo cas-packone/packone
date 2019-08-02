@@ -6,9 +6,9 @@ from uuid import uuid4
 import time
 
 class Driver(object):
-    def __init__(self, cloud, credential):
+    def __init__(self, cloud):
         self._cloud=cloud
-        self._credential=credential
+        self._credential=cloud.platform_credential
         self._nova_client=nova_client.Client(credential['api_version'], username=credential['username'], password=credential['password'], project_name=credential['project_name'], auth_url=credential['auth_url'])
         self._cinder_client=cinder_client.Client(credential['api_version'],credential['username'],credential['password'],credential['project_name'],auth_url=credential['auth_url'])    
         self.instances=InstanceManager(self)
