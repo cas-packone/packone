@@ -28,7 +28,8 @@ def bootstrap(sender,instance,**kwargs):
     blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
     s, created=models.Scale.objects.get_or_create(
         name='packone.bootstrap.{}'.format(instance.name),
-        _remedy_script=remedy_scale_ambari_bootstrap()
+        _remedy_script=remedy_scale_ambari_bootstrap(),
+        owner=instance.owner #TODO only cloud owner can bootstrap the cloud
     )
     s.init_blueprints.add(*blueprints)
     models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
