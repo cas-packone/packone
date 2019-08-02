@@ -1,6 +1,7 @@
 from .h3cloudos import Driver as H3CDriver
 from .h3cloudos import ImageManager as H3CImageManager
 from .h3cloudos import Image
+from .h3cloudos import InstanceManager#TODO  for InstanceManager.mountable_status
 
 
 class Driver(H3CDriver):
