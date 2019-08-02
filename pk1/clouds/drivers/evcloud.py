@@ -2,11 +2,11 @@ import coreapi
 #TODO directly use libvirt and ceph
 
 class Driver(object):
-    def __init__(self, cloud, credential):
+    def __init__(self, cloud):
         self._cloud=cloud
-        self._credential=credential
-        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(credential['user'], credential['passwd']))
-        self._schema = self._client.get(credential['api_endpoint'])
+        self._credential=cloud.platform_credential
+        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(self._credential['user'], self._credential['passwd']))
+        self._schema = self._client.get(self._credential['api_endpoint'])
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
@@ -75,9 +75,9 @@ class Image(object):
             self.name=self.name.replace('0000_','')
 
 class InstanceManager(object):
+    mountable_status=['ACTIVE','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
-        self.mountable_status=['ACTIVE','SHUTDOWN']
     def get(self, instance_id):
         action = ["vms","read"]
         params = {
@@ -169,7 +169,7 @@ class Instance(object):
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
         self.created=info['create_time']
-    def get_console_url(self):
+    def get_console_url(self, type):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
         }
