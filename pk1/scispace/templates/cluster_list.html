@@ -1,0 +1,129 @@
+{% extends 'site_base.html' %}
+
+
+
+
+{% block app-body %}
+<style type="text/css">
+  .card{
+    border: 0px;
+  }
+  .card-header{
+    background-color: rgba(32, 168, 216, 0.5);
+  }
+  .card-footer{
+    background-color: #fff;
+  }
+</style>
+
+<div class="app-body">
+<div class="container-fluid">
+  <div class="row" style="margin-top: 10px;">
+    <div class="col-md-12" style="text-align: right;margin-bottom: 10px;"><a class="btn btn-primary" href="{% url 'scispace_cluster_add' %}"><icon class="fa fa-plus"></icon> Add Space</a></div>
+    
+    {% for cluster in clusters%}
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header"><strong>{{ cluster.name }}</strong></div>
+        <div class="card-body">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>Scale</td>
+                  <td>{{cluster.scale}}</td>
+                </tr>
+                <tr>
+                  <td>Remark</td>
+                  <td>{{cluster.remark}}</td>
+                </tr>
+                <tr>
+                  <td>Owner</td>
+                  <td>{{cluster.owner}}</td>
+                </tr>
+                <tr>
+                  <td>Public</td>
+                  <td>{{cluster.public}}</td>
+                </tr>
+                <tr>
+                  <td>Created Time</td>
+                  <td>{{cluster.created_time|date:'Y-m-d H:i:s'}}</td>
+                </tr>
+                <tr>
+                  <td>Built Time</td>
+                  <td>{{cluster.built_time|date:'Y-m-d H:i:s'}}</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td>{{cluster.status_name}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+          <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success">Open</a>
+          <div class="pull-right">
+            <div class="btn-group">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+              <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','start')" >Start</button>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','reboot')" >Reboot</button>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','shutdown')" >Shutdown</button>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','poweroff')" >Poweroff</button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_out')" >Scale Out</button>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_in')" >Scale In</button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','destroy')" >Destroy</button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+            
+      </div>
+    {% endfor %}
+  </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  function operate_cluster(cluster_id, operation) {
+    var op_show = { "start":"Start",
+                    "reboot": "Reboot",
+                    "shutdown": "Shutdown",
+                    "poweroff": "Poweroff",
+                    "scale_out": "Scale Out",
+                    "scale_in": "Scale In",
+                    "destroy": "Destroy"};
+    var r = confirm("Confirm execute operation \" "+op_show[operation]+" \" ?");
+    if (r != true){
+      return;
+    }
+    $.ajax({
+            url: '{% url "scispace_cluster_operate_ajax" %}',
+            type: 'post',
+            data: {
+                  "cluster_id": cluster_id,
+                  "operation": operation,
+                  },
+            success:function(data){
+                        if (data.res){
+                             alert("Operation Sended. ");
+                        } else {
+                              alert("Operation Failed !");
+                        }
+                        window.location.reload(true);
+                      }
+
+                    }, 'json'); 
+    
+  }
+            
+</script>
+
+{% endblock %}

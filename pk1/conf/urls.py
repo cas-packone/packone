@@ -41,3 +41,8 @@ urlpatterns = [
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
 ]
+
+
+urlpatterns += [
+    path('scispace/', include('scispace.urls')),
+]

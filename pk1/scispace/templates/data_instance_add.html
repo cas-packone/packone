@@ -1,0 +1,153 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+<div class="row">
+<div class="col-md-3"></div>
+<div class="col-md-6">
+  
+    <h3>Add Data Instance</strong></h3>
+    <div>
+      <form id="add_form" role="form"  class="form-horizontal"  method="post" >
+        {% csrf_token %}
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;">Name: *</label>
+          <div class="col-sm-9">
+              <input type="text" name="name" class="form-control" style="width:400px" AUTOCOMPLETE="off" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;">Dataset: *</label>
+          <div class="col-sm-9">
+              <select name="dataset_id" class="form-control" style="width:400px">
+                <option value=""></option>
+              {% for dt in datasets %}
+                {% if dataset_id == dt.id %}
+                <option value="{{dt.id}}" selected="selected">{{dt.name}}</option>
+                {% else %}
+                <option value="{{dt.id}}">{{dt.name}}</option>                
+                {% endif %}
+              {% endfor %}
+              </select>
+          </div>
+        </div>
+
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;">Engine: *</label>
+          <div class="col-sm-9">
+              <select name="data_engine_id" class="form-control" style="width:400px">
+              </select>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remedy script todo:</label>
+          <div class="col-sm-9">
+              <textarea name="remedy_script_todo" class="form-control" rows="4" style="width:400px" ></textarea>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remark:</label>
+          <div class="col-sm-9">
+              <textarea name="remark" class="form-control" rows="3" style="width:400px" ></textarea>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;"></label>
+          <div class="col-sm-9">
+              <div style="width: 400px;text-align: right;">
+                <button type="button" class="btn btn-primary" onclick="submit_form()">Add</button>
+              </div>
+          </div>
+        </div>
+
+    
+        <script type="text/javascript">
+        var data_engines = {{data_engines|safe}};
+        function submit_form(){
+          var dt_name = $.trim($('input[name="name"]').val());
+          var dataset_id = $('select[name="dataset_id"]').val();
+          var engine_id = $('select[name="data_engine_id"]').val();
+          var err = ""
+          if (!dt_name){
+            err += "[name] is required;\n"
+          }
+          if (!dataset_id){
+            err += "[Dataset] is required;\n"
+          }
+          if (!engine_id){
+            err += "[Engine] is required;\n"
+          }
+          if (!err){
+            $("#add_form").submit();
+          }
+          else{
+            alert(err);
+          }
+
+        } 
+        
+        (function(){
+            
+            $("select[name='dataset_id']").change(set_data_engine);
+            
+            function set_data_engine() {
+                var dataset_id = $('select[name="dataset_id"]').val();
+
+                var options = '';
+                if (! dataset_id){
+                  $('select[name="data_engine_id"]').html(options);
+                  return;
+                }
+
+                // not use ajax
+                if (dataset_id in data_engines){
+                  for(var i in data_engines[dataset_id]){
+                    options += '<option value="' + data_engines[dataset_id][i]['id']+'">' 
+                                + data_engines[dataset_id][i]['name']  + '</option>';
+                    }
+
+                  $('select[name="data_engine_id"]').html(options);    
+                }
+
+
+                // $.ajax({
+                //           url: '{% url "scispace_get_data_engines_ajax" cluster.id %}',
+                //           type: 'get',
+                //           data: {
+                //               'dataset_id': dataset_id,
+                //           },
+                //           success:function(data){
+                //             console.log(data);
+                //             if (data.res){
+                //                 for(var i in data.list){
+                //                     options += '<option value="' + data.list[i]['id']+'">' 
+                //                                + data.list[i]['name']  + '</option>';
+                //                   }
+
+                //               $('select[name="data_engine_id"]').html(options);    
+                //             } else {
+                //                   alert(data.error);
+                //               }
+                //           }
+
+                //         }, 'json');        
+            }        
+            set_data_engine();
+        })();
+        </script>
+      </form>
+
+    </div>
+            
+  </div>
+
+</div>
+</div>
+
+{% endblock %}

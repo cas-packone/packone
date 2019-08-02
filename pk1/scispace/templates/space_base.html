@@ -1,0 +1,52 @@
+{% extends 'site_base.html' %}
+{% load staticfiles %}
+
+
+{% block sidebar-nav %}
+            <li class="nav-title">Space</li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_cluster_info' cluster.id %}">
+                <i class="nav-icon icon-speedometer"></i> Dashboard
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_cluster_instance_list' cluster.id %}">
+                <i class="nav-icon fa fa-cubes"></i> Instances
+              </a>
+            </li>
+
+            <li class="nav-title">DATA</li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_dataset_list' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'dataset.svg'%}" width="15px"></i> Datasets</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_data_instance_list' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'instances.svg'%}" width="15px"></i> Data Instances</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_data_pipeline' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'pipeline.svg'%}" width="15px"></i> Data Pipeline</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_notebook' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'notebook.svg'%}" width="15px"></i> Notebook</a>
+            </li>
+
+            <li class="nav-title">ADMIN</li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_op_list' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'operaction.svg'%}" width="15px"></i> SciSpace Operations</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scispace_datainstance_op_list' cluster.id %}">
+                <i class="nav-icon"><img src="{% static 'operaction.svg'%}" width="15px"></i> Instance Operations</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{cluster.portal | default_if_none:''}}" target="_blank">
+                <i class="nav-icon"><img src="{% static 'manage.svg'%}" width="15px"></i> Cluster Manage</a>
+            </li>
+
+            
+{% endblock %}

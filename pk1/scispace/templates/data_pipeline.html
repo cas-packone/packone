@@ -1,0 +1,18 @@
+{% extends 'space_base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+
+  <div class="row">
+    {% if cluster %}
+    <div class="col-md-12">
+      <iframe id="iframe1" src="{{pipeline_url}}" style="width: 100%; height: 1500px;border-width: 0px;">
+        
+      </iframe>
+
+     </div>
+            
+    {% endif %}
+  </div>
+
+{% endblock %}

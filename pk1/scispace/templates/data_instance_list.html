@@ -1,0 +1,61 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+  <div class="row">
+    {% if cluster %}
+    <div class="col-md-12" style="text-align: right;margin-bottom: 10px;">
+    <a class="btn btn-primary btn-sm" href="{% url 'scispace_data_instance_add' cluster.id %}">
+      <icon class="fa fa-plus"></icon> Add Instance</a>
+    </div>
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>DataSet</th>
+            <th>Cluster</th>
+            <th>Engine</th>
+            <th>Created Time</th>
+            <th>Built Time</th>
+            <th>Status</th>
+            <th>Uri</th>
+            <th>Remark</th>
+            <th>Action</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for dt in data_instances %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{dt.name}}</td>
+            <!-- <td>{{dt.source}}</td> -->
+            <!-- <td>{{dt.uri}}</td> -->
+            <td>{{dt.dataset.name}}</td>
+            <td>{{dt.cluster.name}}</td>
+            <td>{{dt.engine.name}}</td>
+            <td>{{dt.created_time|date:'Y-m-d H:i:s'}}</td>
+            <td>{{dt.built_time|date:'Y-m-d H:i:s'}}</td>
+            <td>{{dt.status_name}}</td>
+            <td>{{dt.uri}}</td>
+            <td>{{dt.remark|default_if_none:""}}</td>
+            <td> 
+              <a href="{{dt.query_url}}" class="btn btn-primary btn-sm">Query</a> 
+            </td>
+            <td>
+              <a href="{% url 'scispace_data_instance_delete' cluster.id %}?dt_id={{dt.id}}" class="btn btn-danger btn-sm">Delete</a> 
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      </div>
+            
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}
