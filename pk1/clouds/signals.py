@@ -249,6 +249,7 @@ def materialize_group(sender,instance,**kwargs):
             operation=INSTANCE_OPERATION.start.value,
             target=group,
             status=OPERATION_STATUS.running.value,
+            ignore_error=True
         ).save()
         group.remedy(utils.remedy_script_hosts_add(group.hosts),manual=False)
         materialized.send(sender=Group, instance=group, name='materialized')
