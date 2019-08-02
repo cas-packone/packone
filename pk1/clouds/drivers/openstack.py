@@ -18,12 +18,12 @@ class Driver(object):
         self.keypairs=self._nova_client.keypairs#create, delete
 
 class InstanceManager(object):
+    mountable_status=['ACTIVE','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
         self._manager=driver._nova_client.servers
         self.get=self._manager.get
         self.list=self._manager.list
-        self.mountable_status=['ACTIVE','SHUTDOWN']
     def create(self, image_id, template_id, remark='', **kwargs):
         ins=self._manager.create(
             name=remark,

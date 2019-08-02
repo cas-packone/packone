@@ -75,9 +75,9 @@ class Image(object):
             self.name=self.name.replace('0000_','')
 
 class InstanceManager(object):
+    mountable_status=['ACTIVE','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
-        self.mountable_status=['ACTIVE','SHUTDOWN']
     def get(self, instance_id):
         action = ["vms","read"]
         params = {

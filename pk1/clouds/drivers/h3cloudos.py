@@ -118,9 +118,9 @@ class Image(object):
         return '{}: {}'.format(type(self).__name__, self.name)
 
 class InstanceManager(object):
+    mountable_status=['ACTIVE','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
-        self.mountable_status=['ACTIVE','SHUTDOWN']
     def get(self, id):
         info=self.driver._tenant_get('/servers/'+id)['server']
         return Instance(self, info)
