@@ -169,7 +169,7 @@ class Instance(object):
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
         self.created=info['create_time']
-    def get_console_url(self):
+    def get_console_url(self, type):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
         }

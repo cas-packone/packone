@@ -181,8 +181,8 @@ class Instance(object):
         self.created=info['created']
     def __repr__(self):
         return '{}: {}-{}'.format(type(self).__name__, self.name, self.addresses['provider'][0]['addr'] if 'provider' in self.addresses else self.addresses)
-    def get_console_url(self):
-        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": "novnc"}})
+    def get_console_url(self, type):
+        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": type}})
     def create_image(self, image_name):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name}})
     def start(self):
