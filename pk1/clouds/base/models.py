@@ -144,6 +144,7 @@ class OperationModel(models.Model):
     status=models.CharField(max_length=50,choices=[(s.value,s.name) for s in OPERATION_STATUS],default=OPERATION_STATUS.running.value,editable=False)
     tidied = models.BooleanField(default=False,editable=False)
     manual = models.BooleanField(default=True,editable=False)
+    ignore_error = models.BooleanField(default=False,editable=True)
     class Meta:
         verbose_name = "operation"
         abstract = True
@@ -232,5 +233,6 @@ class M2MOperationModel(OperationModel):
                     target=operatable,
                     tidied=True,
                     manual=self.manual,
+                    ignore_error=self.ignore_error,
                     script=self.script
                 ).save()

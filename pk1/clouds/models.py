@@ -309,8 +309,9 @@ class Instance(models.Model,OperatableMixin):
             status = INSTANCE_STATUS.failure.value
         else:
             try:
-                status = INSTANCE_STATUS[lower(status)].value
+                status = INSTANCE_STATUS[status.lower()].value
             except Exception as e:
+                print(e)
                 status = INSTANCE_STATUS.null.value
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
@@ -440,6 +441,8 @@ class InstanceOperation(OperationModel):
                         self.log='EXCEPTION MESSAGE:\n'+str(e)
                         self.status=OPERATION_STATUS.failed.value
             self.completed_time=now()
+            if self.ignore_error and self.status==OPERATION_STATUS.failed.value:
+                self.status=OPERATION_STATUS.success.value
             try:
                 self.save()
             except IntegrityError as e:
@@ -505,7 +508,7 @@ class Group(models.Model,M2MOperatableMixin):
                 InstanceOperation(
                     target=operatable,
                     operation=INSTANCE_OPERATION.poweroff.value,
-                    manual=True
+                    ignore_error=True
                 ).save()
                 time.sleep(0.1)
         else:
