@@ -1,14 +1,12 @@
 import coreapi
-from django.conf import settings
-from ..models import INSTANCE_STATUS
 #TODO directly use libvirt and ceph
 
 class Driver(object):
-    def __init__(self, cloud, credential):
+    def __init__(self, cloud):
         self._cloud=cloud
-        self._credential=credential
-        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(credential['user'], credential['passwd']))
-        self._schema = self._client.get(credential['api_endpoint'])
+        self._credential=cloud.platform_credential
+        self._client=coreapi.Client(auth=coreapi.auth.BasicAuthentication(self._credential['user'], self._credential['passwd']))
+        self._schema = self._client.get(self._credential['api_endpoint'])
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
@@ -77,9 +75,9 @@ class Image(object):
             self.name=self.name.replace('0000_','')
 
 class InstanceManager(object):
+    mountable_status=['ACTIVE','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
-        self.mountable_status=[INSTANCE_STATUS.shutdown.value, INSTANCE_STATUS.poweroff.value]
     def get(self, instance_id):
         action = ["vms","read"]
         params = {
@@ -118,8 +116,6 @@ class InstanceManager(object):
         ins._operate('shutdown') #avoid disk cache lost
         ins.stop()
         return ins
-    def create_image(self, image_name):
-        raise Exception('create image from instance is unsupported')
     def delete(self, instance_id):
         action = ["vms","delete"]
         params = {
@@ -145,11 +141,22 @@ class InstanceManager(object):
             "vm_id":instance_id
         }
         try:
-            return int(self.driver._do_action(action,params))
+            status = int(self.driver._do_action(action,params))
+            if status==0: return 'NULL'
+            if status==1: return 'ACTIVE'
+            if status==2: return 'BLOCK'
+            if status==3: return 'SUSPEND'
+            if status==4: return 'SHUTDOWN'
+            if status==5: return 'POWEROFF'
+            if status==6: return 'BREAKDOWN'
+            if status==7: return 'PAUSE'
+            if status==8: return 'FAILURE'
+            if status==9: return 'HOST_LOST'
+            if status==10: return 'INSTANCE_LOST'
         except coreapi.exceptions.ErrorMessage as e:
             if '\u865a\u62df\u673aUUID\u9519\u8bef' in e.error._data['detail']:
                 print('VM UUID Mismatch')
-                return 5
+                return 'POWEROFF'
             else:
                 raise e
 
@@ -162,10 +169,12 @@ class Instance(object):
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
         self.created=info['create_time']
-    def get_console_url(self):
+    def get_console_url(self, type):
         return {
             'console': {'url': self.manager.driver._do_action(["vms","vnc","create"], {"vm_id":self.id})}
         }
+    def create_image(self, image_name):
+        raise Exception('create image from instance is unsupported')
     def _operate(self, op):
         action = ["vms","operations","partial_update"]
         params = {"vm_id":self.id,"op":op}

@@ -39,8 +39,11 @@ class Cloud(StaticModel):
         from .utils import get_pub_key
         return get_pub_key(self.instance_credential_private_key)+' '+self._key_name
     @cached_property
+    def driver_module(self):
+        return importlib.import_module(self._driver)
+    @cached_property
     def driver(self):
-        return importlib.import_module(self._driver).Driver(self,self.platform_credential)
+        return self.driver_module.Driver(self)
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
@@ -293,7 +296,7 @@ class Instance(models.Model,OperatableMixin):
         return self.ipv4+' '+hostnames
     @property
     def mountable(self):
-        if self.status in self.cloud.driver.instances.mountable_status: return True
+        if self.status in self.cloud.driver_module.InstanceManager.mountable_status: return True
         if self.status==INSTANCE_STATUS.building.value and self.ready: return True
         return False
     @property
@@ -302,6 +305,13 @@ class Instance(models.Model,OperatableMixin):
     def monitor(self,notify=True):
         if not self.ready: raise Exception('instance not ready')
         status = self.cloud.driver.instances.get_status(str(self.uuid))
+        if status=='ERROR':
+            status = INSTANCE_STATUS.failure.value
+        else:
+            try:
+                status = INSTANCE_STATUS[lower(status)].value
+            except Exception as e:
+                status = INSTANCE_STATUS.null.value
         if self.__class__.objects.filter(pk=self.pk).update(status=status):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')

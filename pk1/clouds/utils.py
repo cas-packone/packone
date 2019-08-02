@@ -64,12 +64,12 @@ def remedy_script_hostname(hostname):
 #TODO make filesystem type chooseable
 #must use rsync -ax to keep permissions
 def remedy_script_mount_add(mount):
-    return "mkfs.xfs {mount.dev}>/dev/null 2>&1 && " \
-    "rsync -ax {mount.point} {mount.point}.old>/dev/null 2>&1 && " \
-    "mkdir -p {mount.point} && " \
-    "mount {mount.dev} {mount.point} && " \
-    "rsync -ax {mount.point}.old/* {mount.point}>/dev/null 2>&1 && " \
-    "rm -rf {mount.point}.old/ && " \
+    return "mkfs.xfs {mount.dev}>/dev/null 2>&1\n" \
+    "rsync -ax {mount.point} {mount.point}.old>/dev/null 2>&1\n" \
+    "mkdir -p {mount.point}\n" \
+    "mount {mount.dev} {mount.point}\n" \
+    "rsync -ax {mount.point}.old/* {mount.point}>/dev/null 2>&1\n" \
+    "rm -rf {mount.point}.old/\n" \
     "echo '{mount.dev} {mount.point} xfs defaults 0 2'>>/etc/fstab". \
     format(mount=mount)
 
@@ -124,8 +124,8 @@ class SSH:
                     pkey=private_key,
                     timeout=None
                 )
-            except paramiko.AuthenticationException as ex:
-                raise ex
+            # except paramiko.AuthenticationException as ex:
+            #     raise ex
             except paramiko.ssh_exception.NoValidConnectionsError as ex:
                 continue
             except Exception as ex:

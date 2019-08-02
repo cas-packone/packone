@@ -28,7 +28,8 @@ def bootstrap(sender,instance,**kwargs):
     blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
     s, created=models.Scale.objects.get_or_create(
         name='packone.bootstrap.{}'.format(instance.name),
-        _remedy_script=remedy_scale_ambari_bootstrap()
+        _remedy_script=remedy_scale_ambari_bootstrap(),
+        owner=instance.owner #TODO only cloud owner can bootstrap the cloud
     )
     s.init_blueprints.add(*blueprints)
     models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
@@ -40,7 +41,9 @@ def create_stack(sender,instance,**kwargs):
         version=get_stack_version('http://'+instance.target.ipv4+':8080')
         stack=models.Stack.objects.get_or_create(name=version)
         stack.import_engine()
-        instance.target.group_set.first().cluster_set.first().scale.stack=stack
+        scale=instance.target.group_set.first().cluster_set.first().scale
+        scale.stack=stack
+        scale.save()
     
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
