@@ -145,12 +145,28 @@ class OperationModel(models.Model):
     tidied = models.BooleanField(default=False,editable=False)
     manual = models.BooleanField(default=True,editable=False)
     ignore_error = models.BooleanField(default=False,editable=True)
+    log=models.TextField(max_length=51200,null=True,blank=True,editable=False)
     class Meta:
         verbose_name = "operation"
         abstract = True
         ordering=['-started_time','-completed_time','-pk']
     def __str__(self):
         return "{}({}/{}/{})".format(self.batch,self.target,self.operation,self.status)
+    @property
+    def short_script(self):
+        if not self.script: return self.script
+        ret=[]
+        for line in self.script.split('\n'):
+            ret.append(line[:50])
+        return '\n'.join(ret)
+    @property
+    def short_log(self):
+        # return self.log
+        if not self.log: return self.log
+        ret=[]
+        for line in self.log.split('\n')[:50]:
+            ret.append(line[:100])
+        return '\n'.join(ret)
     @property
     def batch(self):
         return str(self.batch_uuid).split('-')[0]

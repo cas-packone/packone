@@ -80,15 +80,17 @@ class OperationAdmin(AutoModelAdmin):
         'manual',
         'status',
     )
+    def get_list_display(self,request,obj=None):
+        return super().get_list_display(request,obj)
     def _target(self,obj):
         return get_formated_url(obj.target)
-    list_display_exclude=('operation','target','tidied','created_time','batch_uuid')
+    list_display_exclude=('operation','target','tidied','created_time','batch_uuid','script','log')
     def get_queryset_Q(self, request):
         return Q(target__owner=request.user)
     def get_form_fields_exclude(self,request,obj=None):
         return ('target',) if obj else ('_target',)
     def get_list_display(self,request,obj=None):
-        return ('batch','operation', '_target','script') + super().get_list_display(request,obj)
+        return ('batch','operation', '_target','short_script') + super().get_list_display(request,obj)+('short_log',)
     def get_readonly_fields(self,request,obj=None):
         return ('_target', 'batch_uuid',) + super().get_readonly_fields(request,obj)
     def get_form_field_queryset_Q(self, db_field, request):
@@ -103,8 +105,7 @@ class OperationAdmin(AutoModelAdmin):
             op.status=OPERATION_STATUS.running.value
             op.started_time=now()
             op.completed_time=None
-            if hasattr(op,'log'):
-                op.log=''
+            op.log=None
             op.save()
             op.execute()
     rerun.short_description = "Re-run selected operations"

@@ -215,8 +215,6 @@ class MountAdmin(AutoModelAdmin):
 
 @admin.register(models.InstanceOperation)
 class InstanceOperationAdmin(OperationAdmin):
-    def get_list_display(self,request,obj=None):
-        return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
         return (super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))) & ~Q(status=models.OPERATION_STATUS.success.value)
     def has_delete_permission(self, request, obj=None):
