@@ -10,13 +10,10 @@ from clouds.models import StaticModel, Image, Instance, Mount, INSTANCE_STATUS, 
 from django.utils.functional import cached_property
 from django.db import transaction
 from clouds.base.models import M2MOperatableMixin, M2MOperationModel
+from engines.drivers.ambari import Driver
 
 import pkgutil
 from django.conf import settings
-drivers=[]
-for importer, modname, ispkg in pkgutil.iter_modules((settings.BASE_DIR+'/engines/drivers',)):
-    driver='engines.drivers.{}'.format(modname)
-    drivers.append((driver,driver))
 
 class COMPONENT_STATUS(Enum):
     null=0 #unknown
@@ -51,26 +48,8 @@ class Engine(StaticModel):#TODO make Engine customizable in the ui
 import importlib
 class Stack(StaticModel):
     name=models.CharField(max_length=100,unique=True,verbose_name='version')
-    _driver=models.CharField(max_length=50,default='engines.drivers.ambari',editable=False)
-    # _driver=models.CharField(max_length=50,choices=drivers)
-    engines=models.ManyToManyField(Engine)
+    engines=models.ManyToManyField(Engine,blank=True)
     public=models.BooleanField(default=True, editable=False)
-    @cached_property
-    def driver(self):
-        return importlib.import_module(self._driver)
-    def import_engine(self, portal):
-        es=self.driver.list_engines(portal)
-        for e in es:
-            eg=Engine.objects.get_or_create(
-                name=e.name,
-                defaults={
-                    'owner': self.owner,
-                    'description': e.description,
-                    'remark': 'auto imported',
-                    'enabled': self.enabled
-                }
-            )
-            self.engines.add(eg)
 
 class Scale(StaticModel):
     init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales",verbose_name='initial blueprints')
@@ -167,9 +146,31 @@ class Cluster(models.Model,M2MOperatableMixin):
     @property
     def operatables(self):
         return self.steps.all()
-    def metric(self):
-        from .drivers import ambari
-        return ambari.get_metrics(self.portal)
+    @cached_property
+    def portal(self):#TODO formalize, opt perf.
+        if not self.ready: raise Exception('cluster not ready')
+        mi=self.get_ready_instances().filter(image__name__contains='master1')
+        if mi.exists(): return "http://"+str(mi[0].ipv4)+':8080'
+        return None
+    @cached_property
+    def driver(self):
+        return Driver(self.portal)
+    def import_engine(self):
+        stack=self.scale.stack
+        for e in self.driver.stack_engines:
+            eg, created=Engine.objects.get_or_create(
+                name=e.name,
+                defaults={
+                    'owner': self.owner,
+                    'description': e.description,
+                    'remark': 'auto imported',
+                    'enabled': stack.enabled
+                }
+            )
+            stack.engines.add(eg)
+    @property
+    def metrics(self):
+        return self.driver.metrics
     @property
     def ready(self):
         return self.built_time
@@ -182,12 +183,6 @@ class Cluster(models.Model,M2MOperatableMixin):
         return Instance.objects.filter(group__in=self.steps.filter()).distinct()
     def get_ready_instances(self):
         return Instance.objects.filter(group__in=self.get_ready_steps()).distinct()
-    @cached_property
-    def portal(self):#TODO formalize, opt perf.
-        if not self.ready: raise Exception('cluster not ready')
-        mi=self.get_ready_instances().filter(image__name__contains='master1')
-        if mi.exists(): return "http://"+str(mi[0].ipv4)+':8080'
-        return None
     @cached_property
     def engines_unselected(self):
         return Engine.objects.all().difference(self.engines.all())

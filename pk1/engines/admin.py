@@ -13,12 +13,7 @@ from clouds.utils import get_url, get_formated_url
 
 @admin.register(models.Stack)
 class StackAdmin(StaticModelAdmin):
-    list_filter = ('_driver',)+StaticModelAdmin.list_filter
-    def import_engine(modeladmin, request, queryset):
-        for stack in queryset:
-            stack.import_engine()
-    import_engine.short_description = "Refresh engines from selected stacks"
-    actions = [import_engine]
+    pass
 
 @admin.register(models.Engine)
 class EngineAdmin(StaticModelAdmin):
@@ -62,53 +57,41 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     def materialize(modeladmin, request, queryset):
         for cluster in queryset:
             if not cluster.name.startswith('bootstrap.'): continue
+            blueprints=[]
             for ins in cluster.get_instances():
-                try:
-                    ins.cloud.driver.instances.get(str(ins.uuid)).create_image(ins.image.name.replace('-bootstrap',''))
-                except Exception as e:
-                    print(e)
-            ins.cloud.import_image()
-            image_master1=ins.cloud.image_set.get(name='packone-master1')
-            image_master2=ins.cloud.image_set.get(name='packone-master2')
-            image_slave=ins.cloud.image_set.get(name='packone-slave')
-            blueprint_master1, created=ins.cloud.instanceblueprint_set.get_or_create(
-                name='packone-master1',
-                cloud=ins.cloud,
-                template=ins.template,
-                image=image_master1,
-                volume_capacity=500,
-                remark='auto created',
-                owner=ins.owner
-            )
-            blueprint_master2, created=ins.cloud.instanceblueprint_set.get_or_create(
-                name='packone-master2',
-                cloud=ins.cloud,
-                template=ins.template,
-                image=image_master2,
-                volume_capacity=500,
-                remark='auto created',
-                owner=ins.owner
-            )
-            blueprint_slave, created=ins.cloud.instanceblueprint_set.get_or_create(
-                name='packone-slave',
-                cloud=ins.cloud,
-                template=ins.template,
-                image=image_slave,
-                volume_capacity=500,
-                remark='auto created',
-                owner=ins.owner
-            )
+                img_name=ins.image.name.replace('-bootstrap','').replace('packone-','')+'.packone'
+                if not ins.cloud.image_set.filter(name=img_name).exists():
+                    ins.cloud.driver.instances.get(str(ins.uuid)).create_image(img_name)
+                    ins.cloud.import_image()
+                image=ins.cloud.image_set.get(name=img_name)
+                image.hostname=img_name
+                image.protected=False
+                image.save()
+                blueprint, created=ins.cloud.instanceblueprint_set.get_or_create(
+                    name=img_name,
+                    cloud=ins.cloud,
+                    template=ins.template,
+                    image=image,
+                    defaults={
+                        'owner': ins.owner,
+                        'volume_capacity': 500,
+                        'remark':'auto created'
+                    }
+                )
+                blueprints.append(blueprint)
             from .utils import remedy_scale_ambari_fast_init, remedy_scale_ambari_fast_scale_out, remedy_scale_ambari_fast_scale_in
             s, created=models.Scale.objects.get_or_create(
-                name='packone.{}'.format(ins.cloud.name),
+                name=cluster.name.replace('bootstrap','packone'),
                 _remedy_script=remedy_scale_ambari_fast_init(),
                 _remedy_script_scale_out=remedy_scale_ambari_fast_scale_out(),
                 _remedy_script_scale_in=remedy_scale_ambari_fast_scale_in(),
-                owner=ins.owner
+                stack=cluster.scale.stack,
+                public=True,
+                owner=cluster.owner
             )
             if created:
-                s.init_blueprints.add(*(blueprint_master1, blueprint_master2, blueprint_slave))
-                s.step_blueprints.add(*(blueprint_slave,))
+                s.init_blueprints.add(*blueprints)
+                s.step_blueprints.add(*list(filter(lambda x: 'slave' in x.name, blueprints)))
     materialize.short_description = "Materialize the cluster as a scale"
     def scale_out(modeladmin, request, queryset):
         for cluster in queryset:
@@ -122,7 +105,11 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for cluster in queryset:
             cluster.delete()
     destroy.short_description = "Destroy selected clusters"
-    actions=[start,stop,materialize,scale_out,scale_in,destroy]
+    def import_engine(modeladmin, request, queryset):
+        for cluster in queryset:
+            cluster.import_engine()
+    import_engine.short_description = "Refresh engines from selected clusters"
+    actions=[start,stop,materialize,scale_out,scale_in,destroy,import_engine]
     def has_delete_permission(self, request, obj=None):
         return False
     def get_form_field_queryset_Q(self, db_field, request):
