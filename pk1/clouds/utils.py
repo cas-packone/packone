@@ -113,7 +113,7 @@ class SSH:
             private_key_file=StringIO(private_key)
             private_key=paramiko.RSAKey.from_private_key(private_key_file)
             private_key_file.close()
-        mustend = time.time() + 600
+        mustend = time.time() + 900
         e=Exception()
         while time.time() < mustend:
             time.sleep(5)
