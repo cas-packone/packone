@@ -30,7 +30,7 @@ def log(sender,instance,name,**kwargs):
     print('SIGNAL INFO:{}/{}/{}'.format(sender._meta.app_label, sender._meta.verbose_name, instance), name)
 
 @receiver(post_save, sender=Cloud)
-def cloud_bootstrap(sender,instance,**kwargs):
+def bootstrap_cloud(sender,instance,**kwargs):
     if kwargs['created']:
         instance.import_image()
         instance.import_template()
@@ -41,7 +41,7 @@ def cloud_bootstrap(sender,instance,**kwargs):
         instance.save()
 
 @receiver(pre_delete, sender=Cloud)
-def cloud_cleanup(sender,instance,**kwargs):
+def cleanup_cloud(sender,instance,**kwargs):
     instance.driver.keypairs.delete(instance._key_name)
 
 @receiver(post_save, sender=Image)
@@ -51,6 +51,11 @@ def clone_image(sender,instance,**kwargs):
         raise Exception('Must keep access_id same with parent')
     if instance.parent.cloud != instance.cloud:
         raise Exception('Must keep cloud same with parent')
+
+@receiver(pre_delete, sender=Image)
+def destroy_image(sender,instance,**kwargs):
+    if not instance.protected:
+        instance.cloud.driver.images.delete(instance.access_id)
 
 # actions relies on status must be registered to the monitored signal first.
 @receiver(materialized, sender=Instance)
