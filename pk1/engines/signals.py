@@ -37,13 +37,12 @@ def bootstrap(sender,instance,**kwargs):
 @receiver(executed, sender=InstanceOperation)
 def create_stack(sender,instance,**kwargs):
     if instance.target.image.name=='packone-bootstrap-master1' and 'ambari localhost:8080 cluster create' in instance.script:
-        from .drivers.ambari import get_stack_version
-        version=get_stack_version('http://'+instance.target.ipv4+':8080')
-        stack=models.Stack.objects.get_or_create(name=version)
-        stack.import_engine()
-        scale=instance.target.group_set.first().cluster_set.first().scale
+        cluster=instance.target.group_set.first().cluster_set.first()
+        stack, created=models.Stack.objects.get_or_create(name=cluster.driver.stack_version, defaults={'owner': instance.target.owner})
+        scale=cluster.scale
         scale.stack=stack
         scale.save()
+        if created: cluster.import_engine()
     
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)

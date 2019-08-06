@@ -77,7 +77,8 @@ def remedy_script_mount_remove(mount):
     return "sed -i '/{}/d' /etc/fstab".format('{mount.dev} {mount.point}'.format(mount=mount).replace('/', '\/'))
 
 def remedy_image_ambari_agent():
-    return 'curl -Ssl https://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.3.0/ambari.repo -o /etc/yum.repos.d/ambari.repo\n\nyum -q -y install ambari-agent 2>&1'
+    return "echo 'nameserver 8.8.8.8'>>/etc/resolv.conf\n" \
+    'curl -Ssl https://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.3.0/ambari.repo -o /etc/yum.repos.d/ambari.repo\n\nyum -q -y install ambari-agent 2>&1'
 
 def remedy_image_ambari_server():
     return 'yum -q -y install ambari-server 2>&1\n\n' \
@@ -112,7 +113,7 @@ class SSH:
             private_key_file=StringIO(private_key)
             private_key=paramiko.RSAKey.from_private_key(private_key_file)
             private_key_file.close()
-        mustend = time.time() + 600
+        mustend = time.time() + 900
         e=Exception()
         while time.time() < mustend:
             time.sleep(5)

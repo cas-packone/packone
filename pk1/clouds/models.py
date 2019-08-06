@@ -170,6 +170,7 @@ class Image(StaticModel):
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.CASCADE,blank=True,null=True)
+    protected=models.BooleanField(default=True,editable=False)
     class Meta:
         unique_together = ('cloud', 'name')
     @cached_property
@@ -259,6 +260,18 @@ User.blueprints=blueprints_of_user
 
 monitored = Signal(providing_args=["instance","name"])
 
+#TODO change model status field to char
+def to_status_value(status):
+    if status=='ERROR':
+        status = INSTANCE_STATUS.failure.value
+    else:
+        try:
+            status = INSTANCE_STATUS[status.lower()].value
+        except Exception as e:
+            print(e)
+            status = INSTANCE_STATUS.null.value
+    return status
+
 class Instance(models.Model,OperatableMixin):
     ipv4=models.GenericIPAddressField(protocol='IPv4',blank=True,null=True,editable=False)
     ipv6=models.GenericIPAddressField(protocol='IPv6',blank=True,null=True,editable=False)
@@ -296,7 +309,7 @@ class Instance(models.Model,OperatableMixin):
         return self.ipv4+' '+hostnames
     @property
     def mountable(self):
-        if self.status in self.cloud.driver_module.InstanceManager.mountable_status: return True
+        if INSTANCE_STATUS(self.status).name.upper() in self.cloud.driver_module.InstanceManager.mountable_status: return True
         if self.status==INSTANCE_STATUS.building.value and self.ready: return True
         return False
     @property
@@ -305,15 +318,7 @@ class Instance(models.Model,OperatableMixin):
     def monitor(self,notify=True):
         if not self.ready: raise Exception('instance not ready')
         status = self.cloud.driver.instances.get_status(str(self.uuid))
-        if status=='ERROR':
-            status = INSTANCE_STATUS.failure.value
-        else:
-            try:
-                status = INSTANCE_STATUS[status.lower()].value
-            except Exception as e:
-                print(e)
-                status = INSTANCE_STATUS.null.value
-        if self.__class__.objects.filter(pk=self.pk).update(status=status):
+        if self.__class__.objects.filter(pk=self.pk).update(status=to_status_value(status)):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
     @property
