@@ -113,11 +113,11 @@ class ImageManager(object):
     def __init__(self, driver):
         self.driver=driver
     def get(self, id):
-        info=self.driver._tenant_get('/images/'+id)['image']
+        info=self.driver._get('/v2/images/'+id)['image']
         return Image(info)
     def list(self):
         images=[]
-        for item in self.driver._tenant_get('/images')['images']:
+        for item in self.driver._get('/v2/images')['images']:
             images.append(Image(item))
         return images
     def delete(self, id):
@@ -128,8 +128,7 @@ class Image(object):
         self.info=info
         self.id=info['id']
         self.name=info['name']
-        from django.utils.timezone import now
-        self.created_at=now()
+        self.created_at=info['created_at']
     def __repr__(self):
         return '{}: {}'.format(type(self).__name__, self.name)
 
