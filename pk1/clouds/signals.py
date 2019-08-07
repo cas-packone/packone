@@ -51,6 +51,10 @@ def clone_image(sender,instance,**kwargs):
         raise Exception('Must keep access_id same with parent')
     if instance.parent.cloud != instance.cloud:
         raise Exception('Must keep cloud same with parent')
+    if instance.min_ram<instance.parent.min_ram:
+        sender.objects.filter(pk=instance.pk).update(min_ram=instance.parent.min_ram)
+    if instance.min_disk<instance.parent.min_disk:
+        sender.objects.filter(pk=instance.pk).update(min_disk=instance.parent.min_disk)
 
 @receiver(pre_delete, sender=Image)
 def destroy_image(sender,instance,**kwargs):

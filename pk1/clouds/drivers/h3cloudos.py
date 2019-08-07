@@ -112,6 +112,7 @@ class Flavor(object):
         self.name=info['name']
         self.ram=info['ram']
         self.vcpus=info['vcpus']
+        self.disk=info['disk']
     def __repr__(self):
         return '{}: {}'.format(type(self).__name__, self.name)
 
@@ -134,6 +135,8 @@ class Image(object):
         self.info=info
         self.id=info['id']
         self.name=info['name']
+        self.min_ram=info['min_ram']*1024
+        self.min_disk=info['min_disk']
         self.created_at=info['created_at']
     def __repr__(self):
         return '{}: {}'.format(type(self).__name__, self.name)

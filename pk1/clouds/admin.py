@@ -57,7 +57,7 @@ class ImageAdmin(CloudStaticModelAdmin):
             }
     form = ImageForm
     def clone(self,obj):
-        return format_html('<a href="{}?access_id={image.access_id}&cloud={image.cloud.pk}&parent={image.pk}" class="button">Clone</a>'.format(reverse('admin:clouds_image_add'),image=obj))
+        return format_html('<a href="{}?access_id={image.access_id}&cloud={image.cloud.pk}&parent={image.pk}&min_ram={image.min_ram}&min_disk={image.min_disk}" class="button">Clone</a>'.format(reverse('admin:clouds_image_add'),image=obj))
     def launch(self,obj):
         return format_html('<a href="{}?cloud={image.cloud.pk}&image={image.pk}" class="button">Launch</a>'.format(reverse('admin:clouds_instance_add'),image=obj)) 
     extra=('clone','launch')

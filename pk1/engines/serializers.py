@@ -21,7 +21,7 @@ class ScaleSerializer(serializers.ModelSerializer):
     step_blueprints = InstanceBlueprintPKField(many=True)
     instance_quantity = serializers.ReadOnlyField()
     cpu_quantity = serializers.ReadOnlyField()
-    mem_quantity = serializers.ReadOnlyField()
+    ram_quantity = serializers.ReadOnlyField()
     volume_capacity = serializers.ReadOnlyField()
     class Meta:
         model = models.Scale
