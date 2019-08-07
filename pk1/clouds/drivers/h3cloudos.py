@@ -42,10 +42,12 @@ class Driver(object):
         self.images=ImageManager(self)
         self.flavors=FlavorManager(self)
         self.keypairs=KeyManager()
-    def _request(self,url,method=requests.get,data=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
+    def _request(self,url,method=requests.get,data=None,headers=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
+        if not headers:
+            headers=self._headers
         mustend = time.time() + 900
         while time.time() < mustend:
-            res = method(self.endpoint+url,headers=self._headers,data=json.dumps(data))
+            res = method(self.endpoint+url,headers=headers,data=json.dumps(data))
             self.log.info('REQUEST: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
             if retry_when_response_unexpected_strings:
                 ss=list(filter(lambda x: x in res.text, retry_when_response_unexpected_strings))
@@ -75,7 +77,11 @@ class Driver(object):
     def _tenant_create(self, url, data, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
         return self._create(self.tenant_endpoint+url,data=data,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
     def _delete(self, url, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
-        return self._request(url,method=requests.delete,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
+        try:
+            return self._request(url,method=requests.delete,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
+        except Exception as e:
+            if e.args[0]!=404:
+                raise e
     def _tenant_delete(self, url, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
         return self._delete(self.tenant_endpoint+url,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
 
@@ -194,7 +200,7 @@ class Instance(object):
     def get_console_url(self, type):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": type}})
     def create_image(self, image_name):
-        self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name,"metadata":{"operator_id":self.manager.driver.project_id}}},retry_when_response_unexpected_strings=['conflictingRequest'])
+        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name,"metadata":{"operator_id":self.manager.driver.project_id}}},retry_when_response_unexpected_strings=['conflictingRequest'])
     def start(self):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-start": None})
     def reboot(self):
