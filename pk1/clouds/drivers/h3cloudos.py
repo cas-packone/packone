@@ -35,28 +35,30 @@ class Driver(object):
         ).headers['X-Subject-Token']
         self._token=token
         self._headers['X-Auth-Token']=token
-        project_id=requests.get(url=self.endpoint+'/v3/projects?name='+self._credential['project_name'], headers=self._headers).json()['projects'][0]['id']
-        self.tenant_endpoint='/v2/'+project_id
+        self.project_id=requests.get(url=self.endpoint+'/v3/projects?name='+self._credential['project_name'], headers=self._headers).json()['projects'][0]['id']
+        self.tenant_endpoint='/v2/'+self.project_id
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
         self.flavors=FlavorManager(self)
         self.keypairs=KeyManager()
-    def _request(self,url,method=requests.get,data=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
-        mustend = time.time() + 600
+    def _request(self,url,method=requests.get,data=None,headers=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
+        if not headers:
+            headers=self._headers
+        mustend = time.time() + 900
         while time.time() < mustend:
-            res = method(self.endpoint+url,headers=self._headers,data=json.dumps(data))
+            res = method(self.endpoint+url,headers=headers,data=json.dumps(data))
             self.log.info('REQUEST: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
             if retry_when_response_unexpected_strings:
                 ss=list(filter(lambda x: x in res.text, retry_when_response_unexpected_strings))
                 if ss:
-                    self.log.info('REQUEST RETRING, AS UNEXPECTED RESPONSE STRING "{}" is appeared in response: "{}"!'.format(ss[0], res.text))
+                    self.log.info('REQUEST RETRING, AS UNEXPECTED RESPONSE STRING "{}" appeared in response: "{}"!'.format(ss[0], res.text))
                     time.sleep(5)
                     continue
             if retry_until_response_expected_strings:
                 ss=list(filter(lambda x: x in res.text, retry_until_response_expected_strings))
                 if not ss:
-                    self.log.info('REQUEST RETRING, AS EXPECTED RESPONSE STRING "{}" is not appeared in response: "{}"!'.format(' or '.join(retry_until_response_expected_strings), res.text))
+                    self.log.info('REQUEST RETRING, AS EXPECTED RESPONSE STRING "{}"  didn\'t appear in response: "{}"!'.format(' or '.join(retry_until_response_expected_strings), res.text))
                     time.sleep(5)
                     continue
             break
@@ -75,7 +77,11 @@ class Driver(object):
     def _tenant_create(self, url, data, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
         return self._create(self.tenant_endpoint+url,data=data,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
     def _delete(self, url, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
-        return self._request(url,method=requests.delete,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
+        try:
+            return self._request(url,method=requests.delete,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
+        except Exception as e:
+            if e.args[0]!=404:
+                raise e
     def _tenant_delete(self, url, retry_when_response_unexpected_strings=None, retry_until_response_expected_strings=None):
         return self._delete(self.tenant_endpoint+url,retry_when_response_unexpected_strings=retry_when_response_unexpected_strings, retry_until_response_expected_strings=retry_until_response_expected_strings)
 
@@ -106,6 +112,7 @@ class Flavor(object):
         self.name=info['name']
         self.ram=info['ram']
         self.vcpus=info['vcpus']
+        self.disk=info['disk']
     def __repr__(self):
         return '{}: {}'.format(type(self).__name__, self.name)
 
@@ -113,11 +120,11 @@ class ImageManager(object):
     def __init__(self, driver):
         self.driver=driver
     def get(self, id):
-        info=self.driver._tenant_get('/images/'+id)['image']
+        info=self.driver._get('/v2/images/'+id)['image']
         return Image(info)
     def list(self):
         images=[]
-        for item in self.driver._tenant_get('/images')['images']:
+        for item in self.driver._get('/v2/images')['images']:
             images.append(Image(item))
         return images
     def delete(self, id):
@@ -128,8 +135,9 @@ class Image(object):
         self.info=info
         self.id=info['id']
         self.name=info['name']
-        from django.utils.timezone import now
-        self.created_at=now()
+        self.min_ram=info['min_ram']*1024
+        self.min_disk=info['min_disk']
+        self.created_at=info['created_at']
     def __repr__(self):
         return '{}: {}'.format(type(self).__name__, self.name)
 
@@ -195,7 +203,7 @@ class Instance(object):
     def get_console_url(self, type):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": type}})
     def create_image(self, image_name):
-        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name}},retry_when_response_unexpected_strings=['conflictingRequest'])
+        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name,"metadata":{"operator_id":self.manager.driver.project_id}}},retry_when_response_unexpected_strings=['conflictingRequest'])
     def start(self):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-start": None})
     def reboot(self):

@@ -89,9 +89,8 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 public=True,
                 owner=cluster.owner
             )
-            if created:
-                s.init_blueprints.add(*blueprints)
-                s.step_blueprints.add(*list(filter(lambda x: 'slave' in x.name, blueprints)))
+            s.init_blueprints.add(*blueprints)
+            s.step_blueprints.add(*list(filter(lambda x: 'slave' in x.name, blueprints)))
     materialize.short_description = "Materialize the cluster as a scale"
     def scale_out(modeladmin, request, queryset):
         for cluster in queryset:
