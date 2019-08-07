@@ -13,7 +13,7 @@ class Driver(H3CDriver):
 class ImageManager(H3CImageManager):
     def list(self):
         images=[]
-        for item in self.driver._tenant_get('/images')['images']:
+        for item in self.driver._get('/v2/images')['images']:
             if item['name']=='CentOS7-YouHua':
                 item['name']+='-GenericCloud'
             images.append(Image(item))

@@ -58,6 +58,8 @@ class Cloud(StaticModel):
                 name=name,
                 cloud=self,
                 access_id = id,
+                min_ram=img.min_ram,
+                min_disk=img.min_disk,
                 hostname='packone',
                 owner=self.owner,
                 remark='auto imported',
@@ -72,8 +74,9 @@ class Cloud(StaticModel):
             InstanceTemplate(
                 access_id=id,
                 name=tpl.name,
-                mem=tpl.ram,
-                vcpu=tpl.vcpus,
+                ram=tpl.ram,
+                vcpus=tpl.vcpus,
+                disk=tpl.disk,
                 cloud=self,
                 owner=self.owner,
                 remark='auto imported',
@@ -83,8 +86,8 @@ class Cloud(StaticModel):
     def bootstrap(self):#TODO diss rely on centos7
         img=self.image_set.filter(name__iregex=r'CentOS.*?7.*?GenericCloud').order_by('-created_time').first()
         if not img: raise Exception('image CentOS.*?7.*?GenericCloud is required!')
-        flavor=self.instancetemplate_set.filter(mem__gte=8192,vcpu__gte=2).order_by('mem', 'vcpu').first()
-        if not flavor: raise Exception('a flavor(mem>=8192, vcpus>=2) is required!')
+        flavor=self.instancetemplate_set.filter(ram__gte=max(8192,img.min_ram),vcpus__gte=2,disk__gte=max(30,img.min_disk)).order_by('ram', 'vcpus', 'disk').first()
+        if not flavor: raise Exception('a flavor(ram>=8192, vcpus>=2) is required!')
         from .utils import remedy_image_ambari_agent, remedy_image_ambari_server
         image_ambari_agent, created=Image.objects.get_or_create(
             name='packone-bootstrap-ambari-agent',
@@ -170,6 +173,8 @@ class Image(StaticModel):
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.CASCADE,blank=True,null=True)
+    min_ram=models.PositiveIntegerField(default=1024,validators=[MinValueValidator(256)])
+    min_disk=models.PositiveIntegerField(default=30,validators=[MinValueValidator(1)])
     protected=models.BooleanField(default=True,editable=False)
     class Meta:
         unique_together = ('cloud', 'name')
@@ -200,13 +205,14 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
     name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
-    vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
-    mem=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
+    vcpus=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    ram=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
+    disk=models.PositiveIntegerField(default=30,validators=[MinValueValidator(1)])
     class Meta:
         verbose_name = "flavor"
         unique_together = ('cloud', 'name')
     def __str__(self):
-        return "{}/vcpu:{},mem:{}".format(self.name,self.vcpu,self.mem)
+        return "{}/vcpus:{},ram:{},disk:{}".format(self.name,self.vcpus,self.ram,self.disk)
 
 class InstanceBlueprint(StaticModel):
     name=models.CharField(max_length=500)

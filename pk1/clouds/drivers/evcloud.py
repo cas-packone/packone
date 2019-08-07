@@ -24,18 +24,18 @@ class KeyManager(object):
 class FlavorManager(object):
     def list(self):
         return [
-            Flavor({'id': '0', 'name': 'm1.nano', 'ram': 64, 'vcpus': 1}),
-            Flavor({'id': '1', 'name': 'm1.tiny', 'ram': 512, 'vcpus': 1}),
-            Flavor({'id': '2', 'name': 'm1.small', 'ram': 2048, 'vcpus': 1}),
-            Flavor({'id': '3', 'name': 'm1.medium', 'ram': 4096, 'vcpus': 2}),
-            Flavor({'id': '4', 'name': 'm1.large', 'ram': 8192, 'vcpus': 2}),
-            Flavor({'id': '5', 'name': 'm1.xlarge', 'ram': 16384, 'vcpus': 4}),
-            Flavor({'id': '6', 'name': 'm1.xxlarge', 'ram': 32768, 'vcpus': 8}),
-            Flavor({'id': '7', 'name': 'm1.xxxlarge', 'ram': 65536, 'vcpus': 16}),
-            Flavor({'id': '8', 'name': 'packone.m', 'ram': 8192, 'vcpus': 2}),
-            Flavor({'id': '9', 'name': 'packone.m+', 'ram': 1024, 'vcpus': 2}),
-            Flavor({'id': '10', 'name': 'packone.l', 'ram': 16384, 'vcpus': 4}),
-            Flavor({'id': '11', 'name': 'packone.x', 'ram': 32768, 'vcpus': 8}),
+            Flavor({'id': '0', 'name': 'm1.nano', 'ram': 64, 'vcpus': 1, 'disk': 30}),
+            Flavor({'id': '1', 'name': 'm1.tiny', 'ram': 512, 'vcpus': 1, 'disk': 30}),
+            Flavor({'id': '2', 'name': 'm1.small', 'ram': 2048, 'vcpus': 1, 'disk': 30}),
+            Flavor({'id': '3', 'name': 'm1.medium', 'ram': 4096, 'vcpus': 2, 'disk': 30}),
+            Flavor({'id': '4', 'name': 'm1.large', 'ram': 8192, 'vcpus': 2, 'disk': 30}),
+            Flavor({'id': '5', 'name': 'm1.xlarge', 'ram': 16384, 'vcpus': 4, 'disk': 30}),
+            Flavor({'id': '6', 'name': 'm1.xxlarge', 'ram': 32768, 'vcpus': 8, 'disk': 30}),
+            Flavor({'id': '7', 'name': 'm1.xxxlarge', 'ram': 65536, 'vcpus': 16, 'disk': 30}),
+            Flavor({'id': '8', 'name': 'packone.m', 'ram': 8192, 'vcpus': 2, 'disk': 30}),
+            Flavor({'id': '9', 'name': 'packone.m+', 'ram': 1024, 'vcpus': 2, 'disk': 30}),
+            Flavor({'id': '10', 'name': 'packone.l', 'ram': 16384, 'vcpus': 4, 'disk': 30}),
+            Flavor({'id': '11', 'name': 'packone.x', 'ram': 32768, 'vcpus': 8, 'disk': 30}),
         ]
     def get(self, id):
         for tpl in self.list():
@@ -49,6 +49,7 @@ class Flavor(object):
         self.name=info['name']
         self.ram=info['ram']
         self.vcpus=info['vcpus']
+        self.disk=info['disk']
 
 class ImageManager(object):
     def __init__(self, driver):
@@ -68,6 +69,8 @@ class Image(object):
     def __init__(self, info):
         self.id=info['id']
         self.name=info['name']
+        self.min_ram=256
+        self.min_disk=30
         if self.name=='centos7': self.name='CentOS-7.5.1804-x86_64-GenericCloud-1809'
         from django.utils.timezone import now
         self.created_at=now()
@@ -164,7 +167,6 @@ class Instance(object):
     def __init__(self, manager, info):
         self.manager=manager
         self.id=info['uuid']
-        # self.flavor=self.manager.driver.templates._locate(info['vcpus'], info['mem'])
         self.addresses={}
         if info['ipv4']: self.addresses['provider']=[{'addr': info['ipv4']}]
         self.name=info['remarks']
