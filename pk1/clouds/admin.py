@@ -125,7 +125,12 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for ins in queryset:
             return redirect(ins.vnc_url)
     VNC.short_description = "VNC"
-    actions = [VNC, toggle_power]
+    def get_or_create_image(modeladmin, request, queryset):
+        for ins in queryset:
+            image, created = ins.get_or_create_image()
+        return redirect(reverse('admin:clouds_image_change',args=(image.pk,)))
+    get_or_create_image.short_description = "get or create image with the its hostname"
+    actions = [VNC, toggle_power, get_or_create_image]
     def get_readonly_fields(self,request,obj=None):
         fs=super().get_readonly_fields(request,obj)
         if obj: return ('image', 'template',) + fs

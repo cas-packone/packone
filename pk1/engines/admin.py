@@ -59,16 +59,9 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
             if not cluster.name.startswith('bootstrap.'): continue
             blueprints=[]
             for ins in cluster.get_instances():
-                img_name=ins.image.name.replace('-bootstrap','').replace('packone-','')+'.packone'
-                if not ins.cloud.image_set.filter(name=img_name).exists():
-                    ins.cloud.driver.instances.get(str(ins.uuid)).create_image(img_name)
-                    ins.cloud.import_image()
-                image=ins.cloud.image_set.get(name=img_name)
-                image.hostname=img_name
-                image.protected=False
-                image.save()
+                image, created=ins.get_or_create_image()
                 blueprint, created=ins.cloud.instanceblueprint_set.get_or_create(
-                    name=img_name,
+                    name=image.name,
                     cloud=ins.cloud,
                     template=ins.template,
                     image=image,
