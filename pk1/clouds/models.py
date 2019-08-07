@@ -47,8 +47,9 @@ class Cloud(StaticModel):
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
-    def import_image(self):
-        for img in self.driver.images.list():
+    def import_image(self, cloud_images=None):
+        if not cloud_images: cloud_images=self.driver.images.list()
+        for img in cloud_images:
             name=img.name
             id=img.id
             if Image.objects.filter(cloud=self, access_id=id).exists(): continue
@@ -337,6 +338,21 @@ class Instance(models.Model,OperatableMixin):
         if self.__class__.objects.filter(pk=self.pk).update(status=to_status_value(status)):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
+    def get_or_create_image(self, image_name=None):
+        if not image_name: image_name=self.hostname
+        images=list(filter(lambda x: x.name==image_name, self.cloud.driver.images.list()))
+        if images:
+            created=False
+        else:
+            self.cloud.driver.instances.get(str(self.uuid)).create_image(image_name)
+            created=True
+        images=list(filter(lambda x: x.name==image_name, self.cloud.driver.images.list()))
+        self.cloud.import_image(images)
+        image = Image.objects.get(cloud=self.cloud, name=image_name)
+        image.hostname=self.hostname
+        image.protected=False
+        image.save()
+        return image, created
     @property
     def credential(self):
         return self.owner.profile_set.filter(enabled=True).first().credential
