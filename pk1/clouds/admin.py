@@ -96,13 +96,13 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
             model = models.Instance
             fields = ('__all__')
             widgets = {
-                'template': autocomplete.ModelSelect2(
-                    url='instancetemplate-autocomplete',
-                    forward=['cloud']
-                ),
                 'image': autocomplete.ModelSelect2(
                     url='image-autocomplete',
                     forward=['cloud']
+                ),
+                'template': autocomplete.ModelSelect2(
+                    url='instancetemplate-autocomplete',
+                    forward=['cloud','image']
                 )
             }
     form = InstanceForm
