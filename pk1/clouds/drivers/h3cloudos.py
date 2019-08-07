@@ -88,7 +88,7 @@ class Driver(object):
 class KeyManager(object):
     def create(self, name, public_key):
         return None
-    def delete(self, name, public_key):
+    def delete(self, name):
         return None
 
 class FlavorManager(object):
@@ -122,11 +122,15 @@ class ImageManager(object):
     def get(self, id):
         info=self.driver._get('/v2/images/'+id)['image']
         return Image(info)
-    def list(self):
+    def _json2Images(self, json):
         images=[]
-        for item in self.driver._get('/v2/images')['images']:
+        for item in json:
             images.append(Image(item))
         return images
+    def find(self, name):
+        return self._json2Images(self.driver._get('/v2/images?name'+name)['images'])
+    def list(self):
+        return self._json2Images(self.driver._get('/v2/images')['images'])
     def delete(self, id):
         return self.driver._delete('/v2/images/'+id)
 

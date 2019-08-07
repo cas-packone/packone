@@ -59,7 +59,8 @@ def clone_image(sender,instance,**kwargs):
 @receiver(pre_delete, sender=Image)
 def destroy_image(sender,instance,**kwargs):
     if not instance.protected:
-        instance.cloud.driver.images.delete(instance.access_id)
+        if sender.objects.filter(access_id=instance.access_id).count()==1:# avoid to delete shared cloud images
+            instance.cloud.driver.images.delete(instance.access_id)
 
 # actions relies on status must be registered to the monitored signal first.
 @receiver(materialized, sender=Instance)
