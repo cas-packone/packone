@@ -11,7 +11,7 @@ from clouds.signals import materialized, executed, monitored, destroyed, tidied,
 from clouds.signals import tidy_operation, select_operation
 from clouds import utils
 from .import models
-from clouds.models import Instance, INSTANCE_STATUS, InstanceOperation, INSTANCE_OPERATION, OPERATION_STATUS, Mount, Group, GroupOperation
+from clouds.models import InstanceBlueprint, Instance, INSTANCE_STATUS, InstanceOperation, INSTANCE_OPERATION, OPERATION_STATUS, Mount, Group, GroupOperation
 
 from django.dispatch import Signal
 scaled_out = Signal(providing_args=["instance","name"])
@@ -34,6 +34,10 @@ def bootstrap(sender,instance,**kwargs):
     s.init_blueprints.add(*blueprints)
     models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
 
+@receiver(post_delete, sender=InstanceBlueprint)
+def cleanup_scale(sender, instance, **kwargs):
+    models.Scale.objects.filter(init_blueprints__isnull=True, step_blueprints__isnull=True).delete()
+
 @receiver(executed, sender=InstanceOperation)
 def create_stack(sender,instance,**kwargs):
     if instance.target.image.name=='packone-bootstrap-master1' and 'ambari localhost:8080 cluster create' in instance.script:
@@ -43,7 +47,7 @@ def create_stack(sender,instance,**kwargs):
         scale.stack=stack
         scale.save()
         if created: cluster.import_engine()
-    
+
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
 def scale_out(sender,instance,**kwargs):
