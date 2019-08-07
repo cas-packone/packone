@@ -35,8 +35,8 @@ class Driver(object):
         ).headers['X-Subject-Token']
         self._token=token
         self._headers['X-Auth-Token']=token
-        project_id=requests.get(url=self.endpoint+'/v3/projects?name='+self._credential['project_name'], headers=self._headers).json()['projects'][0]['id']
-        self.tenant_endpoint='/v2/'+project_id
+        self.project_id=requests.get(url=self.endpoint+'/v3/projects?name='+self._credential['project_name'], headers=self._headers).json()['projects'][0]['id']
+        self.tenant_endpoint='/v2/'+self.project_id
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
         self.images=ImageManager(self)
@@ -195,7 +195,7 @@ class Instance(object):
     def get_console_url(self, type):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-getVNCConsole": { "type": type}})
     def create_image(self, image_name):
-        return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name}},retry_when_response_unexpected_strings=['conflictingRequest'])
+        self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"createImage":{"name":image_name,"metadata":{"operator_id":self.manager.driver.project_id}}},retry_when_response_unexpected_strings=['conflictingRequest'])
     def start(self):
         return self.manager.driver._tenant_create('/servers/{}/action'.format(self.id), data={"os-start": None})
     def reboot(self):
