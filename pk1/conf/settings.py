@@ -141,6 +141,20 @@ STATICFILES_DIRS = [
 ]
 
 PACKONE_LABEL='__packone__'
+PACKONE_STACK_VDF_URLS=[
+    {
+        'name': 'HDP-2.6.4.0',
+        'vdf': 'http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.4.0/HDP-2.6.4.0-91.xml'
+    },
+    {
+        'name': 'HDP-2.6.5.0',
+        'vdf': 'http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0/HDP-2.6.5.0-292.xml'
+    },
+    {
+        'name': 'HDP-3.1.0.0',
+        'vdf': 'http://public-repo-1.hortonworks.com/HDP/centos7/3.x/updates/3.1.0.0/HDP-3.1.0.0-78.xml'
+    }
+]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

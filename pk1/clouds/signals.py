@@ -39,6 +39,7 @@ def bootstrap_cloud(sender,instance,**kwargs):
         instance.instance_credential_private_key=prikey
         instance.driver.keypairs.create(name=instance._key_name, public_key=pubkey)
         instance.save()
+        instance.bootstrap()
 
 @receiver(pre_delete, sender=Cloud)
 def cleanup_cloud(sender,instance,**kwargs):
