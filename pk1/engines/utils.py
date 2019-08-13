@@ -1,5 +1,5 @@
-def remedy_scale_ambari_bootstrap():
-    return "sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
+def remedy_scale_ambari_bootstrap(vdf_url=None):
+    script="sed -i 's/hostname=localhost/hostname=master1.packone/g' /etc/ambari-agent/conf/ambari-agent.ini\n\n" \
         "ambari-agent start 2>&1\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
         'yum -q -y install epel-release 2>&1\n' \
@@ -9,8 +9,10 @@ def remedy_scale_ambari_bootstrap():
         'if [ `hostname` == "master1.packone" ]; then\n' \
         'yum -q -y install nmap-ncat 2>&1\n' \
         'while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
-        'ambari localhost:8080 cluster create packone typical_triple master1.packone master2.packone slave.packone\n' \
-        "fi"
+        'ambari localhost:8080 cluster create'
+    if vdf_url: script+='_from_vdf '+vdf_url
+    script+=' packone typical_triple master1.packone master2.packone slave.packone\nfi'
+    return script
 
 def remedy_scale_ambari_fast_init():
     return 'rm -rf /hadoop\n' \

@@ -1,4 +1,5 @@
 import time
+import json
 from uuid import uuid4
 from enum import Enum
 from threading import Thread
@@ -49,12 +50,16 @@ import importlib
 class Stack(StaticModel):
     name=models.CharField(max_length=100,unique=True,verbose_name='version')
     engines=models.ManyToManyField(Engine,blank=True)
+    meta=models.TextField(max_length=5120,default="",blank=True,verbose_name='meta data in json format')
     public=models.BooleanField(default=True, editable=False)
+    @cached_property
+    def meta_data(self):
+        return json.loads(self.meta)
 
 class Scale(StaticModel):
     init_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="initialized_scales",verbose_name='initial blueprints')
     step_blueprints=models.ManyToManyField(InstanceBlueprint,related_name="stepped_scales",blank=True,verbose_name='scale-out blueprints')
-    stack=models.ForeignKey(Stack,on_delete=models.PROTECT,blank=True, null=True)
+    stack=models.ForeignKey(Stack,on_delete=models.PROTECT)
     _remedy_script=models.TextField(max_length=5120,default="",blank=True,verbose_name='initial remedy script')
     _remedy_script_scale_out=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-out remedy script')
     _remedy_script_scale_in=models.TextField(max_length=5120,default="",blank=True,verbose_name='scale-in remedy script')

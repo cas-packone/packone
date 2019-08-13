@@ -30,7 +30,7 @@ class CloudAdmin(StaticModelAdmin):
     def bootstrap(modeladmin, request, queryset):
         for cloud in queryset:
             cloud.bootstrap()
-    bootstrap.short_description = "bootstrap a big data cluster scale for selected clouds"
+    bootstrap.short_description = "bootstrap selected clouds"
     actions = [import_image,import_template, bootstrap]
 
 class CloudStaticModelAdmin(StaticModelAdmin):
