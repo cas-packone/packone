@@ -47,8 +47,9 @@ class Cloud(StaticModel):
     @cached_property
     def platform_credential(self):
         return json.loads(self._platform_credential)
-    def import_image(self):
-        for img in self.driver.images.list():
+    def import_image(self, cloud_images=None):
+        if not cloud_images: cloud_images=self.driver.images.list()
+        for img in cloud_images:
             name=img.name
             id=img.id
             if Image.objects.filter(cloud=self, access_id=id).exists(): continue
@@ -58,6 +59,8 @@ class Cloud(StaticModel):
                 name=name,
                 cloud=self,
                 access_id = id,
+                min_ram=img.min_ram,
+                min_disk=img.min_disk,
                 hostname='packone',
                 owner=self.owner,
                 remark='auto imported',
@@ -72,8 +75,9 @@ class Cloud(StaticModel):
             InstanceTemplate(
                 access_id=id,
                 name=tpl.name,
-                mem=tpl.ram,
-                vcpu=tpl.vcpus,
+                ram=tpl.ram,
+                vcpus=tpl.vcpus,
+                disk=tpl.disk,
                 cloud=self,
                 owner=self.owner,
                 remark='auto imported',
@@ -83,13 +87,15 @@ class Cloud(StaticModel):
     def bootstrap(self):#TODO diss rely on centos7
         img=self.image_set.filter(name__iregex=r'CentOS.*?7.*?GenericCloud').order_by('-created_time').first()
         if not img: raise Exception('image CentOS.*?7.*?GenericCloud is required!')
-        flavor=self.instancetemplate_set.filter(mem__gte=8192,vcpu__gte=2).order_by('mem', 'vcpu').first()
-        if not flavor: raise Exception('a flavor(mem>=8192, vcpus>=2) is required!')
+        flavor=self.instancetemplate_set.filter(ram__gte=max(8192,img.min_ram),vcpus__gte=2,disk__gte=max(30,img.min_disk)).order_by('ram', 'vcpus', 'disk').first()
+        if not flavor: raise Exception('a flavor(ram>=8192, vcpus>=2) is required!')
         from .utils import remedy_image_ambari_agent, remedy_image_ambari_server
         image_ambari_agent, created=Image.objects.get_or_create(
             name='packone-bootstrap-ambari-agent',
             parent=img,
             access_id=img.access_id,
+            min_ram=img.min_ram,
+            min_disk=img.min_disk,
             cloud=self,
             owner=self.owner,
             remark='auto created',
@@ -99,6 +105,8 @@ class Cloud(StaticModel):
             name='packone-bootstrap-ambari-server',
             parent=image_ambari_agent,
             access_id=img.access_id,
+            min_ram=img.min_ram,
+            min_disk=img.min_disk,
             cloud=self,
             owner=self.owner,
             remark='auto created',
@@ -108,6 +116,8 @@ class Cloud(StaticModel):
             name='packone-bootstrap-master1',
             parent=image_ambari_server,
             access_id=img.access_id,
+            min_ram=img.min_ram,
+            min_disk=img.min_disk,
             hostname='master1.packone',
             owner=self.owner,
             remark='auto created',
@@ -117,6 +127,8 @@ class Cloud(StaticModel):
             name='packone-bootstrap-master2',
             parent=image_ambari_agent,
             access_id=img.access_id,
+            min_ram=img.min_ram,
+            min_disk=img.min_disk,
             hostname='master2.packone',
             owner=self.owner,
             remark='auto created',
@@ -126,6 +138,8 @@ class Cloud(StaticModel):
             name='packone-bootstrap-slave',
             parent=image_ambari_agent,
             access_id=img.access_id,
+            min_ram=img.min_ram,
+            min_disk=img.min_disk,
             hostname='slave.packone',
             owner=self.owner,
             remark='auto created',
@@ -170,6 +184,9 @@ class Image(StaticModel):
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
     hostname=models.CharField(max_length=50,default='packone')
     parent=models.ForeignKey("self",on_delete=models.CASCADE,blank=True,null=True)
+    min_ram=models.PositiveIntegerField(default=1024,validators=[MinValueValidator(256)])
+    min_disk=models.PositiveIntegerField(default=30,validators=[MinValueValidator(1)])
+    protected=models.BooleanField(default=True,editable=False)
     class Meta:
         unique_together = ('cloud', 'name')
     @cached_property
@@ -199,13 +216,14 @@ class InstanceTemplate(StaticModel):#TODO support root volume resize
     name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     access_id = models.CharField(max_length=50,verbose_name="actual id on the cloud")
-    vcpu=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
-    mem=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
+    vcpus=models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    ram=models.PositiveIntegerField(default=512,validators=[MinValueValidator(256)])
+    disk=models.PositiveIntegerField(default=30,validators=[MinValueValidator(1)])
     class Meta:
         verbose_name = "flavor"
         unique_together = ('cloud', 'name')
     def __str__(self):
-        return "{}/vcpu:{},mem:{}".format(self.name,self.vcpu,self.mem)
+        return "{}/vcpus:{},ram:{},disk:{}".format(self.name,self.vcpus,self.ram,self.disk)
 
 class InstanceBlueprint(StaticModel):
     name=models.CharField(max_length=500)
@@ -259,6 +277,18 @@ User.blueprints=blueprints_of_user
 
 monitored = Signal(providing_args=["instance","name"])
 
+#TODO change model status field to char
+def to_status_value(status):
+    if status=='ERROR':
+        status = INSTANCE_STATUS.failure.value
+    else:
+        try:
+            status = INSTANCE_STATUS[status.lower()].value
+        except Exception as e:
+            print(e)
+            status = INSTANCE_STATUS.null.value
+    return status
+
 class Instance(models.Model,OperatableMixin):
     ipv4=models.GenericIPAddressField(protocol='IPv4',blank=True,null=True,editable=False)
     ipv6=models.GenericIPAddressField(protocol='IPv6',blank=True,null=True,editable=False)
@@ -296,7 +326,7 @@ class Instance(models.Model,OperatableMixin):
         return self.ipv4+' '+hostnames
     @property
     def mountable(self):
-        if self.status in self.cloud.driver_module.InstanceManager.mountable_status: return True
+        if INSTANCE_STATUS(self.status).name.upper() in self.cloud.driver_module.InstanceManager.mountable_status: return True
         if self.status==INSTANCE_STATUS.building.value and self.ready: return True
         return False
     @property
@@ -305,17 +335,24 @@ class Instance(models.Model,OperatableMixin):
     def monitor(self,notify=True):
         if not self.ready: raise Exception('instance not ready')
         status = self.cloud.driver.instances.get_status(str(self.uuid))
-        if status=='ERROR':
-            status = INSTANCE_STATUS.failure.value
-        else:
-            try:
-                status = INSTANCE_STATUS[status.lower()].value
-            except Exception as e:
-                print(e)
-                status = INSTANCE_STATUS.null.value
-        if self.__class__.objects.filter(pk=self.pk).update(status=status):
+        if self.__class__.objects.filter(pk=self.pk).update(status=to_status_value(status)):
             self.refresh_from_db()
             if notify: monitored.send(sender=self.__class__, instance=self, name='monitored')
+    def get_or_create_image(self, image_name=None):
+        if not image_name: image_name=self.hostname
+        images=list(filter(lambda x: x.name==image_name, self.cloud.driver.images.list()))
+        if images:
+            created=False
+        else:
+            self.cloud.driver.instances.get(str(self.uuid)).create_image(image_name)
+            created=True
+        images=list(filter(lambda x: x.name==image_name, self.cloud.driver.images.list()))
+        self.cloud.import_image(images)
+        image = Image.objects.get(cloud=self.cloud, name=image_name)
+        image.hostname=self.hostname
+        image.protected=False
+        image.save()
+        return image, created
     @property
     def credential(self):
         return self.owner.profile_set.filter(enabled=True).first().credential

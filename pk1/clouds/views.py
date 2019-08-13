@@ -12,10 +12,12 @@ class InstanceTemplateAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return models.InstanceTemplate.objects.none()
-        cloud = self.forwarded.get('cloud', None)
-        if not cloud:
+        cloud_id = self.forwarded.get('cloud', None)
+        if not cloud_id:
             return models.InstanceTemplate.objects.none()
-        qs = models.InstanceTemplate.objects.filter(cloud=cloud,enabled=True).filter(
+        image_id = self.forwarded.get('image', None)
+        image=models.Image.objects.get(pk=image_id)
+        qs = models.InstanceTemplate.objects.filter(cloud=cloud_id,ram__gte=image.min_ram,disk__gte=image.min_disk,enabled=True).filter(
             Q(owner=self.request.user) | Q(public=True)
         ).order_by('id')
         if self.q:

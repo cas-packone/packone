@@ -57,7 +57,7 @@ class ImageAdmin(CloudStaticModelAdmin):
             }
     form = ImageForm
     def clone(self,obj):
-        return format_html('<a href="{}?access_id={image.access_id}&cloud={image.cloud.pk}&parent={image.pk}" class="button">Clone</a>'.format(reverse('admin:clouds_image_add'),image=obj))
+        return format_html('<a href="{}?access_id={image.access_id}&cloud={image.cloud.pk}&parent={image.pk}&min_ram={image.min_ram}&min_disk={image.min_disk}" class="button">Clone</a>'.format(reverse('admin:clouds_image_add'),image=obj))
     def launch(self,obj):
         return format_html('<a href="{}?cloud={image.cloud.pk}&image={image.pk}" class="button">Launch</a>'.format(reverse('admin:clouds_instance_add'),image=obj)) 
     extra=('clone','launch')
@@ -96,13 +96,13 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
             model = models.Instance
             fields = ('__all__')
             widgets = {
-                'template': autocomplete.ModelSelect2(
-                    url='instancetemplate-autocomplete',
-                    forward=['cloud']
-                ),
                 'image': autocomplete.ModelSelect2(
                     url='image-autocomplete',
                     forward=['cloud']
+                ),
+                'template': autocomplete.ModelSelect2(
+                    url='instancetemplate-autocomplete',
+                    forward=['cloud','image']
                 )
             }
     form = InstanceForm
@@ -125,7 +125,12 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for ins in queryset:
             return redirect(ins.vnc_url)
     VNC.short_description = "VNC"
-    actions = [VNC, toggle_power]
+    def get_or_create_image(modeladmin, request, queryset):
+        for ins in queryset:
+            image, created = ins.get_or_create_image()
+        return redirect(reverse('admin:clouds_image_change',args=(image.pk,)))
+    get_or_create_image.short_description = "get or create image with the its hostname"
+    actions = [VNC, toggle_power, get_or_create_image]
     def get_readonly_fields(self,request,obj=None):
         fs=super().get_readonly_fields(request,obj)
         if obj: return ('image', 'template',) + fs
@@ -215,8 +220,6 @@ class MountAdmin(AutoModelAdmin):
 
 @admin.register(models.InstanceOperation)
 class InstanceOperationAdmin(OperationAdmin):
-    def get_list_display(self,request,obj=None):
-        return super().get_list_display(request,obj)+('log',)
     def get_queryset_Q(self, request):
         from user.utils import get_space
         return (super().get_queryset_Q(request)|Q(target__cloud__in=models.Cloud.objects.filter(owner=request.user))) & Q(target__group__cluster=get_space()) & ~Q(status=models.OPERATION_STATUS.success.value)
