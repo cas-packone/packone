@@ -238,11 +238,13 @@ def data_instance_delete(request, c_id):
 
 
 @login_required(login_url=LOGIN_URL)
-def data_instance_query(request, c_id):
+def data_instance_query(request, c_id, di_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
-	dic["pipeline_url"] = "http://10.0.86.131:6001/piflow-web/web/flowList?first"
-	return TemplateResponse(request, "data_pipeline.html", dic)
+	data_instance = get_data_instance_info(di_id)
+
+	dic["query_url"] = "http://10.0.86.131:6001/piflow-web/web/flowList?first"
+	return TemplateResponse(request, "data_instance_query.html", dic)
 
 
 

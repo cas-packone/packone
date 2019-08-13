@@ -42,7 +42,7 @@
             <td>{{dt.uri}}</td>
             <td>{{dt.remark|default_if_none:""}}</td>
             <td> 
-              <a href="{{dt.query_url}}" class="btn btn-primary btn-sm">Query</a> 
+              <a href="{% url 'scispace_data_instance_query' cluster.id dt.id %}" class="btn btn-primary btn-sm">Query</a> 
             </td>
             <td>
               <a href="{% url 'scispace_data_instance_delete' cluster.id %}?dt_id={{dt.id}}" class="btn btn-danger btn-sm">Delete</a> 
