@@ -182,7 +182,7 @@ class Gate(StaticModel):
     name=models.CharField(max_length=500)
     cloud=models.ForeignKey(Cloud,on_delete=models.CASCADE)
     endpoint=models.GenericIPAddressField(protocol='IPv4',verbose_name='wireguard endpoint',help_text="public IP")
-    port=models.PositiveIntegerField(default=51820,validators=[MinValueValidator(2)],verbose_name='wireguard endpoint',help_text="public port")
+    port=models.PositiveIntegerField(default=51820,validators=[MinValueValidator(2)],verbose_name='wireguard port',help_text="public port")
     credential=models.CharField(max_length=5000, blank=True, null=True,verbose_name='wireguard credential',help_text="public key")
     networks=models.CharField(max_length=500,verbose_name='routed networks',help_text="seperated with ;")
     class Meta:
