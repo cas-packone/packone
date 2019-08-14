@@ -6,6 +6,7 @@ from django.db.models import Q
 from engines.models import Cluster, StepOperation, Scale
 from engines.models import COMPONENT_OPERATION
 from data.models import Dataset, DataInstance, DataInstanceOperation, DataEngine
+from data.models import INSTANCE_STATUS as DATA_INSTANCE_STATUS
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS, INSTANCE_OPERATION
 from clouds.models import Instance, InstanceOperation
 
@@ -92,6 +93,12 @@ def add_cluster(owner_id, name, scale, engines, public=False, remedy_script_todo
 
 
 def _get_cluster_instance_info(obj):
+    vnc_url = None
+    try:
+        vnc_url = obj.vnc_url["url"]
+    except Exception as e:
+        pass
+
     return {
             "id": obj.id,
             "ipv4": obj.ipv4,
@@ -112,7 +119,7 @@ def _get_cluster_instance_info(obj):
             "status": obj.status,
             "status_name": INSTANCE_STATUS(obj.status).name,            
             "deleting": obj.deleting,
-            "vnc_url": obj.vnc_url["url"],
+            "vnc_url": vnc_url,
             
     }
 
@@ -219,6 +226,21 @@ def _engine_info(obj):
 
 
 def _data_instance_info(obj):
+    query_url = ""
+    if obj.cluster.ready:
+        query_url = obj.cluster.portal.replace("8080","8888").rstrip("/")
+        if obj.engine:
+            engine_name = obj.engine.name.strip().lower()
+            if engine_name == "hive":
+                query_url += "/beeswax/#query"
+            elif engine_name == "hdfs":
+                query_url += "/filebrowser/#" + obj.uri
+            elif engine_name == "hbase":
+                query_url += "/hbase/"
+            elif obj.uri.strip():
+                query_url = obj.uri.strip()
+                if query_url.count("+") > 0:
+                    query_url = query_url.split("+")[0]
     return {
         'id': obj.id,
         'uuid': obj.uuid,
@@ -228,14 +250,14 @@ def _data_instance_info(obj):
         'built_time': obj.built_time,
         'owner': obj.owner,
         'status': obj.status,
-        'status_name': INSTANCE_STATUS(obj.status).name,
+        'status_name': DATA_INSTANCE_STATUS(obj.status).name,
         'remark': obj.remark,
         'deleting': obj.deleting,
         'dataset': _dataset_info(obj.dataset),      
         'cluster': _cluster_info(obj.cluster),
         'engine': _engine_info(obj.engine),
         'uri': obj.uri,
-        'query_url': obj.query_url,
+        'query_url': query_url,
     }
 
 

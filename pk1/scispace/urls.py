@@ -13,7 +13,8 @@ urlpatterns = [
 
     re_path(r'clusters/$', cluster_list, name="scispace_cluster_list"),
     re_path(r'clusters/add/$', cluster_add, name="scispace_cluster_add"),
-    re_path(r'clusters/operate/$', cluster_operate_ajax, name="scispace_cluster_operate_ajax"),
+    re_path(r'clusters/operate_ajax/$', cluster_operate_ajax, name="scispace_cluster_operate_ajax"),
+    re_path(r'clusters/get_info_ajax/$', get_cluster_info_ajax, name="scispace_get_cluster_info_ajax"),
     re_path(r'clusters/scales/engines_ajax/$', scale_engines_ajax, name="scispace_scale_engines_ajax"),
     path('clusters/<int:c_id>/', cluster_info, name="scispace_cluster_info"),
     path('clusters/<int:c_id>/instances/', cluster_instance_list, name="scispace_cluster_instance_list"),

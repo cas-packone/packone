@@ -55,28 +55,35 @@
                 </tr>
                 <tr>
                   <td>Status</td>
-                  <td>{{cluster.status_name}}</td>
+                  <td id="status_td_{{cluster.id}}">{{cluster.status_name}}</td>
                 </tr>
               </tbody>
             </table>
         </div>
 
         <div class="card-footer">
+          <div id="action_div1_{{cluster.id}}" {%if cluster.status_name != "building" %} style="display: none;"{%endif%}>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+            </div>
+          </div>
+          <div id="action_div2_{{cluster.id}}" {%if cluster.status_name == "building" %} style="display: none;"{%endif%}>
           <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success">Open</a>
-          <div class="pull-right">
-            <div class="btn-group">
-              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
-              <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','start')" >Start</button>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','reboot')" >Reboot</button>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','shutdown')" >Shutdown</button>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','poweroff')" >Poweroff</button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_out')" >Scale Out</button>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_in')" >Scale In</button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','destroy')" >Destroy</button>
+            <div class="pull-right">
+              <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','start')" >Start</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','reboot')" >Reboot</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','shutdown')" >Shutdown</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','poweroff')" >Poweroff</button>
+                          <div class="dropdown-divider"></div>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_out')" >Scale Out</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_in')" >Scale In</button>
+                          <div class="dropdown-divider"></div>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','destroy')" >Destroy</button>
 
+                </div>
               </div>
             </div>
           </div>
@@ -123,7 +130,42 @@
                     }, 'json'); 
     
   }
-            
+
+
+  var cluster_ids = [{%for c in clusters%}"{{c.id}}",{%endfor%}];
+  function update_status(){
+    for(var i in cluster_ids) {
+      setInterval("get_status('" + cluster_ids[i] + "')", 10000);
+      get_status(cluster_ids[i]);
+    }
+  }
+  update_status();
+  function get_status(cluster_id) {
+    console.log(cluster_id);
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_info_ajax' %}",
+      type: 'get',
+      data: {
+        'cluster_id': cluster_id,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          var status_name = data.info.status_name;
+          if (status_name == "building"){
+            $("#action_div1_"+cluster_id).show();
+            $("#action_div2_"+cluster_id).hide();
+          }
+          else{            
+            $("#action_div1_"+cluster_id).hide();
+            $("#action_div2_"+cluster_id).show();
+          }
+          $("#status_td_" + cluster_id).text(status_name);
+        }
+      },
+    }, 'json');
+  }
+        
 </script>
 
 {% endblock %}

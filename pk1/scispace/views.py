@@ -81,6 +81,23 @@ def cluster_operate_ajax(request):
 		dic["err"] = "Invalid ID"
 	return JsonResponse(dic)
 
+@csrf_exempt
+@login_required(login_url=LOGIN_URL)
+def get_cluster_info_ajax(request):
+	"""
+	get cluster status
+	"""
+	dic = {"res": True, "info":None, "err":None}
+	cluster_id = request.GET.get("cluster_id")	
+	if cluster_id.isdecimal():
+		cluster_id = int(cluster_id)
+		cluster_info = get_cluster_info(request.user, cluster_id)
+		dic["info"] = {"status":cluster_info["status"], "status_name":cluster_info["status_name"]}
+	else:
+		dic["res"] = False
+		dic["err"] = "Invalid ID"
+	return JsonResponse(dic)
+
 
 @login_required(login_url=LOGIN_URL)
 def scale_engines_ajax(request):
@@ -242,8 +259,7 @@ def data_instance_query(request, c_id, di_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
 	data_instance = get_data_instance_info(di_id)
-
-	dic["query_url"] = "http://10.0.86.131:6001/piflow-web/web/flowList?first"
+	dic["query_url"] = data_instance["query_url"]
 	return TemplateResponse(request, "data_instance_query.html", dic)
 
 

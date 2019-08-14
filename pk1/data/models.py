@@ -92,9 +92,6 @@ class DataInstance(models.Model,OperatableMixin):
     @property
     def host(self):
         return self.built_time and not self.ready
-    @property
-    def query_url(self):
-        return "#"
     # @property
     # def uri_total(self):#TODO opt. perf.
     #     endpoints=[]
