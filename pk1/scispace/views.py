@@ -17,7 +17,7 @@ from .utils import get_step_operation_list, get_data_instance_operation_list
 from .utils import get_cluster_data_engine_list
 from .utils import get_scale_list, get_available_engines
 
-LOGIN_URL = "/scispace/login/"
+LOGIN_URL = "/login/"
 
 @login_required(login_url=LOGIN_URL)
 def index(request):
