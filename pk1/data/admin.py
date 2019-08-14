@@ -47,16 +47,16 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
                 ),
             }
     form = DataInstanceForm
-    def query(self, obj):
-        # if not obj.ready: return None
-        return format_html('<a href="{}" target="_blank" class="button">Query</a>'.format('obj.uri_elected'))
+    # def query(self, obj):
+    #     # if not obj.ready: return None
+    #     return format_html('<a href="{}" target="_blank" class="button">Query</a>'.format('obj.uri_elected'))
     # def action(self, obj):
     #     if obj.deleting:
     #         if not get_current_user().is_superuser: 
     #             return 'deleting'
     #     op_url=reverse('datainstanceoperation-list')
         # return self.action_button(obj,op_url)
-    extra=('uri','query')#,'action'
+    extra=('uri',)#,'action'
     search_fields = ('name', 'dataset__name', 'cluster__name', 'engine__name')+OwnershipModelAdmin.search_fields
     list_filter = (
         ('dataset', admin.RelatedOnlyFieldListFilter),
