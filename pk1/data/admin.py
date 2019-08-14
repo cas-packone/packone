@@ -42,7 +42,7 @@ class DataInstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
             }
     form = DataInstanceForm
     def query(self, obj):
-        # if not obj.ready: return None
+        if not obj.ready or not obj.cluster.ready: return None
         url=obj.cluster.portal.split('//')[-1].split(':')[0]
         return format_html('<a href="{}" type="{}" target="_blank" class="button">Query</a>'.format(url, obj.dataset.type_name))
     extra=('uri','query')#,'action'
