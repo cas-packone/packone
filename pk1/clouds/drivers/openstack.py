@@ -1,7 +1,9 @@
+from keystoneauth1 import loading, session
 from novaclient import client as nova_client
+from cinderclient import client as cinder_client
+from glanceclient import client as glance_client
 from novaclient.exceptions import NotFound as NovaNotFound
 from cinderclient.exceptions import NotFound as CinderNotFound
-from cinderclient import client as cinder_client
 from uuid import uuid4
 import time
 
@@ -9,13 +11,24 @@ class Driver(object):
     def __init__(self, cloud):
         self._cloud=cloud
         self._credential=cloud.platform_credential
-        self._nova_client=nova_client.Client(self._credential['api_version'], username=self._credential['username'], password=self._credential['password'], project_name=self._credential['project_name'], auth_url=self._credential['auth_url'])
-        self._cinder_client=cinder_client.Client(self._credential['api_version'],self._credential['username'],self._credential['password'],self._credential['project_name'],auth_url=self._credential['auth_url'])    
+        auth=loading.get_plugin_loader('password').load_from_options(
+            auth_url=self._credential['auth_url'],
+            username=self._credential['username'],
+            password=self._credential['password'],
+            project_name=self._credential['project_name']
+        )
+        kwargs={
+            'version': self._credential['api_version'],
+            'session': session.Session(auth=auth)
+        }
+        self._nova_client=nova_client.Client(**kwargs)
+        self._cinder_client=cinder_client.Client(**kwargs)
+        self._glance_client=glance_client.Client(**kwargs)
         self.instances=InstanceManager(self)
         self.volumes=VolumeManager(self)
-        self.images=self._nova_client.glance
         self.flavors=self._nova_client.flavors
         self.keypairs=self._nova_client.keypairs#create, delete
+        self.images=self._glance_client.images
 
 class InstanceManager(object):
     mountable_status=['ACTIVE','SHUTDOWN']

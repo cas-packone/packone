@@ -30,7 +30,7 @@ class CloudAdmin(StaticModelAdmin):
     def bootstrap(modeladmin, request, queryset):
         for cloud in queryset:
             cloud.bootstrap()
-    bootstrap.short_description = "bootstrap a big data cluster scale for selected clouds"
+    bootstrap.short_description = "bootstrap selected clouds"
     actions = [import_image,import_template, bootstrap]
 
 class CloudStaticModelAdmin(StaticModelAdmin):
@@ -43,6 +43,10 @@ class CloudStaticModelAdmin(StaticModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return not obj or obj.owner==request.user or obj.cloud.owner == request.user or request.user.is_superuser
 
+@admin.register(models.Gate)
+class GateAdmin(CloudStaticModelAdmin):
+    pass
+            
 @admin.register(models.Image)
 class ImageAdmin(CloudStaticModelAdmin):
     class ImageForm(forms.ModelForm):

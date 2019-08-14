@@ -25,28 +25,36 @@ from clouds.models import Cloud, bootstraped
 from .utils import remedy_scale_ambari_bootstrap
 @receiver(bootstraped, sender=Cloud)
 def bootstrap(sender,instance,**kwargs):
+    from django.conf import settings
     blueprints=list(instance.instanceblueprint_set.filter(name__startswith='packone-bootstap-', public=False))
-    s, created=models.Scale.objects.get_or_create(
-        name='packone.bootstrap.{}'.format(instance.name),
-        _remedy_script=remedy_scale_ambari_bootstrap(),
-        owner=instance.owner #TODO only cloud owner can bootstrap the cloud
-    )
-    s.init_blueprints.add(*blueprints)
-    models.Cluster.objects.get_or_create(name='bootstrap.{}'.format(instance.name), scale=s, owner=instance.owner)
+    for s in settings.PACKONE_STACK_VDF_URLS:
+        stack, created=models.Stack.objects.get_or_create(
+            name=s['name'],
+            defaults={
+                'meta': '{"vdf_url": "'+s['vdf']+'"}',
+                'public': True,
+                'owner': instance.owner
+            }
+        )
+        scale, created=models.Scale.objects.get_or_create(
+            name='packone.bootstrap.{}.{}'.format(stack.name,instance.name),
+            defaults={
+                'stack': stack,
+                'owner': instance.owner, #TODO only cloud owner can bootstrap the cloud
+                '_remedy_script': remedy_scale_ambari_bootstrap(stack.meta_data['vdf_url'])
+            }
+        )
+        scale.init_blueprints.add(*blueprints)
 
 @receiver(post_delete, sender=InstanceBlueprint)
 def cleanup_scale(sender, instance, **kwargs):
     models.Scale.objects.filter(init_blueprints__isnull=True, step_blueprints__isnull=True).delete()
 
 @receiver(executed, sender=InstanceOperation)
-def create_stack(sender,instance,**kwargs):
-    if instance.target.image.name=='packone-bootstrap-master1' and 'ambari localhost:8080 cluster create' in instance.script:
+def import_stack_engines(sender,instance,**kwargs):
+    if instance.status==OPERATION_STATUS.success.value and instance.target.image.name=='packone-bootstrap-master1' and 'ambari localhost:8080 cluster create' in instance.script:
         cluster=instance.target.group_set.first().cluster_set.first()
-        stack, created=models.Stack.objects.get_or_create(name=cluster.driver.stack_version, defaults={'owner': instance.target.owner})
-        scale=cluster.scale
-        scale.stack=stack
-        scale.save()
-        if created: cluster.import_engine()
+        cluster.import_engine()
 
 @receiver(materialized, sender=Group)
 @receiver(post_save, sender=models.Cluster)
