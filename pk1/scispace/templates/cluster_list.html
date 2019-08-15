@@ -30,12 +30,16 @@
             <table class="table table-sm">
               <tbody>
                 <tr>
+                  <td>Portal</td>
+                  <td>{{cluster.portal|default_if_none:"-"}}</td>
+                </tr>
+                <tr>
                   <td>Scale</td>
                   <td>{{cluster.scale}}</td>
                 </tr>
                 <tr>
                   <td>Remark</td>
-                  <td>{{cluster.remark}}</td>
+                  <td>{{cluster.remark|default_if_none:""}}</td>
                 </tr>
                 <tr>
                   <td>Owner</td>
