@@ -92,10 +92,11 @@ def add_cluster(owner_id, name, scale, engines, public=False, remedy_script_todo
     obj.engines.set(engines)
 
 
-def _get_cluster_instance_info(obj):
+def _get_cluster_instance_info(obj, require_vnc=False):
     vnc_url = None
     try:
-        vnc_url = obj.vnc_url["url"]
+        if require_vnc:
+            vnc_url = obj.vnc_url
     except Exception as e:
         pass
 
@@ -123,16 +124,16 @@ def _get_cluster_instance_info(obj):
             
     }
 
-def get_cluster_instances(req_user: User, c_id) -> list:
+def get_cluster_instances(req_user: User, c_id, require_vnc=False) -> list:
     obj = _get_cluster_obj(req_user, c_id)
     if obj != None:
-        return [_get_cluster_instance_info(instance) for instance in obj.get_instances()   ]     
+        return [_get_cluster_instance_info(instance, require_vnc=require_vnc) for instance in obj.get_instances()   ]     
     return []
 
-def get_cluster_instance_info(req_user:User, instance_id) -> dict:
+def get_cluster_instance_info(req_user:User, instance_id, require_vnc=False) -> dict:
     objs = Instance.objects.filter(id=instance_id)
     if objs.exists():
-        return _get_cluster_instance_info(objs.first())
+        return _get_cluster_instance_info(objs.first(), require_vnc=require_vnc)
     return None
 
 

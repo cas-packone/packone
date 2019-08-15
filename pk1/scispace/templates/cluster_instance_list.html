@@ -49,11 +49,7 @@
                 <button  class="btn btn-secondary btn-danger btn-sm" onclick="operate_instance('{{dt.id}}','delete')">Delete</button>
               </div>   --> 
               <div class="btn-group">
-                {% if not dt.vnc_url %}
-                <a href="#" onclick="javascript:alert('VNC is Unavailable!');" class="btn btn-info btn-sm btn-secondary">VNC</a>
-                {% else %}
-                <a href="{{dt.vnc_url|default_if_none:'#'}}" class="btn btn-info btn-sm btn-secondary">VNC</a> 
-                {% endif %}
+                <button onclick="vnc_btn_click({{dt.id}})" class="btn btn-info btn-sm btn-secondary">VNC</button> 
                 <button class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">Toggle Dropdown</span>
                 </button>
@@ -107,6 +103,27 @@
     
   }
 
+  function vnc_btn_click(instance_id) {
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_instance_info_ajax' cluster.id %}",
+      type: 'get',
+      data: {
+        'instance_id': instance_id,
+        'require_vnc': true,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          if (data.info.vnc_url){
+            window.open(data.info.vnc_url, "_blank");  
+          }
+          else{
+            alert("VNC is unavailable!");
+          }
+        }
+      },
+    }, 'json');
+  }
 
   var instance_ids = [{%for dt in instances%}"{{dt.id}}",{%endfor%}];
   function update_status(){
@@ -122,6 +139,7 @@
       type: 'get',
       data: {
         'instance_id': instance_id,
+        'require_vnc': false,
       },
       cache:false,
       success: function(data) {

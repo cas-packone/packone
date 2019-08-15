@@ -155,11 +155,16 @@ def cluster_instance_get_info_ajax(request, c_id):
 	get cluster instance status
 	"""
 	dic = {"res": True, "info":None, "err":None}
-	instance_id = request.GET.get("instance_id")	
+	instance_id = request.GET.get("instance_id")
+	require_vnc = request.GET.get("require_vnc")
+	if require_vnc == "true":
+		require_vnc = True
+	else:
+		require_vnc = False
 	if instance_id.isdecimal():
 		instance_id = int(instance_id)
-		instance_info = get_cluster_instance_info(request.user, instance_id)
-		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"]}
+		instance_info = get_cluster_instance_info(request.user, instance_id,require_vnc=require_vnc)
+		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"], "vnc_url":instance_info["vnc_url"]}
 	else:
 		dic["res"] = False
 		dic["err"] = "Invalid ID"
