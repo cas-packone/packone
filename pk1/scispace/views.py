@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 from .utils import get_cluster_list, get_cluster_info, add_cluster, operate_cluster
-from .utils import get_cluster_instances, operate_cluster_instance
+from .utils import get_cluster_instances, operate_cluster_instance, get_cluster_instance_info
 from .utils import get_dataset_list, get_dataset_info
 from .utils import get_data_instance_list, get_data_instance_info, add_data_instance, delete_data_instance
 from .utils import get_step_operation_list, get_data_instance_operation_list
@@ -83,7 +83,7 @@ def cluster_operate_ajax(request):
 
 @csrf_exempt
 @login_required(login_url=LOGIN_URL)
-def get_cluster_info_ajax(request):
+def cluster_get_info_ajax(request):
 	"""
 	get cluster status
 	"""
@@ -111,6 +111,14 @@ def scale_engines_ajax(request):
 def cluster_info(request, c_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
+	if dic["cluster"]["portal"]:
+		dic["pipeline_api_url"] = "%s/piflow-web/api/flowList" %(dic["cluster"]["portal"].replace("8080","6001").rstrip("/"))
+		dic["notebook_api_url"] = "%s/api/notebook" %(dic["cluster"]["portal"].replace("8080","9995").rstrip("/"))
+	else:
+		dic["pipeline_api_url"] = "#"
+		dic["notebook_api_url"] = "#"
+	if not dic["cluster"]:
+		raise Http404 
 	return TemplateResponse(request, "cluster_info.html", dic)
 
 @login_required(login_url=LOGIN_URL)
@@ -134,6 +142,24 @@ def cluster_instance_operate_ajax(request, c_id):
 	if instance_id.isdecimal():
 		instance_id = int(instance_id)
 		dic["res"] = operate_cluster_instance(request.user, c_id, instance_id, op)
+	else:
+		dic["res"] = False
+		dic["err"] = "Invalid ID"
+	return JsonResponse(dic)
+
+
+@csrf_exempt
+@login_required(login_url=LOGIN_URL)
+def cluster_instance_get_info_ajax(request, c_id):
+	"""
+	get cluster instance status
+	"""
+	dic = {"res": True, "info":None, "err":None}
+	instance_id = request.GET.get("instance_id")	
+	if instance_id.isdecimal():
+		instance_id = int(instance_id)
+		instance_info = get_cluster_instance_info(request.user, instance_id)
+		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"]}
 	else:
 		dic["res"] = False
 		dic["err"] = "Invalid ID"
@@ -169,18 +195,41 @@ def data_instance_list(request, c_id):
 	dic["data_instances"] = get_data_instance_list(request.user, c_id)
 	return TemplateResponse(request, "data_instance_list.html", dic)
 
+@csrf_exempt
+@login_required(login_url=LOGIN_URL)
+def data_instance_get_info_ajax(request, c_id):
+	"""
+	get cluster instance status
+	"""
+	dic = {"res": True, "info":None, "err":None}
+	instance_id = request.GET.get("instance_id")	
+	if instance_id.isdecimal():
+		instance_id = int(instance_id)
+		instance_info = get_data_instance_info(instance_id)
+		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"]}
+	else:
+		dic["res"] = False
+		dic["err"] = "Invalid ID"
+	return JsonResponse(dic)
+
 @login_required(login_url=LOGIN_URL)
 def data_pipeline(request, c_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
-	dic["pipeline_url"] = "http://10.0.86.131:6001/piflow-web/web/flowList?first"
+	if dic["cluster"]["portal"]:
+		dic["pipeline_url"] = "%s/piflow-web/web/flowList?first" %(dic["cluster"]["portal"].replace("8080","6001").rstrip("/"))
+	else:
+		dic["pipeline_url"] = "#"
 	return TemplateResponse(request, "data_pipeline.html", dic)
 
 @login_required(login_url=LOGIN_URL)
 def notebook(request, c_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
-	dic["notebook_url"] = "http://10.0.88.78:9995/"
+	if dic["cluster"]["portal"]:
+		dic["notebook_url"] = dic["cluster"]["portal"].replace("8080","9995")
+	else:
+		dic["notebook_url"] = "#"
 	return TemplateResponse(request, "notebook.html", dic)
 
 @login_required(login_url=LOGIN_URL)

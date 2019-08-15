@@ -129,6 +129,12 @@ def get_cluster_instances(req_user: User, c_id) -> list:
         return [_get_cluster_instance_info(instance) for instance in obj.get_instances()   ]     
     return []
 
+def get_cluster_instance_info(req_user:User, instance_id) -> dict:
+    objs = Instance.objects.filter(id=instance_id)
+    if objs.exists():
+        return _get_cluster_instance_info(objs.first())
+    return None
+
 
 def operate_cluster_instance(req_user: User, c_id: int, instance_id: int, operation: str) -> bool:
     ops1 = ("toggle","delete")
@@ -239,8 +245,11 @@ def _data_instance_info(obj):
                 query_url += "/hbase/"
             elif obj.uri.strip():
                 query_url = obj.uri.strip()
-                if query_url.count("+") > 0:
-                    query_url = query_url.split("+")[0]
+                if query_url.startswith("http"):
+                    if query_url.count("+") > 0:
+                        query_url = query_url.split("+")[0]
+                else:
+                    query_url = ""
     return {
         'id': obj.id,
         'uuid': obj.uuid,

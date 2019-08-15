@@ -29,7 +29,7 @@
                             var iframe_init_src = ""
                             for (var i = 0; i < result_body.length; i++) {
                                 var option_element = '<option value="' + requestHead + '/#/notebook/' + result_body[i].id + '">' + result_body[i].name + '</option>';
-                                if ("simbademo" === result_body[i].name) {
+                                if (i === 0) {
                                     iframe_init_src = (requestHead + '/#/notebook/' + result_body[i].id);
                                     select_options = (option_element + select_options);
                                 } else {

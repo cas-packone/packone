@@ -141,7 +141,6 @@
   }
   update_status();
   function get_status(cluster_id) {
-    console.log(cluster_id);
     $.ajax({
       url: "{% url 'scispace_get_cluster_info_ajax' %}",
       type: 'get',

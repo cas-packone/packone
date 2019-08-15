@@ -81,6 +81,12 @@
         <li class="nav-item px-3">
           <a class="nav-link" href="{% url 'scispace_cluster_list'%}">Spaces</a>
         </li>
+        {% if cluster %}
+        &gt; 
+        <li class="nav-item px-3">
+          <a class="nav-link" href="#" style="font-weight: bold;">{{cluster.name}}</a>
+        </li>
+        {% endif %}
         <!-- <li class="nav-item px-3">
           <a class="nav-link" href="#">Users</a>
         </li>

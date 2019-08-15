@@ -41,7 +41,7 @@
             <td>{{dt.remark|default_if_none:""}}</td>
             <td>{{dt.created_time|date:'Y-m-d H:i:s'}}</td>
             <td>{{dt.built_time|date:'Y-m-d H:i:s'}}</td>
-            <td>{{dt.status_name}}</td>
+            <td id="status_td_{{dt.id}}">{{dt.status_name}}</td>
             <td> 
               <!-- <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                 <a href="{{dt.vnc_url}}" class="btn btn-secondary btn-info btn-sm">VNC</a> 
@@ -105,6 +105,32 @@
 
                     }, 'json'); 
     
+  }
+
+
+  var instance_ids = [{%for dt in instances%}"{{dt.id}}",{%endfor%}];
+  function update_status(){
+    for(var i in instance_ids) {
+      setInterval("get_status('" + instance_ids[i] + "')", 10000);
+      get_status(instance_ids[i]);
+    }
+  }
+  update_status();
+  function get_status(instance_id) {
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_instance_info_ajax' cluster.id %}",
+      type: 'get',
+      data: {
+        'instance_id': instance_id,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          var status_name = data.info.status_name;
+          $("#status_td_" + instance_id).text(status_name);
+        }
+      },
+    }, 'json');
   }
             
 </script>

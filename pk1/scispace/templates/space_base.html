@@ -44,7 +44,7 @@
                 <i class="nav-icon"><img src="{% static 'operaction.svg'%}" width="15px"></i> Instance Operations</a>
             </li>
             <li class="nav-item">
-              {% if not cluster.protal %}
+              {% if not cluster.portal %}
               <a class="nav-link" href="#" onclick="javascript:alert('Cluster Manage is Unavailable!');" target="_blank">
                 <i class="nav-icon"><img src="{% static 'manage.svg'%}" width="15px"></i> Cluster Manage</a>
               {% else %}

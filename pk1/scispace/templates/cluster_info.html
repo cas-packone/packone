@@ -69,8 +69,8 @@
     <script type="text/javascript" src="{% static 'scispace/js/echarts.min.js' %}"></script>
     <script type="text/javascript">
       var metric_data_url = "/space/{{cluster.id}}/api/data/state/";
-      var piflow_data_url = "http://10.0.86.131:6001/piflow-web/api/flowList";
-      var zeppelin_data_url = "http://10.0.88.78:9995/api/notebook";
+      var piflow_data_url = "{{pipeline_api_url}}";
+      var zeppelin_data_url = "{{notebook_api_url}}";
       jQuery(function($) {
         $.get( metric_data_url, function(data) {
           var metics_array = data.cluster.metics;
@@ -88,6 +88,11 @@
                   var diskChart = echarts.init(disk_div_element);
 
                   var metics_array_i = metics_array[i];
+                  for(var k in metics_array_i){
+                    metics_array_i = metics_array_i[k]
+                    break;
+                  }
+                  
                   var option = {
                       title: {
                           text: metics_array_i.Hosts.host_name + ' 统计',
