@@ -357,7 +357,7 @@ def _cloud_instance_operation_info(obj):
 
 
 def get_data_instance_operation_list(cluster_id):
-    objs = InstanceOperation.objects.filter(script__contains=("mkdir -p /data/packone/")).exclude(status=OPERATION_STATUS.success.value)
+    objs = InstanceOperation.objects.filter(script__contains=("mkdir -p /data/packone/"))
     return [_cloud_instance_operation_info(obj) for obj in objs]
 
 def get_data_instance_operation_info(cluster_id,op_id):
