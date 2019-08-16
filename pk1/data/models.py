@@ -8,6 +8,7 @@ from engines.models import Engine, COMPONENT_OPERATION
 from clouds.base.models import StaticModel, OperationModel, OperatableMixin
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS
 from engines.models import Cluster#TODO use worldwide namespace when upload to pip
+from django.core.validators import RegexValidator
 
 class DataSource(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
@@ -50,7 +51,7 @@ class INSTANCE_STATUS(Enum):
 
 class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=50, validators=[RegexValidator(r'[a-zA-Z0-9]*',inverse_match=True,message='muste be alphanumeric',)])
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
     cluster=models.ForeignKey(Cluster,on_delete=models.PROTECT)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
