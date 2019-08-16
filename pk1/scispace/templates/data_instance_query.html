@@ -15,4 +15,57 @@
     {% endif %}
   </div>
 
+  <script type="text/javascript">
+
+ {% if data_instance.engine_lower_name == "hive"%}
+  	var param_database_fun = function (function_param) {
+        var selectDom = [];
+        var dom = document.getElementsByTagName("a");
+          for (var i = 0; i < dom.length; i++) {
+              if ("click: back" === dom[i].getAttribute("data-bind")) {
+                  selectDom.push(dom[i]);
+              }
+          }
+          if (selectDom && selectDom.length > 0) {
+              selectDom[0].click();
+              var database_list = document.getElementsByClassName("assist-flex-fill assist-db-scrollable")[0];
+              var database_list_table_link = database_list.getElementsByClassName("assist-table-link");
+              if (database_list_table_link && database_list_table_link.length > 0) {
+                  console.log(function_param);
+                  for (var i = 0; i < database_list_table_link.length; i++) {
+                      if (function_param.trim() === database_list_table_link[i].text.trim()) {
+                          database_list_table_link[i].click();
+                          break;
+                      }
+                  }
+              }
+          }
+      };
+    function pre_execution() {
+        var iframe_element = document.getElementById("iframe1");
+        if (iframe_element.attachEvent) {
+            iframe_element.attachEvent("onload", function () {
+                //alert("本地iframe现在已加载。");
+                var hue_hive_choice_base_json = {
+                    "function_name": param_database_fun,
+                    "function_param": function_param_str,
+                }
+                sendMessage("iframe_id", hue_hive_choice_base_json);
+            });
+        } else {
+            iframe_element.onload = function () {
+                //alert("本地iframe现在已加载。");
+                var hue_hive_choice_base_json = {
+                    "function_name": param_database_fun,
+                    "function_param": function_param_str,
+                }
+                sendMessage("iframe_id", hue_hive_choice_base_json);
+            };
+        }
+      };
+    pre_execution();
+
+{% endif %}
+  </script>
+
 {% endblock %}

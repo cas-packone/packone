@@ -266,6 +266,7 @@ def _data_instance_info(obj):
         'dataset': _dataset_info(obj.dataset),      
         'cluster': _cluster_info(obj.cluster),
         'engine': _engine_info(obj.engine),
+        'engine_lower_name':obj.engine.name.strip().lower() if obj.engine else None,
         'uri': obj.uri,
         'query_url': query_url,
     }

@@ -164,6 +164,7 @@ def cluster_instance_get_info_ajax(request, c_id):
 	if instance_id.isdecimal():
 		instance_id = int(instance_id)
 		instance_info = get_cluster_instance_info(request.user, instance_id,require_vnc=require_vnc)
+		print(instance_info["vnc_url"])
 		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"], "vnc_url":instance_info["vnc_url"]}
 	else:
 		dic["res"] = False
@@ -314,6 +315,7 @@ def data_instance_query(request, c_id, di_id):
 	dic["cluster"] = get_cluster_info(request.user, c_id)
 	data_instance = get_data_instance_info(di_id)
 	dic["query_url"] = data_instance["query_url"]
+	dic["data_instance"] = data_instance
 	return TemplateResponse(request, "data_instance_query.html", dic)
 
 

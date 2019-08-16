@@ -42,7 +42,7 @@
             <td>{{dt.uri}}</td>
             <td>{{dt.remark|default_if_none:""}}</td>
             <td> 
-              <a href="{% url 'scispace_data_instance_query' cluster.id dt.id %}" class="btn btn-primary btn-sm">Query</a> 
+              <a id="query_btn_{{dt.id}}" {%if dt.status_name == "loading"%}style="display:none;"{%endif%} href="{% url 'scispace_data_instance_query' cluster.id dt.id %}" class="btn btn-primary btn-sm">Query</a> 
             </td>
             <td>
               <a href="{% url 'scispace_data_instance_delete' cluster.id %}?dt_id={{dt.id}}" class="btn btn-danger btn-sm">Delete</a> 
@@ -79,6 +79,13 @@
         if (data.res == true){
           var status_name = data.info.status_name;
           $("#status_td_" + instance_id).text(status_name);
+          if(status_name != "loading"){            
+            $("#query_btn_" + instance_id).show();
+          }
+          else{
+            $("#query_btn_" + instance_id).hide();
+          }
+
         }
       },
     }, 'json');
