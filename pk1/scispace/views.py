@@ -13,7 +13,8 @@ from .utils import get_cluster_list, get_cluster_info, add_cluster, operate_clus
 from .utils import get_cluster_instances, operate_cluster_instance, get_cluster_instance_info
 from .utils import get_dataset_list, get_dataset_info
 from .utils import get_data_instance_list, get_data_instance_info, add_data_instance, delete_data_instance
-from .utils import get_step_operation_list, get_data_instance_operation_list
+from .utils import get_step_operation_list, get_step_operation_info
+from .utils import get_data_instance_operation_list, get_data_instance_operation_info
 from .utils import get_cluster_data_engine_list
 from .utils import get_scale_list, get_available_engines
 
@@ -246,11 +247,29 @@ def scispace_operation_list(request, c_id):
 	return TemplateResponse(request, "scispace_operation_list.html", dic)
 
 @login_required(login_url=LOGIN_URL)
+def scispace_operation_info(request, c_id, op_id):
+	dic = {}
+	dic["cluster"] = get_cluster_info(request.user, c_id)
+	dic["operation"] = get_step_operation_info(c_id, op_id)
+	return TemplateResponse(request, "scispace_operation_info.html", dic)
+
+
+@login_required(login_url=LOGIN_URL)
 def data_instance_operation_list(request, c_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
 	dic["operations"] = get_data_instance_operation_list(c_id)
 	return TemplateResponse(request, "data_instance_operation_list.html", dic)
+
+
+
+@login_required(login_url=LOGIN_URL)
+def data_instance_operation_info(request, c_id, op_id):
+	dic = {}
+	dic["cluster"] = get_cluster_info(request.user, c_id)
+	dic["operation"] = get_data_instance_operation_info(c_id,op_id)
+	return TemplateResponse(request, "data_instance_operation_info.html", dic)
+
 
 @login_required(login_url=LOGIN_URL)
 def data_instance_add(request, c_id):

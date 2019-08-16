@@ -9,10 +9,13 @@
         <thead>
           <tr>
             <th>#</th>
+            <th>Name</th>
+
             <th>Operation</th>
-            <th>batch_uuid</th>
+            <!-- <th>batch_uuid</th> -->
             <th>script</th>
-            <th>created_time</th>
+            <th>log</th>
+            <!-- <th>created_time</th> -->
             <th>started_time</th>
             <th>completed_time</th>
             <th>status</th>
@@ -24,10 +27,12 @@
         {% for op in operations %}
           <tr>
             <th scope="row">{{forloop.counter}}</th>
+            <td><a href="{% url 'scispace_op_info' cluster.id op.id%}">{{op.name}}</a></td>
             <td>{{op.operation_name}}</td>
-            <td>{{op.batch_uuid  }}</td>
-            <td>{{op.script  }}</td>
-            <td>{{op.created_time|date:'Y-m-d H:i:s'  }}</td>
+            <!-- <td>{{op.batch_uuid  }}</td> -->
+            <td>{{op.script|default_if_none:""|truncatechars:"50"    }}</td>
+            <td>{{op.log|default_if_none:""|truncatechars:"50"    }}</td>
+            <!-- <td>{{op.created_time|date:'Y-m-d H:i:s'  }}</td> -->
             <td>{{op.started_time|date:'Y-m-d H:i:s'  }}</td>
             <td>{{op.completed_time|date:'Y-m-d H:i:s'  }}</td>
             <td>{{op.status  }}</td>

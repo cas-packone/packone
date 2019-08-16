@@ -1,0 +1,31 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+  <div class="row">
+    {% if operation %}
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">{{ operation.name }}</div>
+        <div class="card-body">
+            <table class="table">
+              <tbody>
+                {% for k,v in operation.items%}
+                <tr>
+                  <th>{{k}}</th>
+                  <td>{{v}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+
+        <!-- <div class="panel-footer"><a href="" class="btn btn-info">OPEN</a></div> -->
+
+      </div>
+            
+    </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

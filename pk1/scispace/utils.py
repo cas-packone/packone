@@ -139,7 +139,6 @@ def get_cluster_instance_info(req_user:User, instance_id, require_vnc=False) -> 
 
 def operate_cluster_instance(req_user: User, c_id: int, instance_id: int, operation: str) -> bool:
     ops1 = ("toggle","delete")
-    print(operation)
     if operation not in ops1 :
         return False
 
@@ -305,10 +304,13 @@ def delete_data_instance(req_user: User, di_id):
 # scispace operations
 def _step_operation_info(obj):
     return {
+    'id': obj.id,
+    'name': str(obj),
     'operation': obj.operation,
     'operation_name': INSTANCE_OPERATION(obj.operation).name,
     'batch_uuid': obj.batch_uuid,
     'script': obj.script,
+    'log': obj.log,
     'serial': obj.serial,
     'created_time': obj.created_time,
     'started_time': obj.started_time,
@@ -321,16 +323,25 @@ def _step_operation_info(obj):
 
 
 def get_step_operation_list(cluster_id):
-    objs = StepOperation.objects.filter(target_id = cluster_id)
-    return [_data_instance_info(obj) for obj in objs]
+    cluster_obj = Cluster.objects.filter(id=cluster_id, deleting=False).first()
+    objs = StepOperation.objects.filter(target__cluster = cluster_obj)
+    return [_step_operation_info(obj) for obj in objs]
 
+def get_step_operation_info(cluster_id, op_id):
+    cluster_obj = Cluster.objects.filter(id=cluster_id, deleting=False).first()
+    objs = StepOperation.objects.filter(target__cluster = cluster_obj, id=op_id)
+    if objs.exists():
+        return _step_operation_info(objs.first())
+    return None
 
 
 # data instance operations
-def _data_instance_operation_info(obj):
+def _cloud_instance_operation_info(obj):
     return {
+    'id': obj.id,
+    'name': str(obj),
     'operation': obj.operation,
-    'operation_name': COMPONENT_OPERATION(obj.operation),
+    'operation_name': INSTANCE_OPERATION(obj.operation).name,
     'batch_uuid': obj.batch_uuid,
     'script': obj.script,
     'serial': obj.serial,
@@ -340,15 +351,20 @@ def _data_instance_operation_info(obj):
     'status': obj.status,
     'tidied': obj.tidied,
     'manual': obj.manual,   
-    'data_instance': obj.target,
+    'target': obj.target,
     'log': obj.log,
     }
 
 
 def get_data_instance_operation_list(cluster_id):
-    objs = DataInstanceOperation.objects.filter()
-    return [_data_instance_operation_info(obj) for obj in objs]
+    objs = InstanceOperation.objects.filter(script__contains=("mkdir -p /data/packone/"))
+    return [_cloud_instance_operation_info(obj) for obj in objs]
 
+def get_data_instance_operation_info(cluster_id,op_id):
+    objs = InstanceOperation.objects.filter(id=op_id)
+    if objs.exists():
+        return _cloud_instance_operation_info(objs.first())
+    return None
 
 def _data_engine_info(obj):
     return {
