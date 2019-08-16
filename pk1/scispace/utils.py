@@ -324,7 +324,7 @@ def _step_operation_info(obj):
 
 def get_step_operation_list(cluster_id):
     cluster_obj = Cluster.objects.filter(id=cluster_id, deleting=False).first()
-    objs = StepOperation.objects.filter(target__cluster = cluster_obj)
+    objs = StepOperation.objects.filter(target__cluster = cluster_obj).exclude(status=OPERATION_STATUS.success.value)
     return [_step_operation_info(obj) for obj in objs]
 
 def get_step_operation_info(cluster_id, op_id):
@@ -357,7 +357,7 @@ def _cloud_instance_operation_info(obj):
 
 
 def get_data_instance_operation_list(cluster_id):
-    objs = InstanceOperation.objects.filter(script__contains=("mkdir -p /data/packone/"))
+    objs = InstanceOperation.objects.filter(script__contains=("mkdir -p /data/packone/")).exclude(status=OPERATION_STATUS.success.value)
     return [_cloud_instance_operation_info(obj) for obj in objs]
 
 def get_data_instance_operation_info(cluster_id,op_id):
