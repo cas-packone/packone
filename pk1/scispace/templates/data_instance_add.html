@@ -73,15 +73,19 @@
           var dt_name = $.trim($('input[name="name"]').val());
           var dataset_id = $('select[name="dataset_id"]').val();
           var engine_id = $('select[name="data_engine_id"]').val();
-          var err = ""
+          var err = "" ;
+          var regex=/^[0-9A-Za-z]+$/g ;
           if (!dt_name){
-            err += "[name] is required;\n"
+            err += "[name] is required;\n" ;
+          }
+          else if(!regex.test(dt_name)){
+            err += "[name] should only contain alpha or numberic ;\n" ;
           }
           if (!dataset_id){
-            err += "[Dataset] is required;\n"
+            err += "[Dataset] is required;\n" ;
           }
           if (!engine_id){
-            err += "[Engine] is required;\n"
+            err += "[Engine] is required;\n" ;
           }
           if (!err){
             $("#add_form").submit();
