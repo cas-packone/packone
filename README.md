@@ -19,15 +19,15 @@ pk1 start [--listening 127.0.0.1:11001]
 
 # Step 1: Add Cloud (OpenStack, for example)
 open http://127.0.0.1:11001/clouds/cloud/add/, and fill the form like:
-<img src="pk1/static/into-cloud.png"/>
+<img src="pk1/static/intro-cloud.png"/>
 
 # Step 2: Bootstrap an Ambari cluster
 open http://127.0.0.1:11001/engines/cluster/add/, and fill the form like:
-<img src="pk1/static/into-bootstrap.png"/>
+<img src="pk1/static/intro-bootstrap.png"/>
 
 # Step 3: Materialize/Scale clusters
 open http://127.0.0.1:11001/engines/cluster/, select the target clusters, and click the following materialize.../scale... link:
-<img src="pk1/static/into-materialize.png"/>
+<img src="pk1/static/intro-materialize.png"/>
 
 # Step 4: Boost cluster creation
 open http://127.0.0.1:11001/clouds/cloud/add/ similar to **Step 1**, but choose a scale whose name without 'boostrap'.
