@@ -30,7 +30,7 @@ open http://127.0.0.1:11001/engines/cluster/, select the target clusters, and cl
 <img src="pk1/static/intro-materialize.png"/>
 
 # Step 4: Boost cluster creation
-similar with **Step 1**, open http://127.0.0.1:11001/clouds/cloud/add/, but choose a scale whose name without 'boostrap'.
+Similar to **Step 1**, open http://127.0.0.1:11001/clouds/cloud/add/, but choose a scale whose name without 'boostrap'.
 
 # Stop
 pk1 stop
