@@ -4,7 +4,7 @@
 
   <div class="row">
     {% if cluster %}
-    <div class="col-md-12">
+    <div class="col-md-12" style="overflow-x: scroll;">
       <table class="table">
         <thead>
           <tr>
@@ -27,8 +27,8 @@
         {% for op in operations %}
           <tr>
             <th scope="row">{{forloop.counter}}</th>
-            <td><a href="{% url 'scispace_op_info' cluster.id op.id%}">{{op.name}}</a></td>
-            <td>{{op.operation_name}}</td>
+            <td><a href="{% url 'scispace_op_info' cluster.id op.id%}" title="{{op.name}}">{{op.name|truncatechars:"20" }}</a></td>
+            <td>{{op.operation_name }}</td>
             <!-- <td>{{op.batch_uuid  }}</td> -->
             <td>{{op.script|default_if_none:""|truncatechars:"50"    }}</td>
             <td>{{op.log|default_if_none:""|truncatechars:"50"    }}</td>

@@ -385,3 +385,33 @@ def get_cluster_data_engine_list(cluster_id, dataset_id):
         ).order_by('-pk')
     return [_data_engine_info(obj) for obj in qs]
         
+
+
+from datetime import timedelta, datetime
+from django.db.models import Sum, Count
+import data.models as models
+def get_data_metrics(cluster_id):
+    today = datetime.now()
+    begin_day = today - timedelta(days=365)
+    state = {
+        # 'cluster':{},
+        'dataset':{},
+        'instance':{},
+        # 'space':{}
+    }
+    space = Cluster.objects.filter(id=cluster_id).first()
+    state['dataset']['type_cnt']=[{'type': models.DATASET_TYPE(pair['type']).name, 'cnt': pair['cnt']} for pair in list(models.Dataset.objects.values('type').annotate(cnt=Count('id')))]
+    state['dataset']['type_size']=[{'type': models.DATASET_TYPE(pair['type']).name, 'size': pair['size']} for pair in list(models.Dataset.objects.all().values('type').annotate(size=Sum('size')))]
+    state['dataset']['public_size']=list(models.Dataset.objects.values('public').annotate(size=Sum('size')))
+    state['dataset']['owner_size']=list(models.Dataset.objects.values('owner__username').annotate(size=Sum('size')).order_by('-size')[0:10])
+    state['dataset']['month_size']=list(models.Dataset.objects.filter(modified_time__range=(begin_day, today)).values('modified_time__year', 'modified_time__month').annotate(size=Sum('size')).order_by('modified_time__year', 'modified_time__month'))
+    state['instance']['status_cnt']=[{'status': models.INSTANCE_STATUS(pair['status']).name, 'cnt': pair['cnt']} for pair in list(models.DataInstance.objects.filter(cluster=space).values('status').annotate(cnt=Count('id')))]
+    state['instance']['type_cnt']=[{'dataset__type': models.DATASET_TYPE(pair['dataset__type']).name, 'cnt': pair['cnt']} for pair in list(models.DataInstance.objects.filter(cluster=space).values('dataset__type').annotate(cnt=Count('id')).order_by('-cnt')[0:10])]
+    state['instance']['dataset_cnt']=list(models.DataInstance.objects.filter(cluster=space).values('dataset__name').annotate(cnt=Count('id')).order_by('-cnt')[0:10])
+    
+    return state
+
+def get_hosts_metrics(req_user: User, c_id) -> dict:
+    obj = _get_cluster_obj(req_user, c_id)
+    metrics = obj.metrics
+    return metrics

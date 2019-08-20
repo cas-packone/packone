@@ -18,7 +18,7 @@
   <script type="text/javascript">
 
  {% if data_instance.engine_lower_name == "hive"%}
- var function_param_str = "{{data_instance.uri}}";
+    var function_param_str = "{{data_instance.uri}}";
   	var param_database_fun = function (function_param) {
         var selectDom = [];
         var dom = document.getElementsByTagName("a");
@@ -43,7 +43,8 @@
           }
       };
     function pre_execution() {
-        var iframe_element = document.getElementById("iframe1");
+    	var iframe_id = "iframe1";
+        var iframe_element = document.getElementById(iframe_id);
         if (iframe_element.attachEvent) {
             iframe_element.attachEvent("onload", function () {
                 //alert("本地iframe现在已加载。");
@@ -51,7 +52,7 @@
                     "function_name": param_database_fun,
                     "function_param": function_param_str,
                 }
-                sendMessage("iframe_id", hue_hive_choice_base_json);
+                sendMessage(iframe_id, hue_hive_choice_base_json);
             });
         } else {
             iframe_element.onload = function () {
@@ -60,7 +61,7 @@
                     "function_name": param_database_fun,
                     "function_param": function_param_str,
                 }
-                sendMessage("iframe_id", hue_hive_choice_base_json);
+                sendMessage(iframe_id, hue_hive_choice_base_json);
             };
         }
       };

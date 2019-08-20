@@ -16,14 +16,14 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label" style="font-weight: 200;">Name: *</label>
           <div class="col-sm-9">
-              <input type="text" name="name" class="form-control" style="width:400px" AUTOCOMPLETE="off" />
+              <input type="text" name="name" class="form-control" AUTOCOMPLETE="off" />
           </div>
         </div>
 
         <div class="form-group row">
           <label class="col-sm-3 col-form-label" style="font-weight: 200;">Scale: *</label>
           <div class="col-sm-9">
-              <select name="scale" class="form-control" style="width:400px">
+              <select name="scale" class="form-control">
                 <option value=""></option>
               {% for sc in scales %}
                 <option value="{{sc.id}}">{{sc.name}}</option>
@@ -48,7 +48,7 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remedy script todo:</label>
           <div class="col-sm-9">
-              <textarea name="remedy_script_todo" class="form-control" rows="4" style="width:400px" ></textarea>
+              <textarea name="remedy_script_todo" class="form-control" rows="4" ></textarea>
           </div>
         </div>
 
@@ -67,7 +67,7 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remark:</label>
           <div class="col-sm-9">
-              <textarea name="remark" class="form-control" rows="3" style="width:400px" ></textarea>
+              <textarea name="remark" class="form-control" rows="3" ></textarea>
           </div>
         </div>
     

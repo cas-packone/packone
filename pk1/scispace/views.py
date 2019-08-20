@@ -17,6 +17,7 @@ from .utils import get_step_operation_list, get_step_operation_info
 from .utils import get_data_instance_operation_list, get_data_instance_operation_info
 from .utils import get_cluster_data_engine_list
 from .utils import get_scale_list, get_available_engines
+from .utils import get_data_metrics, get_hosts_metrics
 
 LOGIN_URL = "/login/"
 
@@ -112,6 +113,7 @@ def scale_engines_ajax(request):
 def cluster_info(request, c_id):
 	dic = {}
 	dic["cluster"] = get_cluster_info(request.user, c_id)
+	dic["hosts"] = get_cluster_instances(request.user, c_id)
 	if dic["cluster"]["portal"]:
 		dic["pipeline_api_url"] = "%s/piflow-web/api/flowList" %(dic["cluster"]["portal"].replace("8080","6001").rstrip("/"))
 		dic["notebook_api_url"] = "%s/api/notebook" %(dic["cluster"]["portal"].replace("8080","9995").rstrip("/"))
@@ -165,7 +167,6 @@ def cluster_instance_get_info_ajax(request, c_id):
 	if instance_id.isdecimal():
 		instance_id = int(instance_id)
 		instance_info = get_cluster_instance_info(request.user, instance_id,require_vnc=require_vnc)
-		print(instance_info["vnc_url"])
 		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"], "vnc_url":instance_info["vnc_url"]}
 	else:
 		dic["res"] = False
@@ -347,3 +348,21 @@ def get_data_engines_ajax(request, c_id):
 	engines = get_cluster_data_engine_list(c_id, dataset_id)
 	dic["list"] = [{"id":e["id"],"name":e["engine_name"]} for e in engines]
 	return JsonResponse(dic)
+
+
+@login_required(login_url=LOGIN_URL)
+def get_data_metrics_ajax(request, c_id):
+	dic = {"res": True, "err":None, "metrics":[]}
+	metrics = get_data_metrics(c_id)
+	dic["metrics"] = metrics
+	return JsonResponse(dic)
+
+
+@login_required(login_url=LOGIN_URL)
+def get_hosts_metrics_ajax(request, c_id):
+	dic = {"res": True, "err":None, "metrics":[]}
+	metrics = {}
+	dic["metrics"] = get_hosts_metrics(request.user, c_id)
+	return JsonResponse(dic)
+
+

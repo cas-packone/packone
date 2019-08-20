@@ -28,14 +28,14 @@
       </div>
 
     
-    <div class="col-md-12" id="metrics_parent" style="margin-bottom: 50px;">
+    <div class="col-md-12" id="metrics_parent">
       <h4 class="page-header" style="margin-top: 20px;">
         Cluster Overview
       </h4>
-      <div id="metrics_div" class="row" ></div> 
+      <div id="metrics_div" class="row" style="margin-top: 20px;"></div> 
     </div>     
 
-    <div class="col-md-12" id="dataset_parent" style="margin-bottom: 50px;">
+    <div class="col-md-12" id="dataset_parent">
       <h4 class="page-header"  style="margin-top: 20px;">
         Dataset Overview
       </h4>
@@ -45,14 +45,14 @@
       </div>
     </div>
 
-    <div class="col-md-12" id="instance_parent" style="margin-bottom: 50px;">    
+    <div class="col-md-12" id="instance_parent">    
       <h4 class="page-header"  style="margin-top: 20px;">
         Instance Overview
       </h4>
-      <div id="instance_1" style="height: 300px;"></div>
+      <div id="instance_1" style="height: 300px;max-width: 600px;"></div>
     </div>
 
-    <div class="col-md-12" id="pipeline_parent" style="margin-bottom: 50px;">
+    <div class="col-md-12" id="pipeline_parent">
       <h4 class="page-header"  style="margin-top: 20px;">
         Pipeline Overview
       </h4>
@@ -60,7 +60,7 @@
       </div>
     </div>
     
-    <div class="col-md-12" id="notebook_parent" style="margin-bottom: 50px;">
+    <div class="col-md-12" id="notebook_parent">
       <h4 class="page-header"  style="margin-top: 20px;">
         Notebook Overview
       </h4>
@@ -68,56 +68,47 @@
     </div>
     <script type="text/javascript" src="{% static 'scispace/js/echarts.min.js' %}"></script>
     <script type="text/javascript">
-      var metric_data_url = "/space/{{cluster.id}}/api/data/state/";
+      var data_metrics_url = "{%url 'scispace_get_data_metrics_ajax' cluster.id %}";
+      var hosts_metrics_url = "{%url 'scispace_get_hosts_metrics_ajax' cluster.id %}";
       var piflow_data_url = "{{pipeline_api_url}}";
       var zeppelin_data_url = "{{notebook_api_url}}";
-      jQuery(function($) {
-        $.get( metric_data_url, function(data) {
-          var metics_array = data.cluster.metics;
-          if (metics_array && metics_array.length > 0) {
-              var metics_div = document.getElementById("metrics_div");
-              var content_eles = "";
-              for (var i = 0; i < metics_array.length; i++) {                
-                  content_eles += ('<div id="disk' + i + '" class="col-md-6" style="height:300px;"></div>');                  
-              }           
-              metrics_div.innerHTML = (content_eles);
+      var hosts_metrics = { {%for h in hosts%}
+                    "{{h.hostname}}":{"disk_free":200,"disk_total":500,"mem_total":8174516.0,"mem_free":4820708.0},
+                    {%endfor%} };
 
-              for (var i = 0; i < metics_array.length; i++) {
-
-                  var disk_div_element = document.getElementById('disk' + i);
-                  var diskChart = echarts.init(disk_div_element);
-
-                  var metics_array_i = metics_array[i];
-                  for(var k in metics_array_i){
-                    metics_array_i = metics_array_i[k]
-                    break;
-                  }
-                  
-                  var option = {
-                      title: {
-                          text: metics_array_i.Hosts.host_name + ' 统计',
+      var hosts_options = {};
+      var hosts_charts = {};
+      function get_hosts_option(hostname,disk_free,disk_total,mem_total,mem_free) {
+        return {
+                  title: {
+                          text: hostname,
                           //subtext: '虚构数据',
                           left: 'center'
                       },
-                      color: ['#99d2dd', '#1c7099'],
-                      tooltip: {
+                  color: ['#99d2dd', '#1c7099'],
+                  tooltip: {
                           trigger: 'item',
                           formatter: "{a} <br/>{b} : {c}"
                       },
-                      series: [
-                          {
-                              name: '磁盘空间',
-                              type: 'pie',
-                              radius: '50%',
-                              center: ['35%', '60%'],
-                              data: [{
-                                  value: metics_array_i.metrics.disk.disk_free,
-                                  name: '磁盘空闲'
-                              }, {
-                                  value: (metics_array_i.metrics.disk.disk_total - metics_array_i.metrics.disk.disk_free).toFixed(2),
-                                  name: '磁盘使用'
+                  legend: {
+                          orient: 'vertical',
+                          left: 'left',
+                          data: ['DiskFree','DiskUsed']
+                      },
+                  series: [{
+                            name: 'Disk',
+                            type: 'pie',
+                            radius: '60%',
+                            center: ['25%', '50%'],
+                            data: [{
+                                  value: disk_free,
+                                  name: 'DiskFree'
+                                }, 
+                                {
+                                  value: (disk_total - disk_free).toFixed(2),
+                                  name: 'DiskUsed'
                               }],
-                              itemStyle: {
+                            itemStyle: {
                                   emphasis: {
                                       show: true,
                                       textStyle: {
@@ -125,28 +116,29 @@
                                           fontWeight: 'bold'
                                       }
                                   },
-                                  normal: {
+                            normal: {
                                       position: 'center',
                                       label: {
                                           formatter: function(a, b, c, d) {
-                                            return a.data.name + '：' + a.data.value + 'GB ';
+                                            return a.data.value + 'GB ';
                                           },
-                                          textStyle: {
-                                              baseline: 'top',
-                                              fontSize: '12',
-                                              fontWeight: 'bold'
-                                          }
+                                          position: 'inside',
+                                          // textStyle: {
+                                          //     baseline: 'top',
+                                          //     fontSize: '12',
+                                          //     fontWeight: 'bold',
+                                          // }
                                       }
                                   },
                               }
                           },
                           {
-                              name: '内存已使用(GB)',
+                              name: 'Memory',
                               type: 'gauge',
                               radius: '70%',
-                              center: ['70%', '50%'],
+                              center: ['65%', '50%'],
                               min: 0,
-                              max: (metics_array_i.metrics.memory.mem_total/(1024*1024)).toFixed(1),
+                              max: Math.ceil(mem_total/(1024*1024)),
                               axisLine: {            // 坐标轴线
                                   lineStyle: {       // 属性lineStyle控制线条样式
                                       width: 10
@@ -164,23 +156,46 @@
                                       color: 'auto'
                                   }
                               },
-                              //detail: {formatter:'{value}'},
+                              detail: {formatter:'{value}'+"GB"},
                               data: [{
-                                  value: ((metics_array_i.metrics.memory.mem_total - metics_array_i.metrics.memory.mem_free)/(1024*1024)).toFixed(2), 
-                                  name: '内存(GB)'
+                                  value: ((mem_total - mem_free)/(1024*1024)).toFixed(2), 
+                                  name: 'Memory(GB)'
                                   }]
                           }
                       ]
                   };
-                  diskChart.setOption(option);
-              }
-          }
-          else{
-            // hidden parent element
-            var pr = document.getElementById("metrics_parent");
-            pr.style.display="none";
-          }
+      }
 
+      jQuery(function($) {
+
+        // init hosts metrics
+        var content_eles = "";
+        var metics_div = document.getElementById("metrics_div");
+        var i = 0;
+        for(var key in hosts_metrics){
+          content_eles += ('<div id="host' + i + '" class="col-md-6" style="height:300px;"></div>');
+          i += 1;          
+        }
+        metrics_div.innerHTML = (content_eles);
+        i = 0;
+        for(var key in hosts_metrics){
+          var disk_div_element = document.getElementById('host' + i);
+          i += 1;
+
+          var diskChart = echarts.init(disk_div_element);
+          var disk_free = hosts_metrics[key]["disk_free"];
+          var disk_total = hosts_metrics[key]["disk_total"];
+          var mem_free = hosts_metrics[key]["mem_free"];
+          var mem_total = hosts_metrics[key]["mem_total"];
+          var option = get_hosts_option(key,disk_free,disk_total,mem_total,mem_free);
+          diskChart.setOption(option);
+          hosts_options[key] = option;
+          hosts_charts[key] = diskChart;
+        }
+
+        // init data metrics
+        $.get( data_metrics_url, function(data) {
+          data = data.metrics;
           var data_sets_type_cnt = data.dataset.type_cnt;
           if (data_sets_type_cnt && data_sets_type_cnt.length > 0) {
               var dataset_div_element_1 = document.getElementById('dataset_1');
@@ -193,7 +208,7 @@
               var dataset_chart_1 = echarts.init(dataset_div_element_1);
               var dataset_chart_1_option = {
                   title: {
-                      text: '各种类型数据数量',
+                      text: '',
                       subtext: '',
                       left: 'center'
                   },
@@ -205,13 +220,14 @@
                       }
                   },
                   grid: {
-                      left: '3%',
-                      right: '4%',
-                      bottom: '3%',
+                      left: '10',
+                      right: '80',
+                      bottom: '10',
                       containLabel: true
                   },
                   xAxis: [{
                       type: 'category',
+                      name: 'DataType',
                       //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                       data: dataset_chart_1_option_data_x,
                       axisTick: {
@@ -220,6 +236,7 @@
                   }],
                   yAxis: [{
                       type: 'value',
+                      name: 'Count',
                       axisLabel:{formatter:'{value}'}
                   }],
                   series: [{
@@ -240,12 +257,12 @@
               var dataset_chart_2_option_data_y = [];
               for (var i = 0; i < data_sets_type_size.length; i++) {
                   dataset_chart_2_option_data_x.push(data_sets_type_size[i].type);
-                  dataset_chart_2_option_data_y.push(data_sets_type_size[i].size);
+                  dataset_chart_2_option_data_y.push(Math.round(data_sets_type_size[i].size/1024)); //convert MB
               }
               var dataset_chart_2 = echarts.init(dataset_div_element_2);
               var dataset_chart_2_option = {
                   title: {
-                      text: '各种类型数据占用空间',
+                      text: '',
                       subtext: '',
                       left: 'center'
                   },
@@ -257,13 +274,14 @@
                       }
                   },
                   grid: {
-                      left: '3%',
-                      right: '4%',
-                      bottom: '3%',
+                      left: '10',
+                      right: '80',
+                      bottom: '10',
                       containLabel: true
                   },
                   xAxis: [{
                       type: 'category',
+                      name: 'DataType',
                       //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                       data: dataset_chart_2_option_data_x,
                       axisTick: {
@@ -272,23 +290,23 @@
                   }],
                   yAxis: [{
                       type: 'value',
-                      axisLabel:{formatter:'{value} KB'}
+                      name: 'Size/MB',
+                      axisLabel:{formatter:'{value}'}
                   }],
                   series: [{
-                      name: '大小：',
+                      name: 'Size',
                       type: 'bar',
                       barWidth: '60%',
                       //data: [10, 52, 200, 334, 390, 330, 220]
                       data: dataset_chart_2_option_data_y,
-                      normal: {
-                          position: 'center',
-                          label: {
-                              formatter: function(a, b, c, d) {
-                                  //return a.data.name + '：' + (a.data.value / 7601 * 100).toFixed(2) + '%<br>';
-                                  return a.data.name + '：' + a.data.value + 'GB ';
-                              }
-                          }
-                      },
+                      // normal: {
+                      //     position: 'center',
+                      //     label: {
+                      //         formatter: function(a, b, c, d) {
+                      //             return a.data.value + 'MB ';
+                      //         }
+                      //     }
+                      // },
                   }]
               };
               dataset_chart_2.setOption(dataset_chart_2_option);
@@ -324,26 +342,27 @@
                       }
                   },
                   grid: {
-                      left: '3%',
-                      right: '4%',
-                      bottom: '3%',
+                      left: '10',
+                      right: '80',
+                      bottom: '10',
                       containLabel: true
                   },
                   xAxis: [{
                       type: 'category',
-                      //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                      name: 'DataType',
                       data: instance_chart_1_option_data_x,
                       axisTick: {
                           alignWithLabel: true
                       }
                   }],
                   yAxis: [{
-                      type: 'value'
+                      type: 'value',
+                      name: 'Count',
                   }],
                   series: [{
-                      name: '数量',
+                      name: 'Count',
                       type: 'bar',
-                      barWidth: '60%',
+                      barWidth: '50%',
                       //data: [10, 52, 200, 334, 390, 330, 220]
                       data: instance_chart_1_option_data_y
                   }]
@@ -356,6 +375,7 @@
             pr.style.display="none";
           }
         });
+
 
         $.get( piflow_data_url, function(result) {
           if (result) {
@@ -392,7 +412,42 @@
           }
         });
 
+        // update hosts metrics
+        update_hosts_metrics();
       });
+
+    function update_hosts_metrics(){
+      setInterval("set_hosts_metrics()", 10000);
+      set_hosts_metrics();
+      }
+
+    function set_hosts_metrics() {
+      $.get( hosts_metrics_url, function(data) {
+          var metrics_array = data.metrics;
+          if (metrics_array && metrics_array.length > 0) {
+              for (var i = 0; i < metrics_array.length; i++) {
+                  var metrics_array_i = metrics_array[i];
+                  for(var k in metrics_array_i){
+                    metrics = metrics_array_i[k]["metrics"];
+                    if(hosts_charts.hasOwnProperty(k)){
+                      disk_free = metrics["disk"]["disk_free"];
+                      disk_total = metrics["disk"]["disk_total"];
+                      mem_free = metrics["memory"]["mem_free"];
+                      mem_total = metrics["memory"]["mem_total"];
+                      var option = get_hosts_option(k,disk_free,disk_total,mem_total,mem_free);
+                      hosts_charts[k].setOption(option,true);
+                    }
+                  }                  
+              }
+          }
+          else{
+            // hidden parent element
+            var pr = document.getElementById("metrics_parent");
+            pr.style.display="none";
+          }
+      });
+    }
+    
     </script>
 
     {% endif %}

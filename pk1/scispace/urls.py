@@ -35,6 +35,7 @@ urlpatterns = [
     path('clusters/<int:c_id>/data_instance_operations/', data_instance_operation_list, name="scispace_datainstance_op_list"),
     path('clusters/<int:c_id>/data_instance_operations/<op_id>/', data_instance_operation_info, name="scispace_datainstance_op_info"),
     path('clusters/<int:c_id>/data_engines_ajax/', get_data_engines_ajax, name="scispace_get_data_engines_ajax"),
-    # path('space/<int:sid>/datasets/', datasets),
-    # path('space/<int:sid>/datasets/<int:did>/', datasets),
+
+    path('clusters/<int:c_id>/data_metrics_ajax/', get_data_metrics_ajax, name="scispace_get_data_metrics_ajax"),
+    path('clusters/<int:c_id>/hosts_metrics_ajax/', get_hosts_metrics_ajax, name="scispace_get_hosts_metrics_ajax"),
 ]
