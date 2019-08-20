@@ -154,7 +154,7 @@ class Cluster(models.Model,M2MOperatableMixin):
     @cached_property
     def portal(self):#TODO formalize, opt perf.
         if not self.ready: raise Exception('cluster not ready')
-        mi=self.get_ready_instances().filter(image__name__contains='master1')
+        mi=self.get_ready_instances().filter(hostname__contains='master1')
         if mi.exists(): return "http://"+str(mi[0].ipv4)+':8080'
         return None
     @cached_property
