@@ -7,13 +7,13 @@
     {% if cluster %}
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header">{{ cluster.name }}</div>
+        <div class="card-header" style="font-weight: bold;">{{ cluster.name }}</div>
         <div class="card-body">
             <table class="table">
               <tbody>
                 {% for k,v in cluster.items%}
                 <tr>
-                  <th>{{k}}</th>
+                  <th style="color: #16588c;">{{k}}</th>
                   <td>{{v}}</td>
                 </tr>
                 {% endfor %}
@@ -85,7 +85,7 @@
                           //subtext: '虚构数据',
                           left: 'center'
                       },
-                  color: ['#99d2dd', '#1c7099'],
+                  color: ['#59b3d5', '#cc2f36'],
                   tooltip: {
                           trigger: 'item',
                           formatter: "{a} <br/>{b} : {c}"
@@ -212,7 +212,7 @@
                       subtext: '',
                       left: 'center'
                   },
-                  color: ['#3398DB'],
+                  color: ['#59b3d5'],
                   tooltip: {
                       trigger: 'axis',
                       axisPointer: { // 坐标轴指示器，坐标轴触发有效
@@ -266,7 +266,7 @@
                       subtext: '',
                       left: 'center'
                   },
-                  color: ['#3398DB'],
+                  color: ['#93c4af'],
                   tooltip: {
                       trigger: 'axis',
                       axisPointer: { // 坐标轴指示器，坐标轴触发有效
@@ -334,7 +334,7 @@
                       subtext: '',
                       left: 'center'
                   },
-                  color: ['#3398DB'],
+                  color: ['#eacc6c'],
                   tooltip: {
                       trigger: 'axis',
                       axisPointer: { // 坐标轴指示器，坐标轴触发有效

@@ -19,7 +19,7 @@
 <div class="app-body">
 <div class="container-fluid">
   <div class="row" style="margin-top: 10px;">
-    <div class="col-md-12" style="text-align: right;margin-bottom: 10px;"><a class="btn btn-primary" href="{% url 'scispace_cluster_add' %}"><icon class="fa fa-plus"></icon> Add Space</a></div>
+    <div class="col-md-12" style="text-align: right;margin-bottom: 10px;"><a class="btn btn-primary" style="background-color: #fb9045;border-color: #fb9045;" href="{% url 'scispace_cluster_add' %}"><icon class="fa fa-plus"></icon> Add Space</a></div>
     
     {% for cluster in clusters%}
 
@@ -39,7 +39,7 @@
                 </tr>
                 <tr>
                   <td>Remark</td>
-                  <td>{{cluster.remark|default_if_none:""}}</td>
+                  <td>{{cluster.remark|default_if_none:"-"}}</td>
                 </tr>
                 <tr>
                   <td>Owner</td>

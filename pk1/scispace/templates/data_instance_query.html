@@ -42,6 +42,16 @@
               }
           }
       };
+    function sendMessage(iframe_id, json_object) {
+        // json对象转换成字符串
+        var data_json = JSON.stringify(json_object, function (key, val) {
+            if (typeof val === 'function') {
+                return val + '';
+            }
+            return val;
+        });
+        document.getElementById(iframe_id).contentWindow.postMessage(data_json, '*');
+    }
     function pre_execution() {
     	var iframe_id = "iframe1";
         var iframe_element = document.getElementById(iframe_id);

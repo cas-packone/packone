@@ -58,6 +58,28 @@
     .nav-dropdown-items{
       margin-left: 15px !important;
     }
+
+    .card-header {
+      background-color: #20a6e3 !important;
+      color: #fff;
+    }
+    .card{
+      border-color: #20a6e3 !important;
+    }
+    .btn-primary{
+      background-color: #21a6e1 !important;
+      border-color: #21a6e1 !important;
+    }
+    .btn-success{
+      background-color: #68b25b !important;
+      border-color: #68b25b !important;
+    }
+    .nav-title{
+      color: #16588c !important;
+    }
+    th{
+      text-transform: capitalize;
+    }
    </style>
 
   </head>
@@ -79,12 +101,12 @@
 
       {% if request.user.is_authenticated %}
         <li class="nav-item px-3">
-          <a class="nav-link" href="{% url 'scispace_cluster_list'%}">Spaces</a>
+          <a class="nav-link" href="{% url 'scispace_cluster_list'%}" style="font-weight: bold;color: #256499;">Spaces</a>
         </li>
         {% if cluster %}
         &gt; 
         <li class="nav-item px-3">
-          <a class="nav-link" href="#" style="font-weight: bold;">{{cluster.name}}</a>
+          <a class="nav-link" href="#" style="font-weight: bold;color: #256499;">{{cluster.name}}</a>
         </li>
         {% endif %}
         <!-- <li class="nav-item px-3">
@@ -99,7 +121,7 @@
       {% if request.user.is_authenticated %}
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-user"></i> {{request.user.username}}
+            <i class="fa fa-user" style="color: #20a6e3;"></i> {{request.user.username}}
           </a>
           <div class="dropdown-menu dropdown-menu-right">
             <div class="dropdown-header text-center">

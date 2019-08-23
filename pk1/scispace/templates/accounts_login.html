@@ -1,6 +1,5 @@
 {%extends 'site_base.html'%}
-
-
+{% load staticfiles %}
 
 {% block app-body %}
 <style type="text/css">    
@@ -14,13 +13,13 @@
     margin-top: 100px;
     }
 </style>
-<div class="app-body">
+<div class="app-body" style="background: #3ca4e2 url({% static 'scispace/img/login-background.png'%}) no-repeat round;">
   <div class="container-fluid">
 
     <div class="row justify-content-center">
-        <div class="col-md-3" style="margin-top: 100px;">
+        <div class="" style="margin-top: 10%;width: 350px;">
             <div class="card">
-                <div class="card-header" style="text-align: center;background-color: #fff;">
+                <div class="card-header" style="text-align: center;background-color: #fff !important;color: #333;">
                     <h4>Login</h4>
                 </div>
 
