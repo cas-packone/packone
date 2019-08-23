@@ -19,6 +19,7 @@
 
  {% if data_instance.engine_lower_name == "hive"%}
     var function_param_str = "{{data_instance.uri}}";
+    function_param_str = function_param_str.split(".")[0];
   	var param_database_fun = function (function_param) {
         var selectDom = [];
         var dom = document.getElementsByTagName("a");
