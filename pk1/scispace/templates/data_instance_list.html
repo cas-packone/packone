@@ -8,7 +8,7 @@
     <a class="btn btn-primary btn-sm" href="{% url 'scispace_data_instance_add' cluster.id %}">
       <icon class="fa fa-plus"></icon> Add Instance</a>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12" style="overflow-x: scroll;">
       <table class="table">
         <thead>
           <tr>
@@ -21,6 +21,7 @@
             <th>Built Time</th>
             <th>Status</th>
             <th>Uri</th>
+            <th>Owner</th>
             <th>Remark</th>
             <th>Action</th>
             <th></th>
@@ -40,6 +41,7 @@
             <td>{{dt.built_time|date:'Y-m-d H:i:s'}}</td>
             <td id="status_td_{{dt.id}}">{{dt.status_name}}</td>
             <td>{{dt.uri}}</td>
+            <td>{{dt.owner}}</td>            
             <td>{{dt.remark|default_if_none:""}}</td>
             <td> 
               <a id="query_btn_{{dt.id}}" {%if dt.status_name == "loading"%}style="display:none;"{%endif%} href="{% url 'scispace_data_instance_query' cluster.id dt.id %}" class="btn btn-primary btn-sm">Query</a> 
