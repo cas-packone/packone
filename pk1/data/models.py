@@ -51,7 +51,7 @@ class INSTANCE_STATUS(Enum):
 
 class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    name=models.CharField(max_length=50, validators=[RegexValidator(r'[a-z0-9]*',inverse_match=True,message='muste be lower-case alphanumeric',)])
+    name=models.CharField(max_length=50, validators=[RegexValidator(r'[a-z0-9]*',message='muste be lower-case alphanumeric',)])
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
     cluster=models.ForeignKey(Cluster,on_delete=models.PROTECT)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
