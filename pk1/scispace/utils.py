@@ -247,9 +247,11 @@ def _data_instance_info(obj):
                 query_url = obj.uri.strip()
                 if query_url.startswith("http"):
                     if query_url.count("+") > 0:
-                        query_url = query_url.split("+")[0]
+                        query_url = query_url.split("+")[0].strip()
                 else:
                     query_url = ""
+                if engine_name == "gstore":
+                    query_url += "/admin_root.html"
     return {
         'id': obj.id,
         'uuid': obj.uuid,
