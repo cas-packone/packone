@@ -5,7 +5,7 @@
 
   <div class="row">
     {% if cluster %}
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="card">
         <div class="card-header" style="font-weight: bold;">{{ cluster.name }}</div>
         <div class="card-body">
@@ -28,7 +28,7 @@
       </div>
 
     
-    <div class="col-md-12" id="metrics_parent">
+    <div class="col-md-6" id="metrics_parent">
       <h4 class="page-header" style="margin-top: 20px;">
         Cluster Overview
       </h4>
@@ -173,7 +173,7 @@
         var metics_div = document.getElementById("metrics_div");
         var i = 0;
         for(var key in hosts_metrics){
-          content_eles += ('<div id="host' + i + '" class="col-md-6" style="height:300px;"></div>');
+          content_eles += ('<div id="host' + i + '" class="col-md-12" style="height:300px;"></div>');
           i += 1;          
         }
         metrics_div.innerHTML = (content_eles);
