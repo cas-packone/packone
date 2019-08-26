@@ -250,8 +250,6 @@ def _data_instance_info(obj):
                         query_url = query_url.split("+")[0].strip()
                 else:
                     query_url = ""
-                if engine_name == "gstore":
-                    query_url += "/admin_root.html"
     return {
         'id': obj.id,
         'uuid': obj.uuid,
