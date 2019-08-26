@@ -1,4 +1,5 @@
 {% extends 'space_base.html' %}
+{% load staticfiles %}
 
 {% block main %}
 
@@ -16,7 +17,7 @@
             <th>Name</th>
             <th>DataSet</th>
             <!-- <th>Cluster</th> -->
-            <th>Engine</th>
+            <th style="width:100px;">Engine</th>
             <th>Created Time</th>
             <th>Built Time</th>
             <th>Status</th>
@@ -36,7 +37,24 @@
             <!-- <td>{{dt.uri}}</td> -->
             <td>{{dt.dataset.name}}</td>
             <!-- <td>{{dt.cluster.name}}</td> -->
-            <td>{{dt.engine.name}}</td>
+            <td>
+              {% if dt.dataset.type == 0%}
+              <icon class="fa fa-table" style="font-size:10px;"></icon>              
+              {% elif dt.dataset.type == 1%}
+              <img src="{% static 'hdfs.svg'%}" style="width:10px;">
+              {% elif dt.dataset.type == 2%}
+              <icon class="fa fa-file-text-o" style="font-size:10px;"></icon>
+              {% elif dt.dataset.type == 3%}
+              <img src="{% static 'hive.svg'%}" style="width:10px;">
+              {% elif dt.dataset.type == 4%}
+              <img src="{% static 'event.svg'%}" style="width:10px;">
+              {% elif dt.dataset.type == 5%}
+              <img src="{% static 'gstore.svg'%}" style="width:10px;">
+              {% elif dt.dataset.type == 6%}
+              <img src="{% static 'star.svg'%}" style="width:10px;">
+              {% endif %}
+              {{dt.engine.name}}
+            </td>
             <td>{{dt.created_time|date:'Y-m-d H:i:s'}}</td>
             <td>{{dt.built_time|date:'Y-m-d H:i:s'}}</td>
             <td id="status_td_{{dt.id}}">{{dt.status_name}}</td>
@@ -54,9 +72,10 @@
         </tbody>
       </table>
 
-      </div>
+    </div>
+
+    {% include 'include/data_instance_query.html'%}
             
-      </div>
     {% endif %}
   </div>
 
