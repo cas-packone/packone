@@ -70,6 +70,7 @@ class DataInstance(models.Model,OperatableMixin):
     def entry_host(self):#the host to execute load dataset operations
         if self.engine.name=='EventDB': return self.cluster.find_instance('master1')
         if self.engine.name=='gStore': return self.cluster.find_instance('master1')
+        if self.engine.name=='AstroServ': return self.cluster.find_instance('master1')
         return self.engine.engine.get_host(self.cluster)
     @cached_property
     def uri_suffix(self):#suffix of the final uri, the only approach to access this data instance.
