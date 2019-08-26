@@ -56,7 +56,7 @@ class ClusterAdmin(OwnershipModelAdmin,OperatableAdminMixin):
     stop.short_description = "Stop selected clusters"
     def materialize(modeladmin, request, queryset):
         for cluster in queryset:
-            if not cluster.name.startswith('bootstrap.'): continue
+            if not '.bootstrap.' in cluster.scale.name: continue
             blueprints=[]
             for ins in cluster.get_instances():
                 image, created=ins.get_or_create_image()

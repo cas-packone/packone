@@ -8,6 +8,7 @@ from engines.models import Engine, COMPONENT_OPERATION
 from clouds.base.models import StaticModel, OperationModel, OperatableMixin
 from clouds.models import OPERATION_STATUS, INSTANCE_STATUS
 from engines.models import Cluster#TODO use worldwide namespace when upload to pip
+from django.core.validators import RegexValidator
 
 class DataSource(StaticModel):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
@@ -50,7 +51,7 @@ class INSTANCE_STATUS(Enum):
 
 class DataInstance(models.Model,OperatableMixin):
     uuid=models.UUIDField(auto_created=True, default=uuid4, editable=False)
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=50, validators=[RegexValidator(r'[a-z0-9]*',message='muste be lower-case alphanumeric',)])
     dataset=models.ForeignKey(Dataset,on_delete=models.PROTECT)
     cluster=models.ForeignKey(Cluster,on_delete=models.PROTECT)
     engine=models.ForeignKey(DataEngine,on_delete=models.PROTECT)#TODO:its uri should be the prefix of the final uri
@@ -69,6 +70,7 @@ class DataInstance(models.Model,OperatableMixin):
     def entry_host(self):#the host to execute load dataset operations
         if self.engine.name=='EventDB': return self.cluster.find_instance('master1')
         if self.engine.name=='gStore': return self.cluster.find_instance('master1')
+        if self.engine.name=='AstroServ': return self.cluster.find_instance('master1')
         return self.engine.engine.get_host(self.cluster)
     @cached_property
     def uri_suffix(self):#suffix of the final uri, the only approach to access this data instance.
