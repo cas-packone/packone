@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': 'packone_new',
         'USER': 'rabbit',
         'PASSWORD': 'rabbit',
-        'HOST': 'rabbit-db-host',
+        'HOST': '127.0.0.1',
         'PORT': '5432'
     },
     # 'default': {
