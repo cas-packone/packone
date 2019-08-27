@@ -72,7 +72,7 @@
             </div>
           </div>
           <div id="action_div2_{{cluster.id}}" {%if cluster.status_name == "building" %} style="display: none;"{%endif%}>
-          <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success">Open</a>
+          <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success" target="_blank">Open</a>
             <div class="pull-right">
               <div class="btn-group">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>

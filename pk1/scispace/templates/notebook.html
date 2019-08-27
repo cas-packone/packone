@@ -3,18 +3,14 @@
 
 {% block main %}
 
-  <div class="row">
-    {% if cluster %}
+<div class="row">
+  {% if cluster %}
     <div class="col-md-12">
     	<strong>Please Choose: </strong>
     	<select id="notebook_select" style="width: 400px;" onchange="changeIframeSrc('iframe1',this.value);"></select>
-
     </div>
     <div class="col-md-12" style="margin-top: 20px;">
-      <iframe id="iframe1" src="" style="width: 100%; min-height: 4000px;border-width: 0px;">
-        
-      </iframe>
-
+      <iframe id="iframe1" src="" style="width: 100%; min-height: 4000px;border-width: 0px;"></iframe>
     </div>
 
     <script type="text/javascript">
@@ -54,7 +50,8 @@
     getNoteBookList(notebook_host);
     </script>
     
-    {% endif %}
-  </div>
+ {% endif %}
+</div>
+
 
 {% endblock %}
