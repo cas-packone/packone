@@ -174,7 +174,10 @@ def get_scale_list():
 
 def get_available_engines(scale_id):
     scales = Scale.objects.filter(id=scale_id)
-    required = ["HDFS","HIVE","MAPREDUCE2","YARN","ZEPPELIN","HUE"]
+    required = ["HDFS","HIVE","MAPREDUCE2","YARN","TEZ","HBASE","PIG",
+                "ZOOKEEPER","AMBARI_METRICS","SPARK","SPARK2","AMBARI_INFRA",
+                "ASTROSERV","GSTORE","EVENTDB","PIFLOW","SIMBA","REDIS","SLIDER","SPARKJS",
+                "ZEPPELIN","HUE"]
     if scales.exists():
         obj = scales.first()
         res = []
