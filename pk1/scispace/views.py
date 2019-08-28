@@ -94,6 +94,8 @@ def cluster_get_info_ajax(request):
 	if cluster_id.isdecimal():
 		cluster_id = int(cluster_id)
 		cluster_info = get_cluster_info(request.user, cluster_id)
+		if not cluster_info:
+			raise Http404
 		dic["info"] = {"status":cluster_info["status"], "status_name":cluster_info["status_name"]}
 	else:
 		dic["res"] = False
@@ -112,7 +114,10 @@ def scale_engines_ajax(request):
 @login_required(login_url=LOGIN_URL)
 def cluster_info(request, c_id):
 	dic = {}
-	dic["cluster"] = get_cluster_info(request.user, c_id)
+	dic["cluster"] = get_cluster_info(request.user, c_id)	
+	if not dic["cluster"]:
+		raise Http404 
+		
 	dic["hosts"] = get_cluster_instances(request.user, c_id)
 	if dic["cluster"]["portal"]:
 		dic["pipeline_api_url"] = "%s/piflow-web/api/flowList" %(dic["cluster"]["portal"].replace("8080","6001").rstrip("/"))
@@ -120,14 +125,14 @@ def cluster_info(request, c_id):
 	else:
 		dic["pipeline_api_url"] = "#"
 		dic["notebook_api_url"] = "#"
-	if not dic["cluster"]:
-		raise Http404 
 	return TemplateResponse(request, "cluster_info.html", dic)
 
 @login_required(login_url=LOGIN_URL)
 def cluster_instance_list(request, c_id):
 	dic = {}
-	dic["cluster"] = get_cluster_info(request.user, c_id)
+	dic["cluster"] = get_cluster_info(request.user, c_id)	
+	if not dic["cluster"]:
+		raise Http404 
 	dic["instances"] = get_cluster_instances(request.user, c_id)
 	return TemplateResponse(request, "cluster_instance_list.html", dic)
 
@@ -166,7 +171,9 @@ def cluster_instance_get_info_ajax(request, c_id):
 		require_vnc = False
 	if instance_id.isdecimal():
 		instance_id = int(instance_id)
-		instance_info = get_cluster_instance_info(request.user, instance_id,require_vnc=require_vnc)
+		instance_info = get_cluster_instance_info(request.user, instance_id,require_vnc=require_vnc)	
+		if not instance_info:
+			raise Http404 
 		dic["info"] = {"status":instance_info["status"], "status_name":instance_info["status_name"], "vnc_url":instance_info["vnc_url"]}
 	else:
 		dic["res"] = False
