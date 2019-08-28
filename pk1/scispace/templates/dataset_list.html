@@ -52,7 +52,7 @@
             <td>{{dt.size}}</td>
             <td>{{dt.public}}</td>
             <!-- <td>{{dt.enabled}}</td> -->
-            <td>{{dt.modified_time}}</td>
+            <td>{{dt.modified_time|date:'Y-m-d H:i:s'}}</td>
             <td>{{dt.owner}}</td>
             <td>{{dt.remark|default_if_none:""}}</td>
             <td> 
