@@ -9,8 +9,8 @@
     	<strong>Please Choose: </strong>
     	<select id="notebook_select" style="width: 400px;" onchange="changeIframeSrc('iframe1',this.value);"></select>
     </div>
-    <div class="col-md-12" style="margin-top: 20px;">
-      <iframe id="iframe1" src="" style="width: 100%; min-height: 4000px;border-width: 0px;"></iframe>
+    <div class="col-md-12" style="margin-top: 10px;padding: 0px;">
+      <iframe id="iframe1" src="" style="width: 100%;border-width: 0px;"></iframe>
     </div>
 
     <script type="text/javascript">
@@ -52,17 +52,17 @@
     
 
     <script type="text/javascript">
-    var height1 = $(window).height() - 80;
+    var height1 = $(window).height() - 130;
     $("body").css("overflow-y","hidden");
     $("#iframe1").height(height1);
     
     // linsten window size change event
     $(window).resize(function() { 
-       var height1 = $(this).height() - 80; 
+       var height1 = $(this).height() - 130; 
      $("#iframe1").height(height1);
     });
   </script>
-  
+
  {% endif %}
 </div>
 
