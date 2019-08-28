@@ -50,6 +50,19 @@
     getNoteBookList(notebook_host);
     </script>
     
+
+    <script type="text/javascript">
+    var height1 = $(window).height() - 80;
+    $("body").css("overflow-y","hidden");
+    $("#iframe1").height(height1);
+    
+    // linsten window size change event
+    $(window).resize(function() { 
+       var height1 = $(this).height() - 80; 
+     $("#iframe1").height(height1);
+    });
+  </script>
+  
  {% endif %}
 </div>
 
