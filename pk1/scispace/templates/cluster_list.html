@@ -31,7 +31,8 @@
 
     <div class="col-md-4">
       <div class="card">
-        <div class="card-header"><strong>{{ cluster.name }}</strong></div>
+        <div class="card-header" id="card_header_{{cluster.id}}"
+          {%if cluster.status_name == "building" %} style="background-color: #fb9045 !important;"{%endif%}><strong>{{ cluster.name }}</strong></div>
         <div class="card-body">
             <table class="table table-sm">
               <tbody>
@@ -72,11 +73,6 @@
         </div>
 
         <div class="card-footer">
-          <div id="action_div1_{{cluster.id}}" {%if cluster.status_name != "building" %} style="display: none;"{%endif%}>
-            <div class="progress">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
-            </div>
-          </div>
           <div id="action_div2_{{cluster.id}}" {%if cluster.status_name == "building" %} style="display: none;"{%endif%}>
           <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success" target="_blank">Open</a>
             <div class="pull-right">
@@ -145,7 +141,7 @@
   var cluster_ids = [{%for c in clusters%}"{{c.id}}",{%endfor%}];
   function update_status(){
     for(var i in cluster_ids) {
-      setInterval("get_status('" + cluster_ids[i] + "')", 10000);
+      setInterval("get_status('" + cluster_ids[i] + "')", 60000);
       get_status(cluster_ids[i]);
     }
   }
@@ -162,12 +158,12 @@
         if (data.res == true){
           var status_name = data.info.status_name;
           if (status_name == "building"){
-            $("#action_div1_"+cluster_id).show();
             $("#action_div2_"+cluster_id).hide();
+            $("#card_header_"+cluster_id).css("cssText","background-color:#fb9045!important");
           }
           else{            
-            $("#action_div1_"+cluster_id).hide();
             $("#action_div2_"+cluster_id).show();
+            $("#card_header_"+cluster_id).css("background-color","unset");            
           }
           $("#status_td_" + cluster_id).text(status_name);
         }

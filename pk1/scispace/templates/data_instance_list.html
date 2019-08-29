@@ -81,7 +81,7 @@
   var instance_ids = [{%for dt in data_instances%}"{{dt.id}}",{%endfor%}];
   function update_status(){
     for(var i in instance_ids) {
-      setInterval("get_status('" + instance_ids[i] + "')", 10000);
+      setInterval("get_status('" + instance_ids[i] + "')", 60000);
       get_status(instance_ids[i]);
     }
   }
