@@ -62,14 +62,13 @@ def remedy_script_hostname(hostname):
     return "hostnamectl set-hostname {hostname}".format(hostname=hostname)
 
 #TODO make filesystem type chooseable
-#must use rsync -ax to keep permissions
 def remedy_script_mount_add(mount):
     return "mkfs.xfs {mount.dev}>/dev/null 2>&1\n" \
-    "rsync -ax {mount.point} {mount.point}.old>/dev/null 2>&1\n" \
+    "mv {mount.point} {mount.point}.packone.old >/dev/null 2>&1\n" \
     "mkdir -p {mount.point}\n" \
     "mount {mount.dev} {mount.point}\n" \
-    "rsync -ax {mount.point}.old/* {mount.point}>/dev/null 2>&1\n" \
-    "rm -rf {mount.point}.old/\n" \
+    "mv {mount.point}.packone.old/* {mount.point}/ >/dev/null 2>&1\n" \
+    "rm -rf {mount.point}.packone.old\n" \
     "echo '{mount.dev} {mount.point} xfs defaults 0 2'>>/etc/fstab". \
     format(mount=mount)
 
