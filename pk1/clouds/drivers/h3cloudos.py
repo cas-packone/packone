@@ -240,7 +240,7 @@ class VolumeManager(object):
         info = self.driver._tenant_get('/volumes/'+volume_id,retry_until_response_expected_strings=['in-use'])['volume']
         return Volume(self, info)
     def unmount(self, volume_id, instance_id):
-        self.driver._tenant_get('/servers/'+instance_id,retry_until_response_expected_strings=['SHUTOFF'])
+        self.driver._tenant_get('/servers/'+instance_id,retry_until_response_expected_strings=['SHUTOFF','404'])
         return self.driver._tenant_delete('/servers/'+instance_id+'/os-volume_attachments/'+volume_id)
 
 class Volume(object):
