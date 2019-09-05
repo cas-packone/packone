@@ -128,7 +128,7 @@ class ImageManager(object):
             images.append(Image(item))
         return images
     def find(self, name):
-        return self._json2Images(self.driver._get('/v2/images?name'+name)['images'])
+        return self._json2Images(self.driver._get('/v2/images?name='+name)['images'])
     def list(self):
         return self._json2Images(self.driver._get('/v2/images')['images'])
     def delete(self, id):
