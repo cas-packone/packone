@@ -45,7 +45,7 @@ class Driver(object):
     def _request(self,url,method=requests.get,data=None,headers=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
         if not headers:
             headers=self._headers
-        mustend = time.time() + 900
+        mustend = time.time() + 1800
         while time.time() < mustend:
             res = method(self.endpoint+url,headers=headers,data=json.dumps(data))
             self.log.info('REQUEST: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
