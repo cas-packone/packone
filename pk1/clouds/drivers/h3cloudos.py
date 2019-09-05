@@ -45,7 +45,7 @@ class Driver(object):
     def _request(self,url,method=requests.get,data=None,headers=None,retry_when_response_unexpected_strings=None,retry_until_response_expected_strings=None):
         if not headers:
             headers=self._headers
-        mustend = time.time() + 900
+        mustend = time.time() + 1800
         while time.time() < mustend:
             res = method(self.endpoint+url,headers=headers,data=json.dumps(data))
             self.log.info('REQUEST: token/{}, {} {}, status/{}'.format(self._token, method.__name__, url, res.status_code))
@@ -128,7 +128,7 @@ class ImageManager(object):
             images.append(Image(item))
         return images
     def find(self, name):
-        return self._json2Images(self.driver._get('/v2/images?name'+name)['images'])
+        return self._json2Images(self.driver._get('/v2/images?name='+name)['images'])
     def list(self):
         return self._json2Images(self.driver._get('/v2/images')['images'])
     def delete(self, id):
@@ -240,7 +240,7 @@ class VolumeManager(object):
         info = self.driver._tenant_get('/volumes/'+volume_id,retry_until_response_expected_strings=['in-use'])['volume']
         return Volume(self, info)
     def unmount(self, volume_id, instance_id):
-        self.driver._tenant_get('/servers/'+instance_id,retry_until_response_expected_strings=['SHUTOFF'])
+        self.driver._tenant_get('/servers/'+instance_id,retry_until_response_expected_strings=['SHUTOFF','404'])
         return self.driver._tenant_delete('/servers/'+instance_id+'/os-volume_attachments/'+volume_id)
 
 class Volume(object):
