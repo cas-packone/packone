@@ -1,3 +1,5 @@
+![](https://img.shields.io/pypi/l/pk1?color=green) ![](https://img.shields.io/pypi/v/pk1) ![](https://img.shields.io/pypi/dm/pk1) ![](https://img.shields.io/pypi/pyversions/pk1)
+
 <img src="pk1/static/logo-large.png" width = "50%" />
 
 # Introduction
