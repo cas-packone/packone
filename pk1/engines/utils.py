@@ -47,4 +47,4 @@ def remedy_scale_ambari_fast_scale_out():
         'ambari master1:8080 service start'
 
 def remedy_scale_ambari_fast_scale_in():
-    return '#ambari master1:8080 host delete `hostname`'
+    return 'if [ `hostname` == "master1.packone" ]; then\nambari master1:8080 host delete {hostname}\nfi'
