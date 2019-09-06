@@ -27,7 +27,7 @@ def remedy_scale_ambari_fast_init():
         'if [ `hostname` == "master1.packone" ]; then\n' \
         '    while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
         '    pip -qq install -U ambari\n' \
-        '    ambari master1.packone:8080 service start\n' \
+        '    ambari master1:8080 service start\n' \
         'fi'
 
 def remedy_scale_ambari_fast_scale_out():
@@ -42,9 +42,9 @@ def remedy_scale_ambari_fast_scale_out():
         "reboot\n" \
         "pip -qq install -U ambari\n" \
         'yum -q -y install nmap-ncat 2>&1\n' \
-        'while ! echo exit | nc master1.packone 8080; do sleep 3; done 2>&1\n' \
-        "ambari master1.packone:8080 host clone slave.packone `hostname`\n" \
-        'ambari master1.packone:8080 service start'
+        'while ! echo exit | nc master1 8080; do sleep 3; done 2>&1\n' \
+        "ambari master1:8080 host clone slave.packone `hostname`\n" \
+        'ambari master1:8080 service start'
 
 def remedy_scale_ambari_fast_scale_in():
-    return '#ambari master1.packone:8080 host delete `hostname`'
+    return '#ambari master1:8080 host delete `hostname`'
