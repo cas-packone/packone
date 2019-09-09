@@ -16,7 +16,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    install_requires = ['django','uwsgi','ambari','django-admin-auto','djangorestframework','djangorestframework-simplejwt','django-simpleui', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers==2.4.0', 'python-novaclient', 'python-cinderclient', 'python-glanceclient', 'django-autocomplete-light'],
+    install_requires = ['django','uwsgi','ambari','django-admin-auto','djangorestframework','djangorestframework-simplejwt','django-simpleui', 'django-jet-opt', 'django-filter', 'psycopg2-binary', 'coreapi', 'paramiko', 'scp', 'django-cors-headers==2.4.0', 'python-novaclient', 'python-cinderclient', 'python-glanceclient', 'django-autocomplete-light'],
     entry_points = {
         'console_scripts': [
             'pk1 = pk1.server:main',
