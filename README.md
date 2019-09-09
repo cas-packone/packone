@@ -9,7 +9,7 @@ This software is inspired by the "serverless" trend in cloud computing and big d
 
 # Install
 1. Choose a linux (Centos 7.5 is verified) host which network can reach the target cloud resource;
-2. yum install pip3.6 and python36-devel;
+2. yum install python36-pip and python36-devel;
 3. Create a postgresql db with its information (db_user, db_passwd, db_host, db_port, db_name) collected.
 
 Then run:
