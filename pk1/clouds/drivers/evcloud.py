@@ -78,7 +78,7 @@ class Image(object):
             self.name=self.name.replace('0000_','')
 
 class InstanceManager(object):
-    mountable_status=['ACTIVE','SHUTDOWN']
+    mountable_status=['POWEROFF','SHUTDOWN']
     def __init__(self, driver):
         self.driver=driver
     def get(self, instance_id):
