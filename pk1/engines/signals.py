@@ -89,16 +89,20 @@ def scale_in_cluster(sender,instance,**kwargs):
             if not cluster.steps.all().exists():
                 destroyed.send(sender=models.Cluster, instance=cluster, name='destroyed')
                 cluster.delete()
-        else:
+        elif instance.hosts:
             cluster.update_remedy_script(
                 utils.remedy_script_hosts_remove(instance.hosts),
                 heading=True
             )
-            if cluster.scale.remedy_script_scale_in:
-                cluster.update_remedy_script(
-                    cluster.scale.remedy_script_scale_in,
-                    heading=True
-                )
+            scale_in_script=''
+            for h in instance.hosts.split('\n'):
+                if h.startswith('#'): continue
+                scale_in_script+=cluster.scale.remedy_script_scale_in.format(hostname=h.split(' ')[-1])+'\n'
+            cluster.update_remedy_script(
+                scale_in_script,
+                heading=True
+            )
+            cluster.remedy()
 
 @receiver(monitored, sender=Group)
 @receiver(tidied, sender=models.ClusterOperation)
