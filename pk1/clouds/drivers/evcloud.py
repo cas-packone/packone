@@ -33,7 +33,7 @@ class FlavorManager(object):
             Flavor({'id': '6', 'name': 'm1.xxlarge', 'ram': 32768, 'vcpus': 8, 'disk': 30}),
             Flavor({'id': '7', 'name': 'm1.xxxlarge', 'ram': 65536, 'vcpus': 16, 'disk': 30}),
             Flavor({'id': '8', 'name': 'packone.m', 'ram': 8192, 'vcpus': 2, 'disk': 30}),
-            Flavor({'id': '9', 'name': 'packone.m+', 'ram': 1024, 'vcpus': 2, 'disk': 30}),
+            Flavor({'id': '9', 'name': 'packone.m+', 'ram': 10240, 'vcpus': 2, 'disk': 30}),
             Flavor({'id': '10', 'name': 'packone.l', 'ram': 16384, 'vcpus': 4, 'disk': 30}),
             Flavor({'id': '11', 'name': 'packone.x', 'ram': 32768, 'vcpus': 8, 'disk': 30}),
         ]
