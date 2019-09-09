@@ -4,7 +4,7 @@ def remedy_scale_ambari_bootstrap(vdf_url=None):
         'if [ `hostname` == "master1.packone" ]; then\n' \
         'yum -q -y install epel-release 2>&1\n' \
         'yum -q -y install python-pip 2>&1\n' \
-        'pip --disable-pip-version-check install ambari\n' \
+        'pip -qq install ambari\n' \
         "fi\n\n" \
         'if [ `hostname` == "master1.packone" ]; then\n' \
         'yum -q -y install nmap-ncat 2>&1\n' \
@@ -26,8 +26,8 @@ def remedy_scale_ambari_fast_init():
         'reboot\n' \
         'if [ `hostname` == "master1.packone" ]; then\n' \
         '    while ! echo exit | nc localhost 8080; do sleep 3; done 2>&1\n' \
-        '    pip --disable-pip-version-check install -U ambari\n' \
-        '    ambari master1.packone:8080 service start\n' \
+        '    pip -qq install -U ambari\n' \
+        '    ambari master1:8080 service start\n' \
         'fi'
 
 def remedy_scale_ambari_fast_scale_out():
@@ -40,10 +40,11 @@ def remedy_scale_ambari_fast_scale_out():
         "echo 'CLASS_PATH=.:$JAVA_HOME/lib:$JRE_HOME/lib'>>/etc/profile.d/packone-java.sh\n" \
         "echo 'PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH'>>/etc/profile.d/packone-java.sh\n" \
         "reboot\n" \
-        "pip --disable-pip-version-check install -U ambari\n" \
+        "pip -qq install -U ambari\n" \
         'yum -q -y install nmap-ncat 2>&1\n' \
-        'while ! echo exit | nc master1.packone 8080; do sleep 3; done 2>&1\n' \
-        "ambari master1.packone:8080 host clone slave.packone `hostname`"
+        'while ! echo exit | nc master1 8080; do sleep 3; done 2>&1\n' \
+        "ambari master1:8080 host clone slave.packone `hostname`\n" \
+        'ambari master1:8080 service start'
 
 def remedy_scale_ambari_fast_scale_in():
-    return '#ambari master1.packone:8080 host delete `hostname`'
+    return 'if [ `hostname` == "master1.packone" ]; then\nambari master1:8080 host delete {hostname}\nfi'
