@@ -45,4 +45,4 @@ pk1 stop
 pk1 uninstall
 
 # Acknowledge
-National key Research Program of China: Scientific Big Data Management System (No.2016YFB1000600)
+National Key Research Program of China: Scientific Big Data Management System (No.2016YFB1000600)
