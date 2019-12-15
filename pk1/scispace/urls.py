@@ -1,15 +1,22 @@
 # coding=utf-8
 
+from django.conf import settings
 from django.urls import include, path, re_path
 from django.contrib.auth import views as auth_views
 
-from .views import *
+from .views.main_views import *
+from .views.callback import escience_callback
+
+escience_dic = {"escience_login_url": settings.ESCIENCE_LOGIN_URL}
 
 urlpatterns = [
     re_path(r'^$', index, name="scispace_index"),
 
-    re_path(r'^login/$',  auth_views.LoginView.as_view(template_name="accounts_login.html"), name="scispace_login"), 
+    re_path(r'^login/$',  auth_views.LoginView.as_view(template_name="accounts_login.html", 
+                                            extra_context=escience_dic), name="scispace_login"), 
     re_path(r'^logout/$', auth_views.LogoutView.as_view(), name="scispace_logout"),
+    re_path(r'^callback/escience/$', escience_callback, name="callback_escience"),
+
 
     re_path(r'clusters/$', cluster_list, name="scispace_cluster_list"),
     re_path(r'clusters/add/$', cluster_add, name="scispace_cluster_add"),

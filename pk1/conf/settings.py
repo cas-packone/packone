@@ -209,3 +209,14 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+
+# 科技网登录设置
+DOMAIN = "http://vm.dcloud.cn/scispace"
+ESCIENCE_APP_KEY = '91657'
+ESCIENCE_APP_SECRET = 'DsKIYWicgI1eCg6DWp1WXqPgkfOUK7WM'
+ESCIENCE_CALLBACK = 'http://%s/callback/escience' % DOMAIN
+ESCIENCE_LOGIN_URL = 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=%s&client_id=%s' % (
+                ESCIENCE_CALLBACK, ESCIENCE_APP_KEY)
+ESCIENCE_LOGIN_HOST = "passport.escience.cn"
+ESCIENCE_TOKEN_URL = "https://passport.escience.cn/oauth2/token"

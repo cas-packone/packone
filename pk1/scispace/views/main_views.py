@@ -372,4 +372,3 @@ def get_hosts_metrics_ajax(request, c_id):
 	dic["metrics"] = get_hosts_metrics(request.user, c_id)
 	return JsonResponse(dic)
 
-
