@@ -41,6 +41,7 @@ class BalanceAdmin(EnabledProfileGuardedAdmin):#TODO add balanceZeroException in
 class CredentialAdmin(EnabledProfileGuardedAdmin):
     search_fields = ('ssh_user',)+EnabledProfileGuardedAdmin.search_fields
     def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser: return True
         return False
     def has_add_permission(self, request, obj=None):
         return False
