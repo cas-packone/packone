@@ -1,0 +1,229 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.1.15
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+
+<html lang="en">
+  <head>
+    <base href="./">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+    <meta name="author" content="Łukasz Holeczek">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <title>SciSpace</title>
+    <!-- Icons-->
+    <link rel="icon" type="image/ico" href="{% static 'scispace/img/favicon.png'%}" sizes="any" />
+    <link href="{% static 'scispace/core-ui/vendors/@coreui/icons/css/coreui-icons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'scispace/core-ui/vendors/flag-icon-css/css/flag-icon.min.css'%}" rel="stylesheet">
+    <link href="{% static 'scispace/core-ui/vendors/font-awesome/css/font-awesome.min.css'%}" rel="stylesheet">
+    <link href="{% static 'scispace/core-ui/vendors/simple-line-icons/css/simple-line-icons.css'%}" rel="stylesheet">
+    <!-- Main styles for this application-->
+    <link href="{% static 'scispace/core-ui/css/style.css'%}" rel="stylesheet">
+    <link href="{% static 'scispace/core-ui/vendors/pace-progress/css/pace.min.css'%}" rel="stylesheet">
+   
+    <script src="{% static 'scispace/core-ui/vendors/jquery/js/jquery.min.js'%}"></script>
+
+
+   <style type="text/css">
+     .sidebar{
+      color: #181b1e; 
+      background: #fff;
+    }
+     .sidebar .nav-title{
+          color: #23282c;
+     }
+     .sidebar .nav-link {
+          color: #181b1e;
+     }
+     .sidebar .nav-link.active {
+          color: #181b1e;
+          background-color: #f0f3f5;
+     }
+     .sidebar .nav-dropdown.open {
+        background: inherit;
+        border: 1px;
+    }
+    .sidebar .nav-dropdown.open .nav-link {
+        color: #181b1e;
+        border-left: 0;
+    }
+    .nav-dropdown-items{
+      margin-left: 15px !important;
+    }
+
+    .card-header {
+      background-color: #20a6e3 !important;
+      color: #fff;
+    }
+    .card{
+      border-color: #20a6e3 !important;
+    }
+    .btn-primary{
+      background-color: #21a6e1 !important;
+      border-color: #21a6e1 !important;
+    }
+    .btn-success{
+      background-color: #68b25b !important;
+      border-color: #68b25b !important;
+    }
+    .nav-title{
+      color: #16588c !important;
+    }
+    th{
+      text-transform: capitalize;
+    }
+   </style>
+
+  </head>
+
+  <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+{% comment %}
+    {% block app-header %}
+    <header class="app-header navbar">
+      <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'scispace_index'%}">
+        <img class="navbar-brand-full" src="{% static 'scispace/img/logo-large.png'%}" width="128" height="35" alt="SciSpace">
+        <img class="navbar-brand-minimized" src="{% static 'scispace/img/logo_new.png'%}" width="30" height="30" alt="SciSpace">
+      </a>
+      <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <ul class="nav navbar-nav d-md-down-none">
+
+      {% if request.user.is_authenticated %}
+        <li class="nav-item px-3">
+          <a class="nav-link" href="{% url 'scispace_cluster_list'%}" style="font-weight: bold;color: #256499;">Spaces</a>
+        </li>
+        {% if cluster %}
+        &gt; 
+        <li class="nav-item px-3">
+          <a class="nav-link" href="#" style="font-weight: bold;color: #256499;">{{cluster.name}}</a>
+        </li>
+        {% endif %}
+        <!-- <li class="nav-item px-3">
+          <a class="nav-link" href="#">Users</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link" href="#">Settings</a>
+        </li> -->
+      {% endif %}
+      </ul>
+      <ul class="nav navbar-nav ml-auto" style="padding-right: 20px;">
+      {% if request.user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-user" style="color: #20a6e3;"></i> {{request.user.username}}
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-header text-center">
+              <strong>Account</strong>
+            </div>
+            <!-- 
+            <a class="dropdown-item" href="#">
+              <i class="fa fa-user"></i> Profile</a>
+            <a class="dropdown-item" href="#">
+              <i class="fa fa-wrench"></i> Settings</a> -->
+            
+            <a class="dropdown-item" href="{% url 'scispace_logout'%}?next={% url 'scispace_login'%}">
+              <i class="fa fa-lock"></i> Logout</a>            
+            
+          </div>
+        </li>
+      {% endif %}
+      </ul>
+
+    </header>
+    {% endblock %}
+{% endcomment %}
+    {% block app-body %}
+    <div class="app-body" style="margin-top: 0px;">
+      <div class="sidebar">
+        <nav class="sidebar-nav">
+          <ul class="nav">            
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="nav-icon" style="display: none;"><img class="navbar-brand-minimized" src="{% static 'scispace/img/logo_new.png'%}" alt="SciSpace" style="width:18px;height:18px;"></i> 
+                <img class="navbar-brand-full" src="{% static 'scispace/img/logo-large.png'%}" width="128" height="35" alt="SciSpace">
+              </a>
+            </li>
+        {% block sidebar-nav %}            
+
+        {% endblock %}
+<!-- 
+          <li class="nav-title">Account</li>
+            <li class="nav-item nav-dropdown">
+              <a class="nav-link nav-dropdown-toggle" href="#">
+                <i class="fa fa-user"></i> {{request.user.username}}
+              </a>
+              <ul class="nav-dropdown-items">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'scispace_logout'%}?next={% url 'scispace_login'%}">
+                       Logout
+                    </a>
+                </li>
+              </ul>
+            </li>             -->
+
+          </ul>
+        </nav>
+        <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+      </div>
+      <main class="main">
+        <div class="container-fluid" style="padding: 10px;">
+          <div class="animated fadeIn" style="background-color: white;padding: 0px;min-height: 500px;">
+      {% block main %}
+      {% endblock %}
+            
+          </div>
+        </div>
+
+      </main>
+      
+    </div>
+    <footer class="app-footer">
+      <!-- <div>
+        <a href="https://coreui.io">CoreUI</a>
+        <span>&copy; 2018 creativeLabs.</span>
+      </div>
+      <div class="ml-auto">
+        <span>Powered by</span>
+        <a href="https://coreui.io">CoreUI</a>
+      </div> -->
+    </footer>
+
+    {% endblock %}
+    <!-- CoreUI and necessary plugins-->
+    <!-- <script src="{% static 'scispace/core-ui/vendors/jquery/js/jquery.min.js'%}"></script> -->
+    <script src="{% static 'scispace/core-ui/vendors/popper.js/js/popper.min.js'%}"></script>
+    <script src="{% static 'scispace/core-ui/vendors/bootstrap/js/bootstrap.min.js'%}"></script>
+    <!-- <script src="{% static 'scispace/core-ui/vendors/pace-progress/js/pace.min.js'%}"></script> -->
+    <script src="{% static 'scispace/core-ui/vendors/perfect-scrollbar/js/perfect-scrollbar.min.js'%}"></script>
+    <script src="{% static 'scispace/core-ui/vendors/@coreui/coreui/js/coreui.min.js'%}"></script>
+    <!-- Plugins and scripts required by this view-->
+    <!-- <script src="{% static 'scispace/core-ui/vendors/chart.js/js/Chart.min.js'%}"></script> -->
+    <script src="{% static 'scispace/core-ui/vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js'%}"></script>
+    <!-- <script src="{% static 'scispace/core-ui/js/main.js'%}"></script> -->
+  </body>
+
+  <script type="text/javascript">
+    var height1 = $(window).height() - 80;
+    $("body").css("overflow-y","hidden");
+    $("#iframe1").height(height1);
+    
+    // linsten window size change event
+    $(window).resize(function() { 
+       var height1 = $(this).height() - 40; 
+     $("#iframe1").height(height1);
+    });
+  </script>
+</html>

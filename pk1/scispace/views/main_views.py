@@ -9,15 +9,15 @@ from django.http.response import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from .utils import get_cluster_list, get_cluster_info, add_cluster, operate_cluster
-from .utils import get_cluster_instances, operate_cluster_instance, get_cluster_instance_info
-from .utils import get_dataset_list, get_dataset_info
-from .utils import get_data_instance_list, get_data_instance_info, add_data_instance, delete_data_instance
-from .utils import get_step_operation_list, get_step_operation_info
-from .utils import get_data_instance_operation_list, get_data_instance_operation_info
-from .utils import get_cluster_data_engine_list
-from .utils import get_scale_list, get_available_engines
-from .utils import get_data_metrics, get_hosts_metrics
+from scispace.utils import get_cluster_list, get_cluster_info, add_cluster, operate_cluster
+from scispace.utils import get_cluster_instances, operate_cluster_instance, get_cluster_instance_info
+from scispace.utils import get_dataset_list, get_dataset_info
+from scispace.utils import get_data_instance_list, get_data_instance_info, add_data_instance, delete_data_instance
+from scispace.utils import get_step_operation_list, get_step_operation_info
+from scispace.utils import get_data_instance_operation_list, get_data_instance_operation_info
+from scispace.utils import get_cluster_data_engine_list
+from scispace.utils import get_scale_list, get_available_engines
+from scispace.utils import get_data_metrics, get_hosts_metrics
 
 LOGIN_URL = "/login/"
 
