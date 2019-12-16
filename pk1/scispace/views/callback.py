@@ -1,9 +1,15 @@
 import json
 import urllib
 import httplib2
+from collections import defaultdict
+
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.conf import settings
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.db import transaction
 
 
 def _do_post(host, url, args={}):
@@ -65,15 +71,11 @@ def escience_callback(request):
 
             # 科技网账户和科技网邮箱都没有绑定，则注册新用户
             if user is None:
-                user = create_user({
-                    'username': user_data['cstnetId'],
-                    'email': user_data['cstnetId'],
-                    'last_name': user_data['truename'],
-                    'identity': [(UID_CSTNET, user_data['umtId'], True), (UID_EMAIL, user_data['cstnetId'], True)]
-                    })
+                user, created = User.objects.get_or_create(username=user_data['cstnetId'],
+                        email=user_data['cstnetId'], last_name=user_data['truename'], is_stuff=True)
 
                 # 注册失败，报错
-                if not user:
+                if not created:
                     raise Exception("login fail!")
 
             # 登录
