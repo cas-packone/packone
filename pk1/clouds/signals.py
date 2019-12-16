@@ -92,7 +92,7 @@ def materialize_instance(sender, instance, **kwargs):
             instance.template.access_id,
             remark
         )
-        instance=sender.objects.select_for_update().get(pk=instance.pk)
+        instance=sender.objects.get(pk=instance.pk)
         instance.uuid=UUID(ins.id.replace('-', ''), version=4)
         instance.built_time=ins.created
         instance.ipv4=ins.addresses['provider'][0]['addr']
