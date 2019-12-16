@@ -84,9 +84,7 @@ def materialize_instance(sender, instance, **kwargs):
     instance.built_time=now()
     instance.save()
     instance.update_remedy_script(instance.template.remedy_script+'\n'+instance.image.remedy_script)
-    @transaction.atomic
     def materialize(instance=instance):
-        instance=sender.objects.select_for_update().get(pk=instance.pk)
         remark = settings.PACKONE_LABEL+'.'+instance.cloud.name+';'
         if instance.remark: remark+=instance.remark
         ins=instance.cloud.driver.instances.create(
@@ -94,6 +92,7 @@ def materialize_instance(sender, instance, **kwargs):
             instance.template.access_id,
             remark
         )
+        instance=sender.objects.select_for_update().get(pk=instance.pk)
         instance.uuid=UUID(ins.id.replace('-', ''), version=4)
         instance.built_time=ins.created
         instance.ipv4=ins.addresses['provider'][0]['addr']
@@ -105,7 +104,7 @@ def materialize_instance(sender, instance, **kwargs):
         instance.set_public_key()
         instance.remedy(manual=False)
         materialized.send(sender=sender, instance=instance, name='materialized')
-    transaction.on_commit(Thread(target=materialize).start)
+    Thread(target=materialize).start()
 
 @receiver(pre_save, sender=Instance)
 def update_instance_hostname(sender, instance, **kwargs):
