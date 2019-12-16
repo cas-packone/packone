@@ -1,0 +1,61 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+<div class="row">
+<div class="col-md-3"></div>
+<div class="col-md-6">
+  
+    <h3>Confirm Delete Data Instance ?</strong></h3>
+    <div>
+      <table class="table table-sm">
+        <tbody>
+          <tr>
+            <td>Name</td>
+            <td>{{data_instance.name}}</td>            
+          </tr>
+          <tr>
+            <td>Created Time</td>
+            <td>{{data_instance.created_time}}</td>            
+          </tr>
+          <tr>
+            <td>Owner</td>
+            <td>{{data_instance.owner}}</td>            
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>{{data_instance.status_name}}</td>            
+          </tr>
+          <tr>
+            <td>Remark</td>
+            <td>{{data_instance.remark}}</td>            
+          </tr>
+          <tr>
+            <td>Uri</td>
+            <td>{{data_instance.uri}}</td>            
+          </tr>
+        </tbody>
+      </table>
+      <form id="add_form" role="form"  class="form-horizontal"  method="post" >
+        {% csrf_token %}
+        <input type="text" name="data_instance_id" hidden="hidden" value="{{data_instance.id}}">
+
+        <div class="form-group row">
+          <label class="col-sm-3  col-form-label" style="font-weight: 200;"></label>
+          <div class="col-sm-9">
+              <div style="width: 400px;text-align: right;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </div>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+            
+  </div>
+
+</div>
+</div>
+
+{% endblock %}

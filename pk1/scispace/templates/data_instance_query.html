@@ -1,0 +1,96 @@
+{% extends 'space_base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+
+  <div class="row">
+    {% if cluster %}
+    <div class="col-md-12">
+      <iframe id="iframe1" src="{{query_url}}" style="width: 100%; height: 1500px;border-width: 0px;">        
+      </iframe>
+    </div>
+   
+    <script type="text/javascript">
+
+    {% if data_instance.engine_lower_name == "hive"%}
+      var function_param_str = "{{data_instance.uri}}";
+      function_param_str = function_param_str.split(".")[0];
+      var param_database_fun = function (function_param) {
+          var selectDom = [];
+          var dom = document.getElementsByTagName("a");
+            for (var i = 0; i < dom.length; i++) {
+                if ("click: back" === dom[i].getAttribute("data-bind")) {
+                    selectDom.push(dom[i]);
+                }
+            }
+            if (selectDom && selectDom.length > 0) {
+                selectDom[0].click();
+                var database_list = document.getElementsByClassName("assist-flex-fill assist-db-scrollable")[0];
+                var database_list_table_link = database_list.getElementsByClassName("assist-table-link");
+                if (database_list_table_link && database_list_table_link.length > 0) {
+                    console.log(function_param);
+                    for (var i = 0; i < database_list_table_link.length; i++) {
+                        if (function_param.trim() === database_list_table_link[i].text.trim()) {
+                            database_list_table_link[i].click();
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+      function sendMessage(iframe_id, json_object) {
+          // json对象转换成字符串
+          var data_json = JSON.stringify(json_object, function (key, val) {
+              if (typeof val === 'function') {
+                  return val + '';
+              }
+              return val;
+          });
+          document.getElementById(iframe_id).contentWindow.postMessage(data_json, '*');
+      }
+      function pre_execution() {
+        var iframe_id = "iframe1";
+          var iframe_element = document.getElementById(iframe_id);
+          if (iframe_element.attachEvent) {
+              iframe_element.attachEvent("onload", function () {
+                  //alert("本地iframe现在已加载。");
+                  var hue_hive_choice_base_json = {
+                      "function_name": param_database_fun,
+                      "function_param": function_param_str,
+                  }
+                  sendMessage(iframe_id, hue_hive_choice_base_json);
+              });
+          } else {
+              iframe_element.onload = function () {
+                  //alert("本地iframe现在已加载。");
+                  var hue_hive_choice_base_json = {
+                      "function_name": param_database_fun,
+                      "function_param": function_param_str,
+                  }
+                  sendMessage(iframe_id, hue_hive_choice_base_json);
+              };
+          }
+        };
+      pre_execution();
+
+    {% endif %}
+    </script>
+
+  <script type="text/javascript">
+    var height1 = $(window).height() - 80;
+    $("body").css("overflow-y","hidden");
+    $("#iframe1").height(height1);
+    $("div.animated").css("padding","0px");
+    
+    // linsten window size change event
+    $(window).resize(function() { 
+       var height1 = $(this).height() - 80; 
+     $("#iframe1").height(height1);
+    });
+  </script>
+
+    {% endif %}
+  </div>
+  
+
+{% endblock %}

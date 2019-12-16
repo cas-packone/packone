@@ -1,0 +1,176 @@
+{% extends 'site_base.html' %}
+
+
+
+
+{% block app-body %}
+<style type="text/css">
+  .card{
+    border: 0px;
+  }
+  .card-header{
+    background-color: rgba(32, 168, 216, 0.5);
+  }
+  .card-footer{
+    background-color: #fff;
+  }
+</style>
+
+<div class="app-body">
+<div class="container-fluid">
+  <div class="row" style="margin-top: 10px;">
+    <div class="col-md-6"> 
+      <span style="font-style: italic;font-size: 12px;color: #645c5c;vertical-align: bottom;margin-left: 10px;">Welcome to SciSpace! You have {{clusters|length}} big scientific data spaces.</span>
+    </div>
+    <div class="col-md-6" style="text-align: right;margin-bottom: 10px;">
+      <a class="btn btn-primary" style="background-color: #fb9045 !important;border-color: #fb9045 !important;" 
+        href="{% url 'scispace_cluster_add' %}"><icon class="fa fa-plus"></icon> Create New Space</a>
+    </div>
+    
+    {% for cluster in clusters%}
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header" id="card_header_{{cluster.id}}"
+          {%if cluster.status_name == "building" %} style="background-color: #fb9045 !important;"{%endif%}><strong>{{ cluster.name }}</strong></div>
+        <div class="card-body">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>Portal</td>
+                  <td>{{cluster.portal|default_if_none:"-"}}</td>
+                </tr>
+                <tr>
+                  <td>Scale</td>
+                  <td>{{cluster.scale}}</td>
+                </tr>
+                <tr>
+                  <td>Remark</td>
+                  <td>{{cluster.remark|default_if_none:"-"}}</td>
+                </tr>
+                <tr>
+                  <td>Owner</td>
+                  <td>{{cluster.owner}}</td>
+                </tr>
+                <tr>
+                  <td>Public</td>
+                  <td>{{cluster.public}}</td>
+                </tr>
+                <tr>
+                  <td>Created Time</td>
+                  <td>{{cluster.created_time|date:'Y-m-d H:i:s'}}</td>
+                </tr>
+                <tr>
+                  <td>Built Time</td>
+                  <td>{{cluster.built_time|date:'Y-m-d H:i:s'}}</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td id="status_td_{{cluster.id}}">{{cluster.status_name}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+          <div id="action_div2_{{cluster.id}}" {%if cluster.status_name == "building" %} style="display: none;"{%endif%}>
+          <a href="{% url 'scispace_cluster_info' cluster.id %}" class="btn btn-success" target="_blank">Open</a>
+            <div class="pull-right">
+              <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','start')" >Start</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','reboot')" >Reboot</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','shutdown')" >Shutdown</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','poweroff')" >Poweroff</button>
+                          <div class="dropdown-divider"></div>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_out')" >Scale Out</button>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','scale_in')" >Scale In</button>
+                          <div class="dropdown-divider"></div>
+                          <button class="dropdown-item" onclick="operate_cluster('{{cluster.id}}','destroy')" >Destroy</button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+            
+      </div>
+    {% endfor %}
+  </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  function operate_cluster(cluster_id, operation) {
+    var op_show = { "start":"Start",
+                    "reboot": "Reboot",
+                    "shutdown": "Shutdown",
+                    "poweroff": "Poweroff",
+                    "scale_out": "Scale Out",
+                    "scale_in": "Scale In",
+                    "destroy": "Destroy"};
+    var r = confirm("Confirm execute operation \" "+op_show[operation]+" \" ?");
+    if (r != true){
+      return;
+    }
+    $.ajax({
+            url: '{% url "scispace_cluster_operate_ajax" %}',
+            type: 'post',
+            data: {
+                  "cluster_id": cluster_id,
+                  "operation": operation,
+                  },
+            success:function(data){
+                        if (data.res){
+                             alert("Operation Sended. ");
+                        } else {
+                              alert("Operation Failed !");
+                        }
+                        window.location.reload(true);
+                      }
+
+                    }, 'json'); 
+    
+  }
+
+
+  var cluster_ids = [{%for c in clusters%}"{{c.id}}",{%endfor%}];
+  function update_status(){
+    for(var i in cluster_ids) {
+      setInterval("get_status('" + cluster_ids[i] + "')", 60000);
+      get_status(cluster_ids[i]);
+    }
+  }
+  update_status();
+  function get_status(cluster_id) {
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_info_ajax' %}",
+      type: 'get',
+      data: {
+        'cluster_id': cluster_id,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          var status_name = data.info.status_name;
+          if (status_name == "building"){
+            $("#action_div2_"+cluster_id).hide();
+            $("#card_header_"+cluster_id).css("cssText","background-color:#fb9045!important");
+          }
+          else{            
+            $("#action_div2_"+cluster_id).show();
+            $("#card_header_"+cluster_id).css("background-color","unset");            
+          }
+          $("#status_td_" + cluster_id).text(status_name);
+        }
+      },
+    }, 'json');
+  }
+        
+</script>
+
+{% endblock %}

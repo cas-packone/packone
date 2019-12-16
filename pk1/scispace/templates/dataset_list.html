@@ -1,0 +1,74 @@
+{% extends 'space_base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+  
+  <div class="row">
+    {% if cluster %}
+    <div class="col-md-12" style="overflow-x: scroll;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <!-- <th>Source</th> -->
+            <!-- <th>Uri</th> -->
+            <th>Type</th>
+            <th>Size(KB)</th>
+            <th>Public</th>
+            <!-- <th>Enabled</th> -->
+            <th>Modified</th>
+            <th>Owner</th>
+            <th>Remark</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for dt in datasets %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>
+              {% if dt.type == 0%}
+              <icon class="fa fa-table" style="font-size:10px;"></icon>              
+              {% elif dt.type == 1%}
+              <img src="{% static 'hdfs.svg'%}" style="width:10px;">
+              {% elif dt.type == 2%}
+              <icon class="fa fa-file-text-o" style="font-size:10px;"></icon>
+              {% elif dt.type == 3%}
+              <img src="{% static 'hive.svg'%}" style="width:10px;">
+              {% elif dt.type == 4%}
+              <img src="{% static 'event.svg'%}" style="width:10px;">
+              {% elif dt.type == 5%}
+              <img src="{% static 'gstore.svg'%}" style="width:10px;">
+              {% elif dt.type == 6%}
+              <img src="{% static 'star.svg'%}" style="width:10px;">
+              {% endif %}
+              {{dt.name}}
+              
+            </td>
+            <!-- <td>{{dt.source}}</td> -->
+            <!-- <td>{{dt.uri}}</td> -->
+            <td>{{dt.type_name}}</td>
+            <td>{{dt.size}}</td>
+            <td>{{dt.public}}</td>
+            <!-- <td>{{dt.enabled}}</td> -->
+            <td>{{dt.modified_time|date:'Y-m-d H:i:s'}}</td>
+            <td>{{dt.owner}}</td>
+            <td>{{dt.remark|default_if_none:""}}</td>
+            <td> 
+              <a href="{% url 'scispace_data_instance_add' cluster.id %}?dataset={{dt.id}}" class="btn btn-primary btn-sm">
+              Load
+              </a> 
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      </div>
+            
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

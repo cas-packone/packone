@@ -1,0 +1,81 @@
+{%extends 'site_base.html'%}
+{% load staticfiles %}
+
+{% block app-body %}
+<style type="text/css">    
+    .logindiv {
+    background: white;
+    border: 1px solid #ccc;
+    width: 23em;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    }
+</style>
+<div class="app-body" style="background: #3ca4e2 url({% static 'scispace/img/login-background.png'%}) no-repeat round;">
+  <div class="container-fluid">
+
+    <div class="row justify-content-center">
+        <div class="" style="margin-top: 10%;width: 350px;">
+            <div class="card">
+                <div class="card-header" style="text-align: center;background-color: #fff !important;color: #333;">
+                    <h4>Login</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                </div>
+                                <input class="form-control" id="id_username" type="text" name="username" placeholder="Username">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-asterisk"></i>
+                                    </span>
+                                </div>
+                                <input class="form-control" id="id_password" type="password" name="password" placeholder="Password">
+                            </div>
+                        </div>
+
+                        {% for error in form.non_field_errors %}
+                            <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+
+                        <input type="hidden" name="this_is_the_login_form" value="1" />
+                        <input type="hidden" name="next" value="{% url 'scispace_index'%}" />
+
+                        <div class="form-group form-actions">
+                            <button class="btn btn-primary pull-right" type="submit">Login</button>
+                        </div>
+                        <!-- <a href="#">Register</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="#">Reset Password</a> -->
+                        <a href="{{escience_login_url|safe}}">科技云邮箱登录</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+{%endblock%}
+<!-- 
+<script>
+$(function () {    
+    $.ajaxSetup({headers: { "X-CSRFToken": getCookie("csrftoken") }    });});
+
+function getCookie(name) {
+    var arr,reg=new RegExp("(^| "+name+"=([^;]*)(;|$)");     
+    if(arr=document.cookie.match(reg))
+        return unescape(arr[2]);     else         return null; } 
+</script> -->

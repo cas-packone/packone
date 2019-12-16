@@ -1,0 +1,155 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+  <div class="row">
+    {% if cluster %}
+    <!-- <div class="col-md-12" style="text-align: right;margin-bottom: 10px;">
+    <a class="btn btn-primary btn-sm" href="{% url 'scispace_data_instance_add' cluster.id %}">
+      <icon class="fa fa-plus"></icon> Add Instance</a>
+    </div> -->
+    <div class="col-md-12" style="overflow-x: scroll;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>IPV4</th>
+            <!-- <th>IPV6</th> -->
+            <th>Cloud</th>
+            <th>Image</th>
+            <th>Template</th>
+            <th>Host Name</th>
+            <th>Remark</th>
+            <!-- <th>Created Time</th> -->
+            <th>Built Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for dt in instances %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{dt.ipv4}}</td>
+            <!-- <td>{{dt.source}}</td> -->
+            <!-- <td>{{dt.uri}}</td> -->
+            <!-- <td>{{dt.ipv6}}</td> -->
+            <td>{{dt.cloud_name}}</td>
+            <td>{{dt.image_name}}</td>
+            <td>{{dt.template_name}}</td>
+            <td>{{dt.hostname}}</td>
+            <td>{{dt.remark|default_if_none:""}}</td>
+            <!-- <td>{{dt.created_time|date:'Y-m-d H:i:s'}}</td> -->
+            <td>{{dt.built_time|date:'Y-m-d H:i:s'}}</td>
+            <td id="status_td_{{dt.id}}">{{dt.status_name}}</td>
+            <td> 
+              <!-- <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                <a href="{{dt.vnc_url}}" class="btn btn-secondary btn-info btn-sm">VNC</a> 
+                <button  class="btn btn-secondary btn-primary btn-sm" onclick="operate_instance('{{dt.id}}','toggle')">Toggle</button> 
+                <button  class="btn btn-secondary btn-danger btn-sm" onclick="operate_instance('{{dt.id}}','delete')">Delete</button>
+              </div>   --> 
+              <div class="btn-group">
+                <button onclick="vnc_btn_click({{dt.id}})" class="btn btn-primary btn-sm">VNC</button> 
+                <!-- <button class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <button  class="dropdown-item" onclick="operate_instance('{{dt.id}}','toggle')">Toggle</button> 
+                  <button  class="dropdown-item" onclick="operate_instance('{{dt.id}}','delete')">Delete</button>
+                        
+                </div> -->
+              </div>           
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      </div>
+            
+      </div>
+    {% endif %}
+  </div>
+<script type="text/javascript">
+
+  function operate_instance(instance_id, operation) {
+    var op_show = { "toggle":"Toggle",
+                    "delete": "Delete"};
+    var r = confirm("Confirm execute operation \" "+op_show[operation]+" \" ?");
+    if (r != true){
+      return;
+    }
+    $.ajax({
+            url: '{% url "scispace_cluster_instance_operate_ajax" cluster.id %}',
+            type: 'post',
+            data: {
+                  "instance_id": instance_id,
+                  "operation": operation,
+                  },
+            success:function(data){
+                        if (data.res){
+                             alert("Operation Sended. ");
+                        } else {
+                              alert("Operation Failed !");
+                        }
+                        window.location.reload(true);
+                      },
+            error:function(XMLHttpRequest, textStatus){
+                        alert("Operation Error !");
+                        window.location.reload(true);
+                }
+
+                    }, 'json'); 
+    
+  }
+
+  function vnc_btn_click(instance_id) {
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_instance_info_ajax' cluster.id %}",
+      type: 'get',
+      data: {
+        'instance_id': instance_id,
+        'require_vnc': true,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          if (data.info.vnc_url){
+            window.open(data.info.vnc_url, "_blank");  
+          }
+          else{
+            alert("VNC is unavailable!");
+          }
+        }
+      },
+    }, 'json');
+  }
+
+  var instance_ids = [{%for dt in instances%}"{{dt.id}}",{%endfor%}];
+  function update_status(){
+    for(var i in instance_ids) {
+      setInterval("get_status('" + instance_ids[i] + "')", 60000);
+      get_status(instance_ids[i]);
+    }
+  }
+  update_status();
+  function get_status(instance_id) {
+    $.ajax({
+      url: "{% url 'scispace_get_cluster_instance_info_ajax' cluster.id %}",
+      type: 'get',
+      data: {
+        'instance_id': instance_id,
+        'require_vnc': false,
+      },
+      cache:false,
+      success: function(data) {
+        if (data.res == true){
+          var status_name = data.info.status_name;
+          $("#status_td_" + instance_id).text(status_name);
+        }
+      },
+    }, 'json');
+  }
+            
+</script>
+{% endblock %}

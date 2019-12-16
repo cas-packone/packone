@@ -1,0 +1,70 @@
+{% extends 'space_base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+
+<div class="row">
+  {% if cluster %}
+    <div class="col-md-12">
+    	<strong>Please Choose: </strong>
+    	<select id="notebook_select" style="width: 400px;" onchange="changeIframeSrc('iframe1',this.value);"></select>
+    </div>
+    <div class="col-md-12" style="margin-top: 10px;padding: 0px;">
+      <iframe id="iframe1" src="" style="width: 100%;border-width: 0px;"></iframe>
+    </div>
+
+    <script type="text/javascript">
+    	function getNoteBookList(requestHead) {
+        jQuery(function ($) {
+            $.get(requestHead + "/api/notebook", function (result) {
+                if (result) {
+                    if ("OK" === result.status) {
+                        var result_body = result.body;
+                        if (result_body && result_body.length > 0) {
+                            var select_options = "";
+                            var iframe_init_src = ""
+                            for (var i = 0; i < result_body.length; i++) {
+                                var option_element = '<option value="' + requestHead + '/#/notebook/' + result_body[i].id + '">' + result_body[i].name + '</option>';
+                                if (i === 0) {
+                                    iframe_init_src = (requestHead + '/#/notebook/' + result_body[i].id);
+                                    select_options = (option_element + select_options);
+                                } else {
+                                    select_options += option_element;
+                                }
+                            }
+                            $("#notebook_select").html(select_options);
+                            changeIframeSrc("iframe1",iframe_init_src);
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function changeIframeSrc(iframe_id, url) {
+        var iframe_element = document.getElementById(iframe_id);
+        iframe_element.setAttribute("src", url);
+    }
+    var notebook_host = "{{notebook_url}}";
+    notebook_host = notebook_host.replace(/\/$/,"")
+    getNoteBookList(notebook_host);
+    </script>
+    
+
+    <script type="text/javascript">
+    var height1 = $(window).height() - 130;
+    $("body").css("overflow-y","hidden");
+    $("#iframe1").height(height1);
+    
+    // linsten window size change event
+    $(window).resize(function() { 
+       var height1 = $(this).height() - 130; 
+     $("#iframe1").height(height1);
+    });
+  </script>
+
+ {% endif %}
+</div>
+
+
+{% endblock %}

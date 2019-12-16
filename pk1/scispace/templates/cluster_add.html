@@ -1,0 +1,212 @@
+{% extends 'site_base.html' %}
+
+{% block app-body %}
+<div class="app-body">
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+    <div class="card" style="margin-top: 30px; margin-bottom: 100px;">
+      <div class="card-header" style="background-color:#fff;"><strong>Add Space</strong></div>
+      <div class="card-body">
+      <form id="add_form" role="form"  class="form-horizontal"  method="post" >
+        {% csrf_token %}
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;">Name: *</label>
+          <div class="col-sm-9">
+              <input type="text" name="name" class="form-control" AUTOCOMPLETE="off" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;">Scale: *</label>
+          <div class="col-sm-9">
+              <select name="scale" class="form-control">
+                <option value=""></option>
+              {% for sc in scales %}
+                <option value="{{sc.id}}">{{sc.name}}</option>
+              {% endfor %}
+              </select>
+          </div>
+        </div>
+
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;">Engines: *</label>
+          <div class="col-sm-9" id="engines_div">
+              <table>
+                <tbody id="engines_tb">
+                  
+                </tbody>                
+              </table>
+              
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remedy script todo:</label>
+          <div class="col-sm-9">
+              <textarea name="remedy_script_todo" class="form-control" rows="4" ></textarea>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Public:</label>
+          <div class="col-sm-9 col-form-label">
+              <label class="radio-inline">
+                <input type="radio" name="public" id="inlineRadio1" value="1"> Yes
+              </label>
+              <label class="radio-inline">
+                <input type="radio" checked="checked" name="public" id="inlineRadio2" value="0"> No
+              </label>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" style="font-weight: 200;" AUTOCOMPLETE="off">Remark:</label>
+          <div class="col-sm-9">
+              <textarea name="remark" class="form-control" rows="3" ></textarea>
+          </div>
+        </div>
+    
+      </form>
+      </div>
+      <div class="card-footer" style="background-color:#fff;text-align: right;">
+       <button class="btn btn-sm btn-primary" type="submit" onclick="submit_form()">
+                      <i class="fa fa-dot-circle-o"></i> Submit</button>
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-sm btn-danger" type="reset" href="{% url 'scispace_cluster_list'%}">
+                      <i class="fa fa-ban"></i> Cancel</a>          
+      </div>
+
+    </div>
+      </div>
+            
+  </div>
+
+</div>
+</div>
+
+<script type="text/javascript">
+    var scale_engines = {{scale_engines|safe}};
+    function submit_form(){
+      var dt_name = $.trim($('input[name="name"]').val());
+      var scale = $('select[name="scale"]').val();
+      var engines = $('input[name="engines"]:checked');
+      // var engines = $('select[name="engines"]').val();
+      var err = ""
+      if (!dt_name){
+        err += "[Name] is required;\n"
+      }
+      if (!scale){
+        err += "[Scale] is required;\n"
+      }
+      if (!engines || engines.length == 0){
+        err += "[Engine] is required;\n"
+      }
+
+      if (!err){
+        $("#add_form").submit();
+      }
+      else{
+        alert(err);
+      }
+
+    } 
+    
+    (function(){
+        
+        $("select[name='scale']").change(set_data_engine);
+        
+        function set_data_engine() {
+            var scale = $('select[name="scale"]').val();
+
+            if (! scale){
+              $('#engines_tbl').html("");
+              return;
+            }
+            
+            // not use ajax
+            if (scale in scale_engines){
+              var choices = "";
+              var count = 0
+              for(var i in scale_engines[scale]){
+                dt_list = scale_engines[scale];
+                if(count == 0){
+                  choices += "<tr>"
+                }
+                count += 1;
+                if(dt_list[i]["required"]){
+                  choices += '<td><label class="checkbox-inline">' + 
+                              '<input type="checkbox" name="engines" value="' 
+                                + dt_list[i]["id"] + '" readonly checked>' + 
+                               dt_list[i]['name'] + 
+                               '</label></td>';
+                }
+                else{
+                  choices += '<td><label class="checkbox-inline">' + 
+                              '<input type="checkbox" name="engines" value="' + dt_list[i]["id"] + '">' + 
+                               dt_list[i]['name'] + 
+                               '</label></td>';
+                }
+                if(count == 3){
+                  choices += "</tr>"
+                  count = 0;
+                }
+                  
+              }
+
+              $('#engines_tb').html(choices);  
+            }
+
+            //
+            // $.ajax({
+            //           url: '{% url "scispace_scale_engines_ajax" %}',
+            //           type: 'get',
+            //           data: {
+            //               'scale': scale,
+            //           },
+            //           success:function(data){
+            //             if (data.res){
+            //               var choices = "";
+            //               var count = 0
+            //               for(var i in data.list){
+            //                 if(count == 0){
+            //                   choices += "<tr>"
+            //                 }
+            //                 count += 1;
+            //                 if(data.list[i]["required"]){
+            //                   choices += '<td><label class="checkbox-inline">' + 
+            //                               '<input type="checkbox" name="engines" value="' 
+            //                                 + data.list[i]["id"] + '" readonly checked>' + 
+            //                                data.list[i]['name'] + 
+            //                                '</label></td>';
+            //                 }
+            //                 else{
+            //                   choices += '<td><label class="checkbox-inline">' + 
+            //                               '<input type="checkbox" name="engines" value="' + data.list[i]["id"] + '">' + 
+            //                                data.list[i]['name'] + 
+            //                                '</label></td>';
+            //                 }
+            //                 if(count == 3){
+            //                   choices += "</tr>"
+            //                   count = 0;
+            //                 }
+                              
+            //               }
+
+            //               $('#engines_tb').html(choices);    
+            //             } else {
+            //                   alert(data.error);
+            //               }
+            //           }
+
+            //         }, 'json');        
+        }
+        
+    })();
+    </script>
+
+{% endblock %}

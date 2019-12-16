@@ -27,8 +27,8 @@ admin.site.site_title = 'PackOne Console' # default: "Django site admin"
 admin.site.site_url = None
 
 urlpatterns = [
-    re_path(r'^', admin.site.urls),
-    re_path(r'^space/[0-9]+/', admin.site.urls),
+    # re_path(r'^', admin.site.urls),
+    # re_path(r'^space/[0-9]+/', admin.site.urls),
     re_path(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     re_path(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('api/user/', include('user.urls')),
@@ -40,4 +40,12 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_ROOT}),
     re_path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+]
+
+
+urlpatterns += [
+    re_path(r'^', include('scispace.urls')),
+    re_path(r'^admin/', admin.site.urls),
+    # path('scispace/', include('scispace.urls')),
+
 ]

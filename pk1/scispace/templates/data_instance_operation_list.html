@@ -1,0 +1,51 @@
+{% extends 'space_base.html' %}
+
+{% block main %}
+
+  <div class="row">
+    {% if cluster %}
+    <div class="col-md-12" style="overflow-x: scroll;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>operation</th>
+            <!-- <th>batch_uuid</th> -->
+            <th>script</th>
+            <th>log</th>
+            <!-- <th>created_time</th> -->
+            <!-- <th>started_time</th> -->
+            <th>completed_time</th>
+            <th>status</th>
+            <th>tidied</th>
+            <th>manual</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for op in operations %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td><a href="{% url 'scispace_datainstance_op_info' cluster.id op.id %}" title="{{op.name}}">{{op.name|truncatechars:"20" }}</a></td>
+            <td>{{op.operation_name  }}</td>
+            <!-- <td>{{op.batch_uuid  }}</td> -->
+            <td>{{op.script|default_if_none:""|truncatechars:"100"  }}</td>            
+            <td>{{op.log|default_if_none:""|truncatechars:"100" }}</td>
+            <!-- <td>{{op.created_time|date:'Y-m-d H:i:s'  }}</td> -->
+            <!-- <td>{{op.started_time|date:'Y-m-d H:i:s'  }}</td> -->
+            <td>{{op.completed_time|date:'Y-m-d H:i:s'  }}</td>
+            <td>{{op.status  }}</td>
+            <td>{{op.tidied  }}</td>
+            <td>{{op.manual  }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      </div>
+            
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

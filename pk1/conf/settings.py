@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'scispace',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ DATABASES = {
         'NAME': 'packone_new',
         'USER': 'rabbit',
         'PASSWORD': 'rabbit',
-        'HOST': 'rabbit-db-host',
+        'HOST': '127.0.0.1',
         'PORT': '5432'
     },
     # 'default': {
@@ -126,7 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-USE_TZ = True
+USE_TZ = False
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -207,3 +209,14 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+
+# 科技网登录设置
+DOMAIN = "www.abc.cn"
+ESCIENCE_APP_KEY = '123456'
+ESCIENCE_APP_SECRET = 'DsKIYWicgI1eCg6DWp1WXqPgkfOUK7WM'
+ESCIENCE_CALLBACK = 'http://%s/callback/escience' % DOMAIN
+ESCIENCE_LOGIN_URL = 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=%s&client_id=%s' % (
+                ESCIENCE_CALLBACK, ESCIENCE_APP_KEY)
+ESCIENCE_LOGIN_HOST = "passport.escience.cn"
+ESCIENCE_TOKEN_URL = "https://passport.escience.cn/oauth2/token"
