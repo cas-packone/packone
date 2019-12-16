@@ -28,7 +28,7 @@ def credential_update(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=models.Credential)
 def credential_pre_delete(sender, instance, **kwargs):
-    if instance.ssh_user=='root':
+    if instance.ssh_user=='root' and instance.profile.owner.instance_set.exists():
         raise Exception('cannot delete credentials of root')
 
 @receiver(pre_save, sender=models.Profile)
