@@ -72,7 +72,7 @@ def escience_callback(request):
             # 科技网账户和科技网邮箱都没有绑定，则注册新用户
             if user is None:
                 user, created = User.objects.get_or_create(username=user_data['cstnetId'],
-                        email=user_data['cstnetId'], last_name=user_data['truename'], is_stuff=True)
+                        email=user_data['cstnetId'], last_name=user_data['truename'], is_staff=True)
 
                 # 注册失败，报错
                 if not created:
