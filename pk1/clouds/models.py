@@ -291,6 +291,8 @@ monitored = Signal(providing_args=["instance","name"])
 def to_status_value(status):
     if status=='ERROR':
         status = INSTANCE_STATUS.failure.value
+    elif status=='SHUTOFF':
+        status = INSTANCE_STATUS.shutdown.value
     else:
         try:
             status = INSTANCE_STATUS[status.lower()].value

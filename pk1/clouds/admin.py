@@ -121,6 +121,7 @@ class InstanceAdmin(OwnershipModelAdmin,OperatableAdminMixin):
         for ins in queryset:
             models.InstanceOperation(
                 target=ins,
+                ignore_error=True,
                 operation=models.INSTANCE_OPERATION.poweroff.value if ins.status==models.INSTANCE_STATUS.active.value else models.INSTANCE_OPERATION.start.value
             ).save()
             
