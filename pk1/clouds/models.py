@@ -573,3 +573,10 @@ class GroupOperation(M2MOperationModel):
     @staticmethod
     def get_sub_operation_model():
         return InstanceOperation
+
+class InstanceMetric(models.Model):
+    instance=models.ForeignKey(Instance,on_delete=models.CASCADE)
+    uuid=models.UUIDField(unique=True,auto_created=False,null=True,editable=False)
+    metric=models.TextField(max_length=51200,default="",blank=True)# in json format
+    created_time=models.DateTimeField(auto_now_add=True)
+    remark = models.CharField(blank=True,null=True,max_length=100)
