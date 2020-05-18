@@ -24,7 +24,11 @@
     </div>
     <div class="col-md-6" style="text-align: right;margin-bottom: 10px;">
       <a class="btn btn-primary" style="background-color: #fb9045 !important;border-color: #fb9045 !important;" 
+        href="#" onclick="alert('maintenance...')"><icon class="fa fa-plus"></icon> Create New Space</a>
+        {% comment %}
+      <a class="btn btn-primary" style="background-color: #fb9045 !important;border-color: #fb9045 !important;" 
         href="{% url 'scispace_cluster_add' %}"><icon class="fa fa-plus"></icon> Create New Space</a>
+        {% endcomment %}
     </div>
     
     {% for cluster in clusters%}
