@@ -7,7 +7,7 @@ django-filter
 djangorestframework
 djangorestframework-simplejwt
 paramiko
-psycopg2-binary
+psycopg2-binary==2.8.6
 python-cinderclient
 python-novaclient
 python-glanceclient
