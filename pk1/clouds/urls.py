@@ -4,13 +4,13 @@ from . import views
 
 ROUTER = routers.DefaultRouter()
 ROUTER.register(r'clouds', views.CloudViewSet)
-ROUTER.register(r'images', views.ImageViewSet, base_name='image')
+ROUTER.register(r'images', views.ImageViewSet, basename='image')
 ROUTER.register(r'instancetemplates', views.InstanceTemplateViewSet)
-ROUTER.register(r'instanceblueprints', views.InstanceBlueprintViewSet, base_name='instanceblueprint')
-ROUTER.register(r'instances', views.InstanceViewSet, base_name='instance')
-ROUTER.register(r'instanceoperations', views.InstanceOperationViewSet, base_name='instanceoperation')
-ROUTER.register(r'volumes', views.VolumeViewSet, base_name='volume')
-ROUTER.register(r'mounts', views.MountViewSet, base_name='mount')
+ROUTER.register(r'instanceblueprints', views.InstanceBlueprintViewSet, basename='instanceblueprint')
+ROUTER.register(r'instances', views.InstanceViewSet, basename='instance')
+ROUTER.register(r'instanceoperations', views.InstanceOperationViewSet, basename='instanceoperation')
+ROUTER.register(r'volumes', views.VolumeViewSet, basename='volume')
+ROUTER.register(r'mounts', views.MountViewSet, basename='mount')
 
 urlpatterns = [
     re_path(r'^', include(ROUTER.urls)),
