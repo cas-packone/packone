@@ -3,11 +3,11 @@ from rest_framework import routers
 from . import views
 
 ROUTER = routers.DefaultRouter()
-ROUTER.register(r'datasources', views.DataSourceViewSet,base_name='datasource')
-ROUTER.register(r'datasets', views.DatasetViewSet,base_name='dataset')
-ROUTER.register(r'dataengines', views.DataEngineViewSet,base_name='dataengine')
-ROUTER.register(r'datainstances', views.DataInstanceViewSet,base_name='datainstance')
-ROUTER.register(r'datainstanceoperations', views.DataInstanceOperationViewSet,base_name='datainstanceoperation')
+ROUTER.register(r'datasources', views.DataSourceViewSet,basename='datasource')
+ROUTER.register(r'datasets', views.DatasetViewSet,basename='dataset')
+ROUTER.register(r'dataengines', views.DataEngineViewSet,basename='dataengine')
+ROUTER.register(r'datainstances', views.DataInstanceViewSet,basename='datainstance')
+ROUTER.register(r'datainstanceoperations', views.DataInstanceOperationViewSet,basename='datainstanceoperation')
 
 urlpatterns = [
     re_path(r'^', include(ROUTER.urls)),
