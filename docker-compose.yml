@@ -1,0 +1,18 @@
+version: '3'
+services:
+  pk1-pg:
+    image: postgres:10
+    container_name: pk1-pg
+    environment:
+      POSTGRES_PASSWORD: pk1
+      POSTGRES_USER: pk1
+      POSTGRES_DB: pk1
+  pk1-app:
+    container_name: pk1-app
+    build:
+      context: .
+      dockerfile: dockerfile
+    expose:
+      - "11001"
+    depends_on:
+      - pk1-pg

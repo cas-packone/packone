@@ -14,6 +14,7 @@ This software is inspired by the "serverless" trend in cloud computing and big d
 
 Then run:
 
+pip3.6 install -r requirements.txt
 pip3.6 install pk1
 
 pip3.6 install -U pip setuptools
