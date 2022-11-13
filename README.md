@@ -22,6 +22,7 @@ Then run:
 
 # Install method 2：Docker
 `docker-compose up`
+
 `docker exec -it pk1-app /bin/bash pk1 setup --database pk1:pk1:pk1-pg:5432:pk1`
 
 # Start Service

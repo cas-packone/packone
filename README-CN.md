@@ -26,6 +26,7 @@ PackOne的长期目标是实现serverless式云端大数据处理，即在用户
 
 # 安装方式2：Docker安装
 `docker-compose up`
+
 `docker exec -it pk1-app /bin/bash pk1 setup --database pk1:pk1:pk1-pg:5432:pk1`($db_*替换为实际值)
 
 # 启动PackOne服务
