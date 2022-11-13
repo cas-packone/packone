@@ -12,7 +12,9 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    expose:
-      - "11001"
+    ports:
+      - "11001:11001"
     depends_on:
+      - pk1-pg
+    links:
       - pk1-pg

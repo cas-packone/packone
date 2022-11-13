@@ -14,8 +14,7 @@ PackOne致力于简化大数据软件在各类云上的弹性部署流程。通�
 PackOne的长期目标是实现serverless式云端大数据处理，即在用户不直接管理云主机实例的前提下，实现大数据软件集群的自动部署和弹性伸缩（集群层）、多源异构数据资源的自动汇聚与自动入库（数据层）、数据库实例的函数式交互分析与流水线分析（space层）。
 
 # 安装
-1. 选择一个linux云主机 (推荐Centos 7.5)，该主机能够与目标云平台进行通信；
-2. `yum install python36-pip and python36-devel`；
+1. Python 3.6, postgresql 10；
 3. 创建一个postgresql数据库实例，并准备好该实例的以下信息：db_user、db_passwd、db_host、db_port、db_name。
 然后运行：
 
