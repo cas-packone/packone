@@ -11,7 +11,7 @@ PackOne, inspired by the "serverless" trend in cloud computing and big data proc
 Install
 ===================
 
-Choose a linux (Centos 7.5 is verified) host which network can reach the target openstack group resource, and create a postgresql db with its information (db_user, db_passwd, db_host, db_port, db_name) collected. Then run:
+Choose a linux host with python 3.6, and create a postgresql db with its information (db_user, db_passwd, db_host, db_port, db_name) collected. Then run:
 
 pip install pk1
 
@@ -33,8 +33,3 @@ pk1 stop
 Uninstall 
 ===================
 pk1 uninstall
-
-===================
-Acknowledge
-===================
-National key Research Program of China: Scientific Big Data Management System (No.2016YFB1000600)
