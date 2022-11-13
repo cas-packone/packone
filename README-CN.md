@@ -13,7 +13,7 @@ PackOne致力于简化大数据软件在各类云上的弹性部署流程。通�
 
 PackOne的长期目标是实现serverless式云端大数据处理，即在用户不直接管理云主机实例的前提下，实现大数据软件集群的自动部署和弹性伸缩（集群层）、多源异构数据资源的自动汇聚与自动入库（数据层）、数据库实例的函数式交互分析与流水线分析（space层）。
 
-# 安装
+# 安装方式1：本地安装
 1. Python 3.6, postgresql 10；
 3. 创建一个postgresql数据库实例，并准备好该实例的以下信息：db_user、db_passwd、db_host、db_port、db_name。
 然后运行：
@@ -24,8 +24,13 @@ PackOne的长期目标是实现serverless式云端大数据处理，即在用户
 
 `pk1 setup --database $db_user:$db_passwd:$db_host:$db_port:$db_name`($db_*替换为实际值)
 
+# 安装方式2：Docker安装
+`docker-compose up`
+`docker exec -it pk1-app /bin/bash pk1 setup --database pk1:pk1:pk1-pg:5432:pk1`($db_*替换为实际值)
+
 # 启动PackOne服务
 `pk1 start [--listening 127.0.0.1:11001]`
+
 
 # Step 1: 接入云资源(以OpenStack为例)
 访问 http://127.0.0.1:11001/clouds/cloud/add/, 填写Openstack相关账户信息，如下图：

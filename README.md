@@ -7,18 +7,22 @@ PackOne is used to simplify big data cluster deployment on the clouds include **
 
 This software is inspired by the "serverless" trend in cloud computing and big data processing, with the ambitions to bridge the IaaS to Apache Ambari seamlessly and coordinate Ambari Services into an elastic high-level workspace. Currently, It support to deploy and scale out Hadoop, Spark, Hive, Neo4j, MongoDB, Kylin, Redis and many other clustering software in several clicks or api callings.
 
-# Install
+# Install method 1：Native
 1. Python 3.6, postgresql 10;
 2. yum install python36-pip and python36-devel;
 3. Create a postgresql db with its information (db_user, db_passwd, db_host, db_port, db_name) collected.
 
 Then run:
 
-pip3.6 install pk1
+`pip3.6 install pk1`
 
-pip3.6 install -U pip setuptools
+`pip3.6 install -U pip setuptools`
 
-pk1 setup --database db_user:db_passwd:db_host:db_port:db_name
+`pk1 setup --database db_user:db_passwd:db_host:db_port:db_name`
+
+# Install method 2：Docker
+`docker-compose up`
+`docker exec -it pk1-app /bin/bash pk1 setup --database pk1:pk1:pk1-pg:5432:pk1`
 
 # Start Service
 pk1 start [--listening 127.0.0.1:11001]
