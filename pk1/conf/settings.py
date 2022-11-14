@@ -92,7 +92,7 @@ DATABASES = {
         'USER': 'rabbit',
         'PASSWORD': 'rabbit',
         'HOST': 'rabbit-db-host',
-        'PORT': '5432
+        'PORT': '5432'
     },
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
