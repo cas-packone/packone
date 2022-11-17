@@ -30,6 +30,9 @@ Then run:
 # Start Service
 pk1 start [--listening 127.0.0.1:11001]
 
+# Access Service
+https://127.0.0.1:11001/admin
+
 # Step 1: Add Cloud (OpenStack, for example)
 open http://127.0.0.1:11001/clouds/cloud/add/, and fill the form like:
 <img src="pk1/static/intro-cloud.png"/>
