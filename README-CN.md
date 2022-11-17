@@ -34,6 +34,8 @@ PackOne的长期目标是实现serverless式云端大数据处理，即在用户
 # 启动PackOne服务
 `pk1 start [--listening 127.0.0.1:11001]`
 
+# 访问PackOne服务
+https://127.0.0.1:11001/admin
 
 # Step 1: 接入云资源(以OpenStack为例)
 访问 http://127.0.0.1:11001/clouds/cloud/add/, 填写Openstack相关账户信息，如下图：
