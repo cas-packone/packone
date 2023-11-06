@@ -3,7 +3,7 @@
 <img src="pk1/static/logo-large.png" width = "50%" />
 
 # Introduction
-PackOne is used to simplify big data cluster deployment on the clouds include **OpenStack**, H3CloudOS, EVCloud and CSTCloud etc. It can **bootstrap** a cluster from scratch in a few clicks, and **materialize** the cluster into cloud images to boost following cluster creating procedures. Besides, PackOne can **scale-out**/**in** clusters by only one click.
+PackOne provides a set of consistent interfaces of resources management of heterogeneous clouds.  Resources include virtual machines, containers, storage volumes, etc. Clouds include **OpenStack**, H3CloudOS, EVCloud, CSTCloud, etc. It can **bootstrap** a big data cluster from scratch in a few clicks, and **materialize** the cluster into cloud images to boost following cluster creating procedures. Besides, PackOne can **scale-out**/**in** clusters by only one click.
 
 This software is inspired by the "serverless" trend in cloud computing and big data processing, with the ambitions to bridge the IaaS to Apache Ambari seamlessly and coordinate Ambari Services into an elastic high-level workspace. Currently, It support to deploy and scale out Hadoop, Spark, Hive, Neo4j, MongoDB, Kylin, Redis and many other clustering software in several clicks or api callings.
 
